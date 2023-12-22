@@ -37,3 +37,11 @@ table td {
 tbody tr:nth-of-type(odd) {
     background-color: rgb(179, 208, 255, 0.3)
 }
+
+input[type=checkbox] {
+    transform: scale(1.5);
+    margin-left: 1rem;
+}
+.select {
+    transform: scale(1.25);
+}

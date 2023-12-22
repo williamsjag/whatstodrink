@@ -36,9 +36,13 @@ def index():
         "index.html",
     )
 
+@app.route("/addcocktail")
+@login_required
+def addcocktail():
 
-
-
+    return render_template(
+        "addcocktail.html"
+    )
 
 
 
@@ -93,7 +97,6 @@ def logout():
 
 
 
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
@@ -131,3 +134,53 @@ def register():
         return render_template("register.html")
 
 
+@app.route("/addingredient", methods=["GET", "POST"])
+@login_required
+def addingredient():
+
+    # reached via post
+     if request.method == "POST":
+        # Ensure ingredient was submitted
+        if not request.form.get("ingredientname"):
+            return apology("must add ingredient", 400)
+
+        # Ensure type was submitted
+        elif not request.form.get("type"):
+            return apology("must select ingredient type", 400)
+
+        # Query database for ingredient
+        rows = db.execute(
+            "SELECT * FROM ingredients WHERE name = ?", request.form.get("ingredientname")
+        )
+
+        # Ensure username exists and password is correct
+        if rows:
+            return apology("ingredient already exists", 400)
+        else:
+            # insert new ingredient into db
+            db.execute(
+                "INSERT INTO ingredients (user_id, name, type, stock) VALUES(?, ?, ?, ?)",
+                session["user_id"],
+                request.form.get("ingredientname"),
+                request.form.get("type"),
+                request.form.get("stock"),
+            )
+        return render_template(
+            "addingredient.html"
+        )
+    # User reached route via GET (as by clicking a link or via redirect)
+     else:
+        return render_template(
+            "addingredient.html"
+        )
+
+@app.route("/managestock", methods=["GET", "POST"])
+@login_required
+def managestock():
+
+    ingredients = db.execute("SELECT name, type, stock FROM ingredients")
+    types = db.execute("SELECT DISTINCT type FROM ingredients")
+
+    return render_template(
+        "managestock.html", ingredients=ingredients, types=types
+    )

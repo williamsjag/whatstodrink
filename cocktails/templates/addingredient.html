@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Cocktail
+{% endblock %}
+
+{% block main %}
+    <!-- TODO -->
+    <form action="/addingredient" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
+        </div>
+        <div class="mb-3 select">
+            <select name="type" id="type">
+                <option value="" disabled selected>--Ingredient Type--</option>
+                <option value="spirit">Spirit</option>
+                <option value="liqueur">Liqueur</option>
+                <option value="wine">Wine/Vermouth/Sherry</option>
+                <option value="bitters">Bitters</option>
+                <option value="syrup">Syrup</option>
+                <option value="juice">Juice</option>
+                <option value="pantry">Pantry</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <br>
+        <div class="mb-3">
+            <label for="stock">In Stock:</label>
+            <input id="stock" name="stock" type="checkbox">
+        </div>
+        <button class="btn btn-primary" type="submit">Add Ingredient</button>
+    </form>
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}

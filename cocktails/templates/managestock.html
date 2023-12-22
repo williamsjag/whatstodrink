@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+    <!-- TODO -->
+    <form action="/managestock" method="post">    
+        {% for type in types %}
+            <h3>{{ type.type|capitalize }}</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ingredient</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ingredient in ingredients %}
+                            <tr>
+                                {% if ingredient.type == type.type %}
+                                    <td>{{ ingredient.name }}</td>
+                                    {% if ingredient.stock == "on" %}
+                                    <td><input id="stock_{{ ingredient.name }}" name ="stock_{{ ingredient.name }}" type="checkbox" checked></td>
+                                    {% else %}
+                                    <td><input id="stock_{{ ingredient.name }}" name ="stock_{{ ingredient.name }}" type="checkbox"></td>
+                                    {% endif %}
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+        {% endfor %}
+        <button class="btn btn-primary" type="submit">Update</button>
+    </form>
+{% endblock %}
