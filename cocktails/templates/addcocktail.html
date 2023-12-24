@@ -10,9 +10,99 @@
         <div class="mb-3">
             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="name" name="name" placeholder="Name" type="text">
         </div>
+        <div class="mb-3 select">
+            <select name="ingredient" id="ingredient">
+                <option value="" disabled selected>--Ingredient--</option>
+                <option value="addingredient" href="/addingredient">--Create New Ingredient--</option>
+                {% for type in types %}
+                <optgroup label="{{ type.type|capitalize }}">
+                    {% for ingredient in ingredients %}
+                        {% if ingredient.type == type.type %}
+                        <option value="{{ ingredient.name }}">{{ingredient.name|capitalize }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </optgroup>
+                {% endfor %}
+        </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="addingredient" name="addingredient" placeholder="Add Ingredient" type="text">
+            <input autocomplete="off" class="form-control mx-auto w-auto" id="build" name="build" placeholder="Build Instructions" type="text">
+        </div>
+        <div class="mb-3">
+            <input autocomplete="off" class="form-control mx-auto w-auto" id="source" name="source" placeholder="Source" type="text">
+        </div>
+        <div class="mb-3 select">
+            <select name="family" id="family">
+                <option value="" disabled selected>--Family--</option>
+                <option value="oldfashioned">Old Fashioneds</option>
+                <option value="sour">Sours</option>
+                <option value="vermouth">Vermouth Cocktails</option>
+                <option value="amaro">Amaro Cocktails</option>
+                <option value="duotrio">Duos and Trios</option>
+                <option value="champagne">Champagne Cocktails</option>
+                <option value="highball">Highballs</option>
+                <option value="julep">Juleps and Smashes</option>
+                <option value="hot">Hot Drinks</option>
+                <option value="egg">Egg Cocktails</option>
+                <option value="tiki">Tiki Cocktails</option>
+                <option value="punch">Punches</option>
+                <option value="orphans">Orphans</option>
+            </select>
         </div>
         <button class="btn btn-primary" type="submit">Add Cocktail</button>
     </form>
+    <!-- Modal for adding ingredient -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <form action="/ingredientmodal" id="modalform" method="post">
+            <div class="mb-3">
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
+            </div>
+            <div class="mb-3 select">
+                <select name="type" id="type">
+                    <option value="" disabled selected>--Ingredient Type--</option>
+                    <option value="spirit">Spirit</option>
+                    <option value="liqueur">Liqueur</option>
+                    <option value="wine">Wine/Vermouth/Sherry</option>
+                    <option value="bitters">Bitters</option>
+                    <option value="syrup">Syrup</option>
+                    <option value="juice">Juice</option>
+                    <option value="pantry">Pantry</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <br>
+            <div class="mb-3">
+                <label for="stock">In Stock:</label>
+                <input id="stock" name="stock" type="checkbox">
+            </div>
+            <button class="btn btn-primary" type="submit">Add Ingredient</button>
+        </form>
+        </div>
+      
+      </div>
+{% endblock %}
+{% block javascript %}
+<script>
+
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    document.getElementById('ingredient').onchange = function() {
+        val = this.children[this.selectedIndex].getAttribute('href');
+        if (val[0] = "/") {
+            modal.style.display = "block";
+        }
+    }
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 {% endblock %}
