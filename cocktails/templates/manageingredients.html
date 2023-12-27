@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Index
+    Manage Ingredients
 {% endblock %}
 
 {% block main %}
     <!-- TODO -->
-    <form action="/managestock" method="post">    
+    <form action="/manageingredients" method="post">    
         {% for type in types %}
             <h3>{{ type.type|capitalize }}</h3>
                 <table>
@@ -22,9 +22,15 @@
                                 {% if ingredient.type == type.type %}
                                     <td>{{ ingredient.name }}</td>
                                     {% if ingredient.stock == "on" %}
-                                    <td><input id="stock_{{ ingredient.name }}" name ="stock_{{ ingredient.name }}" type="checkbox" checked></td>
+                                    <td>
+                                        <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" checked>
+                                        <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient.id }}">
+                                    </td>
                                     {% else %}
-                                    <td><input id="stock_{{ ingredient.name }}" name ="stock_{{ ingredient.name }}" type="checkbox"></td>
+                                    <td>
+                                        <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" unchecked>
+                                        <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient.id }}">
+                                    </td>
                                     {% endif %}
                                 {% endif %}
                             </tr>

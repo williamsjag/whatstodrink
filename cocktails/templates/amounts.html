@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Amounts
+{% endblock %}
+
+{% block main %}
+<form action="/amounts" method="post">
+   <table>
+        <thead>
+           <tr>
+            <th>Ingredient</th>
+            <th>Amount (don't forget units!)</th>
+           </tr> 
+        </thead>
+        {% for ingredient in ingredients %}
+            <tr>
+                <td>{{ ingredient }}</td>
+                <td><input type="text" id="amount_{{ ingredient }}" name="amount_{{ ingredient }}" placeholder="1.5 oz | 2 dashes | 1 1/2 teaspoons"></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <input type="hidden" name="cocktail_id" value="{{ cocktail_id }}">
+    <button class="btn btn-primary" type="submit">Submit</button>
+</form>
+{% endblock %}

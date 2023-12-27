@@ -5,31 +5,46 @@
 {% endblock %}
 
 {% block main %}
-    <!-- TODO -->
+    <!-- Add cocktail form -->
     <form action="/addcocktail" method="post">
+            <!-- name field -->
         <div class="mb-3">
             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="name" name="name" placeholder="Name" type="text">
         </div>
+            <!--ingredients menu -->
         <div class="mb-3 select">
-            <select name="ingredient" id="ingredient">
-                <option value="" disabled selected>--Ingredient--</option>
-                <option value="addingredient" href="/addingredient">--Create New Ingredient--</option>
-                {% for type in types %}
-                <optgroup label="{{ type.type|capitalize }}">
-                    {% for ingredient in ingredients %}
-                        {% if ingredient.type == type.type %}
-                        <option value="{{ ingredient.name }}">{{ingredient.name|capitalize }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </optgroup>
-                {% endfor %}
+            <ol id="dynamicSelects">
+                <li class="select" id="ingredientmenu">
+                    <select name="ingredient" class="selectlink">
+                        <option value="" disabled selected>--Ingredient--</option>
+                        <option value="addingredient" href="/addingredient">--Create New Ingredient--</option>
+                        {% for type in types %}
+                        <optgroup label="{{ type.type|capitalize }}">
+                            {% for ingredient in ingredients %}
+                                {% if ingredient.type == type.type %}
+                                <option value="{{ ingredient.name }}">{{ingredient.name|capitalize }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </optgroup>
+                        {% endfor %}
+                    </select>
+                </li>
+            </ol>
         </div>
+        
+        <!-- More ingredients button -->
         <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto" id="build" name="build" placeholder="Build Instructions" type="text">
+            <button class="mb-3" type="button" onclick="createNewDiv()">More Ingredients</button>
         </div>
+        <!-- Build instructions field -->
+        <div class="mb-3">
+            <textarea autocomplete="off" class="form-control mx-auto w-auto" id="build" name="build" placeholder="Build Instructions"></textarea>
+        </div>
+        <!-- Source field -->
         <div class="mb-3">
             <input autocomplete="off" class="form-control mx-auto w-auto" id="source" name="source" placeholder="Source" type="text">
         </div>
+        <!-- family field -->
         <div class="mb-3 select">
             <select name="family" id="family">
                 <option value="" disabled selected>--Family--</option>
@@ -54,9 +69,9 @@
     <div id="myModal" class="modal">
 
         <!-- Modal content -->
-        <div class="modal-content">
+        <div class="modal-content" id="modalform">
           <span class="close">&times;</span>
-          <form action="/ingredientmodal" id="modalform" method="post">
+          <form action="/ingredientmodal" id="addItemForm" method="post">
             <div class="mb-3">
                 <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
             </div>
@@ -78,21 +93,22 @@
                 <label for="stock">In Stock:</label>
                 <input id="stock" name="stock" type="checkbox">
             </div>
-            <button class="btn btn-primary" type="submit">Add Ingredient</button>
+            <button onclick="alertName(event)" id="modalbutton" class="btn btn-primary" type="submit">Add Ingredient</button>
         </form>
         </div>
       
       </div>
+      
 {% endblock %}
 {% block javascript %}
 <script>
-
+    // Add modal for new ingredient
     var modal = document.getElementById("myModal");
     var span = document.getElementsByClassName("close")[0];
-
-    document.getElementById('ingredient').onchange = function() {
-        val = this.children[this.selectedIndex].getAttribute('href');
-        if (val[0] = "/") {
+    // pull up modal when add new ingredient is selected
+    document.querySelector('.selectlink').onchange = function() {
+        var val = this.children[this.selectedIndex].getAttribute('href');
+        if (val[0] === "/") {
             modal.style.display = "block";
         }
     }
@@ -102,6 +118,37 @@
     window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
+        }
+    }
+    $(window).on('hidden.bs.modal', function() { 
+        $('#code').modal('hide');
+        alert('hidden');
+    });
+    // create new select fields when a choice is made
+   
+    function createNewDiv() {
+        // get original select field
+        var originalElement = document.getElementById('ingredientmenu');
+
+        // create a new one
+        var newDiv = document.createElement('li');
+
+        // copy original population into new
+        newDiv.innerHTML = originalElement.innerHTML;
+
+        // newDiv.classList.add('mb-3', 'select')
+
+        // add new div to dynamicSelects
+        var hostdiv = document.getElementById('dynamicSelects');
+        hostdiv.appendChild(newDiv);
+
+        // add event listener to listen for link
+        var newSelect = newDiv.querySelector('.selectlink');
+        newSelect.onchange = function() {
+            var val = this.children[this.selectedIndex].getAttribute('href');
+            if (val[0] === "/") {
+                modal.style.display = "block";
+            }
         }
     }
 </script>
