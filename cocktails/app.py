@@ -43,11 +43,13 @@ def index():
         "LEFT JOIN common_ingredients ci ON a.ingredient_id = ci.id "
         "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND i.user_id = ? "
         "LEFT JOIN common_cocktails cc ON c.id = cc.id "
+        "LEFT JOIN common_amounts ca ON c.id = ca.cocktail_id "
         "WHERE "
         "("
         "(ci.id IS NOT NULL) OR "
         "(i.id IS NOT NULL AND i.stock = 'on') OR "
-        "(cc.id IS NOT NULL) "
+        "(cc.id IS NOT NULL) OR"
+        "(ca.cocktail_id IS NOT NULL)"
         ") "
         "GROUP BY c.id "
         "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a2 WHERE a2.cocktail_id = c.id)",
@@ -95,15 +97,15 @@ def login():
         session["user_id"] = rows[0]["id"]
 
         # make sure user has stock values for all common ingredients on login
-        common_ingredients = db.execute("SELECT id FROM common_ingredients").fetchall()
+        common_ingredients = db.execute("SELECT id FROM common_ingredients")
         # get all ids in common_ingredients
         for ingredient in common_ingredients:
             ingredient_id = ingredient['id']
-            # check if user is has ingredient in common_stock
-            result = db.execute("SELECT COUNT(*) FROM common_stock WHERE user_id = ? AND ingredient_id = ?", session["user_id"], ingredient_id).fetchone()
+            # check if user has ingredient in common_stock
+            result = db.execute("SELECT ingredient_id FROM common_stock WHERE user_id = ? AND ingredient_id = ?", session["user_id"],  ingredient_id)
 
             # if 0, insert a default
-            if result[0] == 0:
+            if len(result) == 0:
                 db.execute("INSERT INTO common_stock (user_id, ingredient_id, stock) VALUES (?, ?, ?)", session["user_id"], ingredient_id, '')
 
 
@@ -265,7 +267,7 @@ def manageingredients():
     elif request.method =="POST":
         # set all stock to off
         db.execute(
-            "UPDATE ingredients SET stock = 0 WHERE user_id = ?",
+            "UPDATE common_stock SET stock = 0 WHERE user_id = ?",
             session["user_id"]
         )
         # turn checked stock on
@@ -281,29 +283,16 @@ def manageingredients():
                 ingredient_source = request.form.get(f'src_{ingredient_name}')
                 ingredient_stock = request.form.get(f'stock_{ingredient_name}')
 
-                print(f"Ingredient Name: {ingredient_name}")
-                print(f"Ingredient ID: {ingredient_id}")
-                print(f"Ingredient Source: {ingredient_source}")
-                print(f"Ingredient Stock: {ingredient_stock}")
-
                 # set stock for user ingredients
                 # Determine the correct table and column for the update
                 table_name = "common_stock" if ingredient_source == "common" else "ingredients"
                 id_column = "ingredient_id" if ingredient_source == "common" else "id"
                 stock = 'on' if ingredient_stock == 'on' else ''
 
-                sql_query = f"UPDATE {table_name} SET stock = {stock} WHERE {id_column} = {ingredient_id} AND user_id = 6"
-                print(f"SQL Query: {sql_query}")
-
+                sql_query = f"UPDATE {table_name} SET stock = ? WHERE {id_column} = ? AND user_id = ?"
+            
                 # Update the stock value
-                db.execute(
-                    "UPDATE ? SET stock = ? WHERE ? = ? AND user_id = ?",
-                    table_name,
-                    stock,
-                    id_column,
-                    ingredient_id,
-                    session["user_id"]
-                )
+                db.execute(sql_query, stock, ingredient_id, session["user_id"])
 
                 
         return redirect(url_for(
@@ -361,7 +350,7 @@ def amounts():
                 ingredient_name = key.replace('amount_', '')
                 amount = value
                 ingredient_id = (db.execute("SELECT name, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, session["user_id"]))[0]['id']
-                print(f"cid: {cocktail_id} ingname: {ingredient_name} amount: {amount} ing_id: {ingredient_id}")
+
                 db.execute(
                     "INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id) VALUES(?, ?, ?, ?)",
                     cocktail_id,

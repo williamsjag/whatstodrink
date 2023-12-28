@@ -5,15 +5,7 @@
 {% endblock %}
 
 {% block main %}
-    <!-- TODO -->
-    {% for ingredient in ingredients %}
-    <p>Source: {{ ingredient['source'] }}</p>
-    <p>Ingredient ID: {{ ingredient['ingredient_id'] }}</p>
-    <p>Name: {{ ingredient['name'] }}</p>
-    <p>Type: {{ ingredient['type'] }}</p>
-    <p>Stock: {{ ingredient['stock'] }}</p>
-    <hr>
-    {% endfor %}
+
 
     <form action="/manageingredients" method="post">    
         {% for type in types %}
