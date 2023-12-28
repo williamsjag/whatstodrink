@@ -13,7 +13,8 @@
         </div>
             <!--ingredients menu -->
         <div class="mb-3 select">
-            <ol id="dynamicSelects">
+            <ol name="ingredients" id="dynamicSelects">
+                <!-- initial select menu -->
                 <li class="select" id="ingredientmenu">
                     <select name="ingredient" class="selectlink">
                         <option value="" disabled selected>--Ingredient--</option>
@@ -22,7 +23,7 @@
                         <optgroup label="{{ type.type|capitalize }}">
                             {% for ingredient in ingredients %}
                                 {% if ingredient.type == type.type %}
-                                <option value="{{ ingredient.name }}">{{ingredient.name|capitalize }}</option>
+                                <option value="{{ ingredient.name }}">{{ingredient.name|title }}</option>
                                 {% endif %}
                             {% endfor %}
                         </optgroup>
@@ -34,7 +35,7 @@
         
         <!-- More ingredients button -->
         <div class="mb-3">
-            <button class="mb-3" type="button" onclick="createNewDiv()">More Ingredients</button>
+            <button class="mb-3" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
         </div>
         <!-- Build instructions field -->
         <div class="mb-3">
@@ -57,7 +58,7 @@
                 <option value="highball">Highballs</option>
                 <option value="julep">Juleps and Smashes</option>
                 <option value="hot">Hot Drinks</option>
-                <option value="egg">Egg Cocktails</option>
+                <option value="egg">Flips and Nogs</option>
                 <option value="tiki">Tiki Cocktails</option>
                 <option value="punch">Punches</option>
                 <option value="orphans">Orphans</option>
@@ -84,7 +85,7 @@
                     <option value="bitters">Bitters</option>
                     <option value="syrup">Syrup</option>
                     <option value="juice">Juice</option>
-                    <option value="pantry">Pantry</option>
+                    <option value="pantry">Pantry/Fridge</option>
                     <option value="other">Other</option>
                 </select>
             </div>
@@ -124,7 +125,7 @@
         $('#code').modal('hide');
         alert('hidden');
     });
-    // create new select fields when a choice is made
+    // create new select fields on button press
    
     function createNewDiv() {
         // get original select field
@@ -142,6 +143,8 @@
         var hostdiv = document.getElementById('dynamicSelects');
         hostdiv.appendChild(newDiv);
 
+
+
         // add event listener to listen for link
         var newSelect = newDiv.querySelector('.selectlink');
         newSelect.onchange = function() {
@@ -151,5 +154,11 @@
             }
         }
     }
+
+    // focus on new element when more ingredients is clicked
+    document.getElementById('more_ingredients').addEventListener('click', function () {
+        // select the list items
+        document.find('.select:last').focus();
+    });
 </script>
 {% endblock %}

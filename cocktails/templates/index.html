@@ -1,3 +1,5 @@
+{% extends "layout.html" %}
+
 {% block title %}
     Index
 {% endblock %}
@@ -5,22 +7,37 @@
 {% block main %}
     <!-- TODO: make query for all cocktails -->
     <!-- imported from flask: cocktails, ingredients, amounts-->
+    {% for family in families %}
+    <h2>{{ family.family|capitalize }}</h2>
     <div class="accordion" id="makeabledrinks">
         {% for cocktail in cocktails %}
+        {% if cocktail.family == family.family %}
         <div class="accordion-item">
           <h2 class="accordion-header" id="{{ cocktail.name }}">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              {{ cocktail.name|capitalize }}
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ cocktail.name }}" aria-expanded="false" aria-controls="Arr{{ cocktail.name }}">
+                <span class ="left-text">{{ cocktail.name|capitalize }}</span>
+                <span class="right-text" style="text-align: right;">
+                    {% set cocktail_ingredients = [] %}
+                    {% for ingredient in ingredients %}
+                        {% for amount in amounts %}
+                            {% if amount.cocktail_id == cocktail.id and amount.ingredient_id == ingredient.id %}
+                                {% set _ = cocktail_ingredients.append(ingredient.name|capitalize) %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    {{ cocktail_ingredients|join(', ') }}
+                </span>
             </button>
           </h2>
-          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#{{ cocktail.name }}">
+          <div id="Arr{{ cocktail.name }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#{{ cocktail.name }}">
             <div class="accordion-body">
               <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
             </div>
           </div>
         </div>
+        {% endif %}
         {% endfor %}
-    
+    {% endfor %}
 {% endblock %}
 
 {% block javascript %}

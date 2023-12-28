@@ -6,6 +6,15 @@
 
 {% block main %}
     <!-- TODO -->
+    {% for ingredient in ingredients %}
+    <p>Source: {{ ingredient['source'] }}</p>
+    <p>Ingredient ID: {{ ingredient['ingredient_id'] }}</p>
+    <p>Name: {{ ingredient['name'] }}</p>
+    <p>Type: {{ ingredient['type'] }}</p>
+    <p>Stock: {{ ingredient['stock'] }}</p>
+    <hr>
+    {% endfor %}
+
     <form action="/manageingredients" method="post">    
         {% for type in types %}
             <h3>{{ type.type|capitalize }}</h3>
@@ -24,12 +33,14 @@
                                     {% if ingredient.stock == "on" %}
                                     <td>
                                         <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" checked>
-                                        <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient.id }}">
+                                        <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
+                                        <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
                                     </td>
                                     {% else %}
                                     <td>
                                         <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" unchecked>
-                                        <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient.id }}">
+                                        <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
+                                        <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
                                     </td>
                                     {% endif %}
                                 {% endif %}

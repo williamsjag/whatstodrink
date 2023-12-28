@@ -6,7 +6,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 import logging
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-
+import sqlite3
 from helpers import apology, login_required
 
 # Configure application
@@ -36,14 +36,29 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
-    cocktails = db.execute("SELECT c.id, c.name FROM cocktails c JOIN amounts a ON c.id = a.cocktail_id JOIN ingredients i ON a.ingredient_id = i.id JOIN users u ON i.user_id = u.id WHERE i.stock = 'on' AND u.id = ? GROUP BY c.id HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts WHERE cocktail_id = c.id)", session["user_id"])
-    ingredients = db.execute("SELECT * FROM ingredients WHERE user_id = ?", session["user_id"])
-    # try:
-        #amounts = db.execute("SELECT * FROM amounts WHERE cocktail_id IN (SELECT c.id FROM cocktails c JOIN amounts a ON c.id = a.cocktail_id JOIN ingredients i ON a.ingredient_id = i.id JOIN users u ON i.user_id = u.id WHERE i.stock = 'on' AND u.id = ? GROUP BY c.id HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts WHERE cocktail_id = c.id)", session["user_id"])
-    #except Exception as e:
-        #print(f"Error executing query: {e}")
+    cocktails = db.execute(
+        "SELECT c.id, c.name, c.build, c.source, c.family "
+        "FROM cocktails c "
+        "JOIN amounts a ON c.id = a.cocktail_id "
+        "LEFT JOIN common_ingredients ci ON a.ingredient_id = ci.id "
+        "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND i.user_id = ? "
+        "LEFT JOIN common_cocktails cc ON c.id = cc.id "
+        "WHERE "
+        "("
+        "(ci.id IS NOT NULL) OR "
+        "(i.id IS NOT NULL AND i.stock = 'on') OR "
+        "(cc.id IS NOT NULL) "
+        ") "
+        "GROUP BY c.id "
+        "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a2 WHERE a2.cocktail_id = c.id)",
+        session["user_id"]
+    )
+    
+    ingredients = db.execute("SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM AMOUNTS WHERE user_id = ?", session["user_id"])
+    families = db.execute("SELECT c.family FROM cocktails c JOIN amounts a ON c.id = a.cocktail_id JOIN ingredients i ON a.ingredient_id = i.id JOIN users u ON i.user_id = u.id WHERE i.stock = 'on' AND u.id = ? GROUP BY c.id HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts WHERE cocktail_id = c.id)", session["user_id"])
     return render_template(
-        "index.html", cocktails=cocktails, ingredients=ingredients,
+        "index.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
     )
   
 
@@ -78,6 +93,19 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
+
+        # make sure user has stock values for all common ingredients on login
+        common_ingredients = db.execute("SELECT id FROM common_ingredients").fetchall()
+        # get all ids in common_ingredients
+        for ingredient in common_ingredients:
+            ingredient_id = ingredient['id']
+            # check if user is has ingredient in common_stock
+            result = db.execute("SELECT COUNT(*) FROM common_stock WHERE user_id = ? AND ingredient_id = ?", session["user_id"], ingredient_id).fetchone()
+
+            # if 0, insert a default
+            if result[0] == 0:
+                db.execute("INSERT INTO common_stock (user_id, ingredient_id, stock) VALUES (?, ?, ?)", session["user_id"], ingredient_id, '')
+
 
         # Redirect user to home page
         return redirect("/")
@@ -128,6 +156,8 @@ def register():
                 request.form.get("password"), method="pbkdf2", salt_length=16
             )
             db.execute("INSERT INTO users (username, hash) VALUES(?, ?)", uname, hash)
+            # assign default ingredients to stock
+
         else:
             return apology("username already exists", 400)
         return redirect("/")
@@ -192,7 +222,7 @@ def ingredientmodal():
 
         # Query database for ingredient
         rows = db.execute(
-            "SELECT * FROM ingredients WHERE name = ? AND user_name = ?", request.form.get("ingredientname", session["user_id"])
+            "SELECT * FROM ingredients WHERE name = ? AND user_id = ?", request.form.get("ingredientname"), session["user_id"]
         )
 
         # Ensure username exists and password is correct
@@ -222,8 +252,12 @@ def ingredientmodal():
 def manageingredients():
     
     if request.method =="GET":
-        ingredients = db.execute("SELECT id, name, type, stock FROM ingredients WHERE user_id = ?", session["user_id"])
-        types = db.execute("SELECT DISTINCT type FROM ingredients WHERE user_id = ?", session["user_id"])
+        ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, cs.stock FROM common_ingredients ci LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.stock FROM ingredients i WHERE i.user_id = ? ORDER BY name ASC", session["user_id"], session["user_id"])
+        types = db.execute("SELECT DISTINCT type FROM common_ingredients")
+
+        print("ingredients data:")
+        for row in ingredients:
+            print(row)
 
         return render_template(
             "manageingredients.html", ingredients=ingredients, types=types
@@ -239,14 +273,38 @@ def manageingredients():
             if key.startswith('stock_'):
                 ingredient_name = key.replace('stock_', '')
                 ingredient_id = request.form.get(f'id_{ingredient_name}')
+                ingredient_source = request.form.get(f'src_{ingredient_name}')
+                ingredient_stock = value
+            elif key.startswith('id_'):
+                ingredient_name = key.replace('id_', '')
+                ingredient_id = value
+                ingredient_source = request.form.get(f'src_{ingredient_name}')
+                ingredient_stock = request.form.get(f'stock_{ingredient_name}')
 
+                print(f"Ingredient Name: {ingredient_name}")
+                print(f"Ingredient ID: {ingredient_id}")
+                print(f"Ingredient Source: {ingredient_source}")
+                print(f"Ingredient Stock: {ingredient_stock}")
+
+                # set stock for user ingredients
+                # Determine the correct table and column for the update
+                table_name = "common_stock" if ingredient_source == "common" else "ingredients"
+                id_column = "ingredient_id" if ingredient_source == "common" else "id"
+                stock = 'on' if ingredient_stock == 'on' else ''
+
+                sql_query = f"UPDATE {table_name} SET stock = {stock} WHERE {id_column} = {ingredient_id} AND user_id = 6"
+                print(f"SQL Query: {sql_query}")
+
+                # Update the stock value
                 db.execute(
-                    "UPDATE ingredients SET stock = ? WHERE id = ? AND user_id = ?",
-                    value,
+                    "UPDATE ? SET stock = ? WHERE ? = ? AND user_id = ?",
+                    table_name,
+                    stock,
+                    id_column,
                     ingredient_id,
                     session["user_id"]
                 )
-            
+
                 
         return redirect(url_for(
             "manageingredients"
@@ -260,7 +318,7 @@ def addcocktail():
 
     if request.method=="GET":
         ingredients = db.execute("SELECT name, type FROM ingredients WHERE user_id = ? ORDER BY name ASC", session["user_id"])
-        types = db.execute("SELECT DISTINCT type FROM ingredients WHERE user_id = ?", session["user_id"])
+        types = db.execute("SELECT DISTINCT type FROM ingredients WHERE user_id = ? GROUP BY type ORDER BY COUNT(type) DESC", session["user_id"])
 
         return render_template(
             "addcocktail.html", ingredients=ingredients, types=types
@@ -272,6 +330,11 @@ def addcocktail():
         source = request.form.get('source')
         family = request.form.get('family')
         ingredients = request.form.getlist('ingredient')
+        rows = db.execute(
+            "SELECT name FROM cocktails WHERE name = ? AND user_id = ?", name, session["user_id"]
+        )
+        if rows:
+            return apology("You already have a cocktail by that name", 400)
         db.execute(
             "INSERT INTO cocktails (name, build, source, family, user_id) VALUES(?, ?, ?, ?, ?)",
             name,
@@ -310,11 +373,6 @@ def amounts():
         "cocktailsuccess.html"
     )
 
-@app.route("/accordion")
-def accordion():
-    return render_template(
-        "accordion.html"
-    )
 
 
 
