@@ -37,28 +37,31 @@ def after_request(response):
 @login_required
 def index():
     cocktails = db.execute(
-        "SELECT c.id, c.name, c.build, c.source, c.family "
+        "SELECT cc.name, cc.id, cc.family, cc.build, cc.source "
+        "FROM common_cocktails cc "
+        "JOIN common_amounts ca ON cc.id = ca.cocktail_id "
+        "LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id "
+        "LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id "
+        "WHERE ((ci.id IS NOT NULL AND cs.stock = 'on' AND cs.user_id = ?) "
+        "OR (cc.id IS NOT NULL) OR (ca.cocktail_id IS NOT NULL)) "
+        "GROUP BY cc.id "
+        "HAVING COUNT(*) = (SELECT COUNT(*) FROM common_amounts a2 WHERE a2.cocktail_id = cc.id) "
+        "UNION "
+        "SELECT c.name, c.id, c.family, c.build, c.source "
         "FROM cocktails c "
         "JOIN amounts a ON c.id = a.cocktail_id "
-        "LEFT JOIN common_ingredients ci ON a.ingredient_id = ci.id "
-        "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND i.user_id = ? "
-        "LEFT JOIN common_cocktails cc ON c.id = cc.id "
-        "LEFT JOIN common_amounts ca ON c.id = ca.cocktail_id "
-        "WHERE "
-        "("
-        "(ci.id IS NOT NULL) OR "
-        "(i.id IS NOT NULL AND i.stock = 'on') OR "
-        "(cc.id IS NOT NULL) OR"
-        "(ca.cocktail_id IS NOT NULL)"
-        ") "
+        "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
+        "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
+        "WHERE (a.ingredient_source = 'user' AND i.stock = 'on' AND i.user_id = ?) "
+        "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND c.user_id = ?) "
         "GROUP BY c.id "
-        "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a2 WHERE a2.cocktail_id = c.id)",
-        session["user_id"]
+        "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)", session["user_id"], session["user_id"], session["user_id"]
     )
     
-    ingredients = db.execute("SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
-    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM AMOUNTS WHERE user_id = ?", session["user_id"])
-    families = db.execute("SELECT c.family FROM cocktails c JOIN amounts a ON c.id = a.cocktail_id JOIN ingredients i ON a.ingredient_id = i.id JOIN users u ON i.user_id = u.id WHERE i.stock = 'on' AND u.id = ? GROUP BY c.id HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts WHERE cocktail_id = c.id)", session["user_id"])
+    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients")
+    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts")
+    families = set(cocktail['family'] for cocktail in cocktails)
+    print(f"families: {families}")
     return render_template(
         "index.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
     )
@@ -184,7 +187,7 @@ def addingredient():
 
         # Query database for ingredient
         rows = db.execute(
-            "SELECT * FROM ingredients WHERE name = ? AND user_id = ?", request.form.get("ingredientname"), session["user_id"]
+            "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
         )
 
         # Ensure username exists and password is correct
@@ -224,7 +227,7 @@ def ingredientmodal():
 
         # Query database for ingredient
         rows = db.execute(
-            "SELECT * FROM ingredients WHERE name = ? AND user_id = ?", request.form.get("ingredientname"), session["user_id"]
+            "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
         )
 
         # Ensure username exists and password is correct
@@ -256,10 +259,6 @@ def manageingredients():
     if request.method =="GET":
         ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, cs.stock FROM common_ingredients ci LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.stock FROM ingredients i WHERE i.user_id = ? ORDER BY name ASC", session["user_id"], session["user_id"])
         types = db.execute("SELECT DISTINCT type FROM common_ingredients")
-
-        print("ingredients data:")
-        for row in ingredients:
-            print(row)
 
         return render_template(
             "manageingredients.html", ingredients=ingredients, types=types
@@ -306,9 +305,8 @@ def manageingredients():
 def addcocktail():
 
     if request.method=="GET":
-        ingredients = db.execute("SELECT name, type FROM ingredients WHERE user_id = ? ORDER BY name ASC", session["user_id"])
-        types = db.execute("SELECT DISTINCT type FROM ingredients WHERE user_id = ? GROUP BY type ORDER BY COUNT(type) DESC", session["user_id"])
-
+        ingredients = db.execute("SELECT name, type FROM common_ingredients UNION SELECT name, type FROM ingredients ORDER BY name ASC")
+        types = db.execute("SELECT type, COUNT(*) as type_count FROM (SELECT type FROM common_ingredients UNION SELECT DISTINCT type FROM ingredients) GROUP BY type ORDER BY type_count DESC")
         return render_template(
             "addcocktail.html", ingredients=ingredients, types=types
         )
@@ -320,7 +318,7 @@ def addcocktail():
         family = request.form.get('family')
         ingredients = request.form.getlist('ingredient')
         rows = db.execute(
-            "SELECT name FROM cocktails WHERE name = ? AND user_id = ?", name, session["user_id"]
+            "SELECT name FROM cocktails WHERE name = ? AND user_id = ? UNION SELECT name FROM common_cocktails WHERE name = ?", name, session["user_id"], name
         )
         if rows:
             return apology("You already have a cocktail by that name", 400)
@@ -348,14 +346,17 @@ def amounts():
             if key.startswith('amount_'):
                 cocktail_id = request.form.get('cocktail_id')
                 ingredient_name = key.replace('amount_', '')
+                ingredient_source = db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"])[0]['source']
                 amount = value
-                ingredient_id = (db.execute("SELECT name, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, session["user_id"]))[0]['id']
+                ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"]))[0]['id']
 
+                print(f"c.id: {cocktail_id} i.id: {ingredient_id} amount: {amount}")
                 db.execute(
-                    "INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id) VALUES(?, ?, ?, ?)",
+                    "INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(?, ?, ?, ?, ?)",
                     cocktail_id,
                     ingredient_id,
                     amount,
+                    ingredient_source,
                     session["user_id"])
     
     return render_template(

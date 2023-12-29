@@ -15,7 +15,10 @@ Made Manage stock update database - post method of manage stock
 made amounts dialogue for each ingredient after add cocktail is submitted
 Made add cocktail add to database - post method of add cocktail
 --28/12
-Madd index page load makeable cocktails
+Made index page load makeable cocktails
+made common versions of every table to serve default options. User will add own on original tables.
+Made default ingredients and cocktails.
+Login, Logout, Register, Add Ingredients, Add Cocktail, Add Cocktail ingredient modal, and manage ingredients should all work. Index Works.
 
 ## TODO
 
@@ -24,14 +27,14 @@ Prettify
 Make sure they cant submit nothing on /amounts
 
 Make add ingredient in Add Cocktail only refresh the select element it's in.
-Make first accordion on index work
+Make all accordions on index work
 
-Make Starter List of options
-Make Starter List of cocktails
+Make Starter List of cocktails - done but needs to finish second half of amounts
 
 Make SQL query for cocktails you can almost make
 fix order of add ingredients in add cocktail
 Add option to see all cocktails
+Add simplified name option to common ingredients and ingredient input for Ingredient sidebar
 
 ## Future Features
 
