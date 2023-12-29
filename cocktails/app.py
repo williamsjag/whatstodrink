@@ -42,8 +42,7 @@ def index():
         "JOIN common_amounts ca ON cc.id = ca.cocktail_id "
         "LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id "
         "LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id "
-        "WHERE ((ci.id IS NOT NULL AND cs.stock = 'on' AND cs.user_id = ?) "
-        "OR (cc.id IS NOT NULL) OR (ca.cocktail_id IS NOT NULL)) "
+        "WHERE (cs.stock = 'on' AND cs.user_id = ?) "
         "GROUP BY cc.id "
         "HAVING COUNT(*) = (SELECT COUNT(*) FROM common_amounts a2 WHERE a2.cocktail_id = cc.id) "
         "UNION "
@@ -61,7 +60,7 @@ def index():
     ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients")
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts")
     families = set(cocktail['family'] for cocktail in cocktails)
-    print(f"families: {families}")
+    print(f"amounts: {amounts}")
     return render_template(
         "index.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
     )

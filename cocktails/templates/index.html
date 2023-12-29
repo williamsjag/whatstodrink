@@ -8,14 +8,14 @@
     <!-- TODO: make query for all cocktails -->
     <!-- imported from flask: cocktails, ingredients, amounts, families-->
     {% for family in families %}
-    <h3>{{ family|capitalize }}</h3>
+    <h3 class="mb-3">{{ family|capitalize }}</h3>
     <div class="accordion" id="makeabledrinks">
         {% for cocktail in cocktails %}
         {% if cocktail.family == family %}
         <div class="accordion-item">
           <h2 class="accordion-header" id="{{ cocktail.name }}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ cocktail.name }}" aria-expanded="false" aria-controls="Arr{{ cocktail.name }}">
-                <span class ="left-text">{{ cocktail.name|capitalize }}</span>
+                <span class ="left-text"><strong>{{ cocktail.name|capitalize }}</strong></span>
                 <span class="right-text" style="text-align: right;">
                     {% set cocktail_ingredients = [] %}
                     {% for ingredient in ingredients %}
@@ -31,7 +31,27 @@
           </h2>
           <div id="Arr{{ cocktail.name }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#{{ cocktail.name }}">
             <div class="accordion-body">
-              <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+              <div class="text-pair">
+                <div class="category">Ingredients: </div>
+                <div class="center-text">
+                {% for amount in amounts %}
+                  {% if amount.cocktail_id == cocktail.id %}
+                    {{ amount.amount }}
+                      {% for ingredient in ingredients %}
+                        {% if ingredient.id == amount.ingredient_id %}
+                          {{ ingredient.name }}
+                        {% endif %}
+                      {% endfor %}<br>
+                  {% endif %}
+                {% endfor %}
+                </div>
+              </div>
+                <div class="category">Build: </div>
+                <div class="center-text">{{ cocktail.build }}</div>
+
+                <div class="category">Source: </div>
+                <div class="center-text">{{ cocktail.source }}</div>
+              </div>
             </div>
           </div>
         </div>

@@ -6,12 +6,14 @@
 
 {% block main %}
     <!-- TODO -->
-    <form action="/addingredient" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
+    <form action="/addingredient" class="center" method="post">
+        <div class="form-group mb-3">
+            <label for="ingredientname" class="form-label">Ingredient Name</label>
+            <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
         </div>
-        <div class="mb-3 select">
-            <select name="type" id="type">
+        <div class="form-group mb-3">
+            <label for="type" class="form-label">Ingredient Type</label>
+            <select name="type" id="type" class="form-select">
                 <option value="" disabled selected>--Ingredient Type--</option>
                 <option value="spirit">Spirit</option>
                 <option value="liqueur">Liqueur</option>
@@ -23,7 +25,6 @@
                 <option value="other">Other</option>
             </select>
         </div>
-        <br>
         <div class="mb-3">
             <label for="stock">In Stock:</label>
             <input id="stock" name="stock" type="checkbox">

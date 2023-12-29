@@ -22,6 +22,7 @@ Login, Logout, Register, Add Ingredients, Add Cocktail, Add Cocktail ingredient 
 
 ## TODO
 
+Get body of accordions to populate with details
 Instructions for each page
 Prettify
 Make sure they cant submit nothing on /amounts
@@ -38,11 +39,11 @@ Add simplified name option to common ingredients and ingredient input for Ingred
 
 ## Future Features
 
-Option to include common and basic or not
+Option to include common ingreds and basic cocktails or not
 Modify Cocktail Button
 Make Query Page where you can search by many options
 Rename button in manage ingredients that makes a modal to rename and update database for that id
 add tags tables: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
-select units imperial/metric
+select units imperial/metric?
 Make 'modify ingredient' with rename and delete
 make ratings feature

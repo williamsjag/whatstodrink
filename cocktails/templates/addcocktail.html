@@ -6,17 +6,19 @@
 
 {% block main %}
     <!-- Add cocktail form -->
-    <form action="/addcocktail" method="post">
+    <form action="/addcocktail" class="center" method="post">
             <!-- name field -->
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="name" name="name" placeholder="Name" type="text">
+        <div class="form-group mb-3">
+            <label for="name" class="form-label">Ingredient Name</label>
+            <input autocomplete="off" autofocus class="form-control" id="name" name="name" placeholder="Name" type="text">
         </div>
             <!--ingredients menu -->
-        <div class="mb-3 select">
+        <div class="mb-3 form-group">
+            <label for="ingredient" class="form-label">Intredients</label>
             <ol name="ingredients" id="dynamicSelects">
                 <!-- initial select menu -->
                 <li class="select" id="ingredientmenu">
-                    <select name="ingredient" class="selectlink">
+                    <select name="ingredient" class="selectlink custom-select mb-3 form-select">
                         <option value="" disabled selected>--Ingredient--</option>
                         <option value="addingredient" href="/addingredient">--Create New Ingredient--</option>
                         {% for type in types %}
@@ -35,19 +37,22 @@
         
         <!-- More ingredients button -->
         <div class="mb-3">
-            <button class="mb-3" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
+            <button class="btn btn-primary btn-sm" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
         </div>
         <!-- Build instructions field -->
-        <div class="mb-3">
-            <textarea autocomplete="off" class="form-control mx-auto w-auto" id="build" name="build" placeholder="Build Instructions"></textarea>
+        <div class="form-group mb-3">
+            <label for="build" class="form-label">Build Instructions</label>
+            <textarea autocomplete="off" class="form-control" id="build" name="build" placeholder="Build Instructions/Garnish/Notes" rows="4"></textarea>
         </div>
         <!-- Source field -->
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto" id="source" name="source" placeholder="Source" type="text">
+        <div class="form-group mb-3">
+            <label for="source" class="form-label">Source</label>
+            <input autocomplete="off" class="form-control" id="source" name="source" placeholder="Source" type="text">
         </div>
         <!-- family field -->
-        <div class="mb-3 select">
-            <select name="family" id="family">
+        <div class="mb-3 form-group">
+            <label for="family" class="form-label">Cocktail Family</label>
+            <select name="family" class="form-select" id="family">
                 <option value="" disabled selected>--Family--</option>
                 <option value="oldfashioned">Old Fashioneds</option>
                 <option value="sour">Sours</option>
@@ -64,7 +69,7 @@
                 <option value="orphans">Orphans</option>
             </select>
         </div>
-        <button class="btn btn-primary" type="submit">Add Cocktail</button>
+        <button class="btn btn-primary btn-lg" type="submit">Add Cocktail</button>
     </form>
     <!-- Modal for adding ingredient -->
     <div id="myModal" class="modal">
@@ -73,11 +78,13 @@
         <div class="modal-content" id="modalform">
           <span class="close">&times;</span>
           <form action="/ingredientmodal" id="addItemForm" method="post">
-            <div class="mb-3">
-                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
+            <div class="form-group mb-3">
+                <label for="ingredientname" class="form-label">Ingredient Name</label>
+                <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
             </div>
-            <div class="mb-3 select">
-                <select name="type" id="type">
+            <div class="mb-3 form-group">
+                <label for="type" class="form-label">Ingredient Type</label>
+                <select name="type" id="type" class="form-select">
                     <option value="" disabled selected>--Ingredient Type--</option>
                     <option value="spirit">Spirit</option>
                     <option value="liqueur">Liqueur</option>

@@ -7,29 +7,31 @@
 {% block main %}
 
 
-    <form action="/manageingredients" method="post">    
+    <form action="/manageingredients" method="post">
+        <div class="table-group">    
         {% for type in types %}
-            <h3>{{ type.type|capitalize }}</h3>
-                <table>
+            <div class="no-break">
+                <h4>{{ type.type|capitalize }}</h4>
+                <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Ingredient</th>
-                            <th>Stock</th>
+                            <th class="left-text">Ingredient</th>
+                            <th class="right-text">Stock</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for ingredient in ingredients %}
                             <tr>
                                 {% if ingredient.type == type.type %}
-                                    <td>{{ ingredient.name }}</td>
+                                    <td class="left-text">{{ ingredient.name }}</td>
                                     {% if ingredient.stock == "on" %}
-                                    <td>
+                                    <td class="right-text">
                                         <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" checked>
                                         <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
                                         <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
                                     </td>
                                     {% else %}
-                                    <td>
+                                    <td class="right-text">
                                         <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" unchecked>
                                         <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
                                         <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
@@ -41,7 +43,9 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
         {% endfor %}
+        </div>
         <button class="btn btn-primary" type="submit">Update</button>
     </form>
 {% endblock %}
