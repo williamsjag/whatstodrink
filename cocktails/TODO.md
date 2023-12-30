@@ -18,32 +18,28 @@ Made add cocktail add to database - post method of add cocktail
 Made index page load makeable cocktails
 made common versions of every table to serve default options. User will add own on original tables.
 Made default ingredients and cocktails.
-Login, Logout, Register, Add Ingredients, Add Cocktail, Add Cocktail ingredient modal, and manage ingredients should all work. Index Works.
+Login, Logout, Register, Add Ingredients, Add Cocktail, Add Cocktail ingredient modal, and manage ingredients should all work. What's to drink Works.
 
 ## TODO
 
-Get body of accordions to populate with details
-Instructions for each page
-Prettify
-Make sure they cant submit nothing on /amounts
+Prettify What's to drink
 
-Make add ingredient in Add Cocktail only refresh the select element it's in.
-Make all accordions on index work
-
+Make all accordions on What's to drink work
 Make Starter List of cocktails - done but needs to finish second half of amounts
-
 Make SQL query for cocktails you can almost make
-fix order of add ingredients in add cocktail
-Add option to see all cocktails
-Add simplified name option to common ingredients and ingredient input for Ingredient sidebar
+Make sure they cant submit nothing on /amounts
 
 ## Future Features
 
+fix order of add ingredients in add cocktail
+Add option to see all cocktails
+Add simplified name option to common ingredients and ingredient input for Ingredient sidebar
+Make add ingredient in Add Cocktail only refresh the select element it's in.
+change input method for add cocktail ingredients to autocomplete typing
 Option to include common ingreds and basic cocktails or not
 Modify Cocktail Button
 Make Query Page where you can search by many options
 Rename button in manage ingredients that makes a modal to rename and update database for that id
 add tags tables: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
-select units imperial/metric?
+select units imperial/metric for common cocktails
 Make 'modify ingredient' with rename and delete
-make ratings feature

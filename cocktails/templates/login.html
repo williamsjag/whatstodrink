@@ -5,13 +5,22 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/login" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
+    <form action="/login" class="center" method="post">
+        <div class="form-group mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input autocomplete="off" autofocus class="form-control mb-3" id="username" name="username" placeholder="Username" type="text">
+            <label for="password" class="form-label">Password</label>
+            <input class="form-control mb-3" id="password" name="password" placeholder="Password" type="password">
         </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
+            <div class="text-center mb-3">
+                <button class="btn btn-primary" type="submit">Log In</button>
+            </div>
         </div>
-        <button class="btn btn-primary" type="submit">Log In</button>
+        <br>
+        <div class="text-center">
+            No account? Register here:
+            <br>
+            <a href="/register" class="btn btn-info" role="button" style="margin-top:10px;">Register</a>
+        </div>
     </form>
 {% endblock %}

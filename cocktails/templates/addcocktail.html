@@ -5,107 +5,138 @@
 {% endblock %}
 
 {% block main %}
-    <!-- Add cocktail form -->
-    <form action="/addcocktail" class="center" method="post">
-            <!-- name field -->
-        <div class="form-group mb-3">
-            <label for="name" class="form-label">Ingredient Name</label>
-            <input autocomplete="off" autofocus class="form-control" id="name" name="name" placeholder="Name" type="text">
+    <div class="center-thin center-text border border-info mb-5">
+        <p>Use this page to add a new cocktail recipe to your database</p>
+    </div>
+    <div class="container">
+        <div class="item-left border border-info p-3 me-5">
+            <p style="margin-bottom: 45px;"><strong>Cocktail Name: </strong>Name your cocktail</p>
+            <p><strong>Ingredients: </strong> Select the first ingredient from the list. To add more, click <span class="blue"><strong>More Ingredients</strong></span>. If you need an ingredient that is not in the list, select <strong>--Create New Ingredient-- </strong>from the menu.</p>
+            <p><strong>Build Instructions: </strong>Everything else you need to know to make the cocktail. Order of operations, special techniques, type of ice, garnish, etc... Don't worry about amounts for now, we'll cover that on the next page.</p>
+            <p><strong>Source: </strong>Where the cocktail comes from. Perhaps a book, a classic, or your own invention.</p>
+        </div><br>
+        <div class="item-right border border-info p-3 ms-5">
+            <p><strong>Cocktail Family: </strong>The type of cocktail.</p>
+            <p><span class="blue">Old Fashioneds: </span>The original cocktail. Spirit, sugar, and water.</p>
+            <p><span class="blue">Sours: </span>e.g. Gimlet, Margarita. They usually contain a sour element like lemon juice balanced by sugar.</p>
+            <p><span class="blue">Vermouth Cocktails: </span>Cocktails like Americanos that use vermouth prominently.</p>
+            <p><span class="blue">Amaro Cocktails: </span>Drinks like Negronis that feature Amari.</p>
+            <p><span class="blue">Duos and Trios: </span>Spirit and Mixer combos (think Rusty Nail). Add cream to make it a trio (White Russian).</p>
+            <p><span class="blue">Champagne Cocktails: </span>For something fizzy and festive, throw in some Champagne!</p>
+            <p><span class="blue">Highballs: </span>Longer drinks with a higher percentage of non-alcoholic mixers.</p>
+            <p><span class="blue">Juleps and Smashes: </span>Spirit forward and served over crushed ice, often with mint and/or extra fruit.</p>
+            <p><span class="blue">Hot Drinks: </span>Your Irish Coffees and Hot Toddies.</p>
+            <p><span class="blue">Flips and Nogs: </span>If it has a whole egg in it, it probably belongs here.</p>
+            <p><span class="blue">Tiki Cocktails: </span>You know it when you see it. It probably comes in a fun mug. </p>
+            <p><span class="blue">Punches: </span>Spirit, juice, sugar, spice water. Great for a party!</p>
+            <p><span class="blue">Orphans: </span>Creations that don't fit into a mold.</p>
         </div>
-            <!--ingredients menu -->
-        <div class="mb-3 form-group">
-            <label for="ingredient" class="form-label">Intredients</label>
-            <ol name="ingredients" id="dynamicSelects">
-                <!-- initial select menu -->
-                <li class="select" id="ingredientmenu">
-                    <select name="ingredient" class="selectlink custom-select mb-3 form-select">
-                        <option value="" disabled selected>--Ingredient--</option>
-                        <option value="addingredient" href="/addingredient">--Create New Ingredient--</option>
-                        {% for type in types %}
-                        <optgroup label="{{ type.type|capitalize }}">
-                            {% for ingredient in ingredients %}
-                                {% if ingredient.type == type.type %}
-                                <option value="{{ ingredient.name }}">{{ingredient.name|title }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </optgroup>
-                        {% endfor %}
-                    </select>
-                </li>
-            </ol>
-        </div>
-        
-        <!-- More ingredients button -->
-        <div class="mb-3">
-            <button class="btn btn-primary btn-sm" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
-        </div>
-        <!-- Build instructions field -->
-        <div class="form-group mb-3">
-            <label for="build" class="form-label">Build Instructions</label>
-            <textarea autocomplete="off" class="form-control" id="build" name="build" placeholder="Build Instructions/Garnish/Notes" rows="4"></textarea>
-        </div>
-        <!-- Source field -->
-        <div class="form-group mb-3">
-            <label for="source" class="form-label">Source</label>
-            <input autocomplete="off" class="form-control" id="source" name="source" placeholder="Source" type="text">
-        </div>
-        <!-- family field -->
-        <div class="mb-3 form-group">
-            <label for="family" class="form-label">Cocktail Family</label>
-            <select name="family" class="form-select" id="family">
-                <option value="" disabled selected>--Family--</option>
-                <option value="oldfashioned">Old Fashioneds</option>
-                <option value="sour">Sours</option>
-                <option value="vermouth">Vermouth Cocktails</option>
-                <option value="amaro">Amaro Cocktails</option>
-                <option value="duotrio">Duos and Trios</option>
-                <option value="champagne">Champagne Cocktails</option>
-                <option value="highball">Highballs</option>
-                <option value="julep">Juleps and Smashes</option>
-                <option value="hot">Hot Drinks</option>
-                <option value="egg">Flips and Nogs</option>
-                <option value="tiki">Tiki Cocktails</option>
-                <option value="punch">Punches</option>
-                <option value="orphans">Orphans</option>
-            </select>
-        </div>
-        <button class="btn btn-primary btn-lg" type="submit">Add Cocktail</button>
-    </form>
-    <!-- Modal for adding ingredient -->
-    <div id="myModal" class="modal">
-
-        <!-- Modal content -->
-        <div class="modal-content" id="modalform">
-          <span class="close">&times;</span>
-          <form action="/ingredientmodal" id="addItemForm" method="post">
+        <!-- Add cocktail form -->
+        <form action="/addcocktail" class="item-center" method="post">
+                <!-- name field -->
             <div class="form-group mb-3">
-                <label for="ingredientname" class="form-label">Ingredient Name</label>
-                <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
+                <label for="name" class="form-label">Cocktail Name</label>
+                <input autocomplete="off" autofocus class="form-control" id="name" name="name" placeholder="Name" type="text">
             </div>
+                <!--ingredients menu -->
             <div class="mb-3 form-group">
-                <label for="type" class="form-label">Ingredient Type</label>
-                <select name="type" id="type" class="form-select">
-                    <option value="" disabled selected>--Ingredient Type--</option>
-                    <option value="spirit">Spirit</option>
-                    <option value="liqueur">Liqueur</option>
-                    <option value="wine">Wine/Vermouth/Sherry</option>
-                    <option value="bitters">Bitters</option>
-                    <option value="syrup">Syrup</option>
-                    <option value="juice">Juice</option>
-                    <option value="pantry">Pantry/Fridge</option>
-                    <option value="other">Other</option>
+                <label for="ingredient" class="form-label">Ingredients</label>
+                <ol name="ingredients" id="dynamicSelects">
+                    <!-- initial select menu -->
+                    <li class="select" id="ingredientmenu">
+                        <select name="ingredient" class="selectlink custom-select mb-3 form-select">
+                            <option value="" disabled selected>--Ingredient--</option>
+                            <option value="addingredient" href="/addingredient">--Create New Ingredient--</option>
+                            {% for type in types %}
+                            <optgroup label="{{ type.type }}">
+                                {% for ingredient in ingredients %}
+                                    {% if ingredient.type == type.type %}
+                                    <option value="{{ ingredient.name }}">{{ingredient.name|title }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </optgroup>
+                            {% endfor %}
+                        </select>
+                    </li>
+                </ol>
+            </div>
+            
+            <!-- More ingredients button -->
+            <div class="mb-3 text-center">
+                <button class="btn btn-primary btn-sm" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
+            </div>
+            <!-- Build instructions field -->
+            <div class="form-group mb-3">
+                <label for="build" class="form-label">Build Instructions</label>
+                <textarea autocomplete="off" class="form-control" id="build" name="build" placeholder="Build Instructions/Garnish/Notes" rows="4"></textarea>
+            </div>
+            <!-- Source field -->
+            <div class="form-group mb-3">
+                <label for="source" class="form-label">Source</label>
+                <input autocomplete="off" class="form-control" id="source" name="source" placeholder="Source" type="text">
+            </div>
+            <!-- family field -->
+            <div class="mb-3 form-group">
+                <label for="family" class="form-label">Cocktail Family</label>
+                <select name="family" class="form-select" id="family">
+                    <option value="" disabled selected>--Family--</option>
+                    <option value="Old Fashioneds">Old Fashioneds</option>
+                    <option value="Sours">Sours</option>
+                    <option value="Vermouth Cocktails">Vermouth Cocktails</option>
+                    <option value="Amaro Cocktails">Amaro Cocktails</option>
+                    <option value="Duos and Trios">Duos and Trios</option>
+                    <option value="Champagne Cocktails">Champagne Cocktails</option>
+                    <option value="Highballs">Highballs</option>
+                    <option value="Juleps and Smashes">Juleps and Smashes</option>
+                    <option value="Hot Drinks">Hot Drinks</option>
+                    <option value="Flips and Nogs">Flips and Nogs</option>
+                    <option value="Tiki Cocktails">Tiki Cocktails</option>
+                    <option value="Punches">Punches</option>
+                    <option value="Orphans">Orphans</option>
                 </select>
             </div>
-            <br>
-            <div class="mb-3">
-                <label for="stock">In Stock:</label>
-                <input id="stock" name="stock" type="checkbox">
+            <div class="mb-3 text-center">
+                <button class="btn btn-primary btn-lg" type="submit">Add Cocktail</button>
             </div>
-            <button onclick="alertName(event)" id="modalbutton" class="btn btn-primary" type="submit">Add Ingredient</button>
         </form>
+        <!-- Modal for adding ingredient -->
+        <div id="myModal" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content" id="modalform">
+            <span class="close">&times;</span>
+            <form action="/ingredientmodal" id="addItemForm" method="post">
+                <div class="form-group mb-3">
+                    <label for="ingredientname" class="form-label">Ingredient Name</label>
+                    <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
+                </div>
+                <div class="mb-3 form-group">
+                    <label for="type" class="form-label">Ingredient Type</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="" disabled selected>--Ingredient Type--</option>
+                        <option value="Spirit">Spirit</option>
+                        <option value="Liqueur">Liqueur</option>
+                        <option value="Wine/Vermouth/Sherry">Wine/Vermouth/Sherry</option>
+                        <option value="Bitters">Bitters</option>
+                        <option value="Syrup">Syrup</option>
+                        <option value="Juice">Juice</option>
+                        <option value="Pantry/Fridge">Pantry/Fridge</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <br>
+                <div class="mb-3 text-center form-check">
+                    <label for="stock">In Stock:</label>
+                    <input id="stock" name="stock" type="checkbox">
+                </div>
+                    <div class="mb-3 text-center">
+                        <button onclick="alertName(event)" id="modalbutton" class="btn btn-primary" type="submit">Add Ingredient</button>
+                    </div>
+            </form>
+            </div>
+        
         </div>
-      
-      </div>
+    </div>
       
 {% endblock %}
 {% block javascript %}

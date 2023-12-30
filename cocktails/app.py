@@ -6,7 +6,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 import logging
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-import sqlite3
+import re
 from helpers import apology, login_required
 
 # Configure application
@@ -32,10 +32,17 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-
 @app.route("/")
 @login_required
 def index():
+    return render_template(
+        "index.html"
+    )
+
+@app.route("/whatstodrink")
+@login_required
+def whatstodrink():
+
     cocktails = db.execute(
         "SELECT cc.name, cc.id, cc.family, cc.build, cc.source "
         "FROM common_cocktails cc "
@@ -52,17 +59,18 @@ def index():
         "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
         "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
         "WHERE (a.ingredient_source = 'user' AND i.stock = 'on' AND i.user_id = ?) "
-        "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND c.user_id = ?) "
+        "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND cs.user_id = ?) "
         "GROUP BY c.id "
         "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)", session["user_id"], session["user_id"], session["user_id"]
     )
-    
+
+   
     ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients")
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts")
     families = set(cocktail['family'] for cocktail in cocktails)
-    print(f"amounts: {amounts}")
+
     return render_template(
-        "index.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
+        "whatstodrink.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
     )
   
 
