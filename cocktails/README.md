@@ -60,4 +60,4 @@ What is shown when the loops are all finished is a complete list of closed accor
 * I want to add a tags system, so that user can customize filterable options aside from the predetermined cocktail families.
 * I want to add a rating system so a user can note their thoughts on each creation (table 9)
 
-With that, this has been Cocktails.
+With that, this has been "What's to Drink?"
