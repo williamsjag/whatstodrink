@@ -1,4 +1,5 @@
 import os
+import re
 
 from cs50 import SQL
 import sqlite3
@@ -23,6 +24,12 @@ Session(app)
 db = SQL("sqlite:///cocktails.db")
 app.config['db'] = '/cocktails.db'
 
+# Add helpers/extensions to jinja template language here
+def sanitize(string):
+    return re.sub('\s|#|\'', '', string)
+
+# Register helpers/extensions on jinja_env.filters here
+app.jinja_env.filters['sanitize'] = sanitize
 
 @app.after_request
 def after_request(response):
@@ -56,7 +63,7 @@ def index():
         "GROUP BY c.id "
         "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)", session["user_id"], session["user_id"], session["user_id"]
     )
-    
+
     ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients")
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts")
     families = set(cocktail['family'] for cocktail in cocktails)
@@ -64,7 +71,7 @@ def index():
     return render_template(
         "index.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
     )
-  
+
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -242,7 +249,7 @@ def ingredientmodal():
                 request.form.get("stock"),
             )
 
-    
+
 
         return redirect(url_for("addcocktail"))
       # User reached route via GET (as by clicking a link or via redirect)
@@ -254,7 +261,7 @@ def ingredientmodal():
 @app.route("/manageingredients", methods=["GET", "POST"])
 @login_required
 def manageingredients():
-    
+
     if request.method =="GET":
         ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, cs.stock FROM common_ingredients ci LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.stock FROM ingredients i WHERE i.user_id = ? ORDER BY name ASC", session["user_id"], session["user_id"])
         types = db.execute("SELECT DISTINCT type FROM common_ingredients")
@@ -288,11 +295,11 @@ def manageingredients():
                 stock = 'on' if ingredient_stock == 'on' else ''
 
                 sql_query = f"UPDATE {table_name} SET stock = ? WHERE {id_column} = ? AND user_id = ?"
-            
+
                 # Update the stock value
                 db.execute(sql_query, stock, ingredient_id, session["user_id"])
 
-                
+
         return redirect(url_for(
             "manageingredients"
         ))
@@ -309,7 +316,7 @@ def addcocktail():
         return render_template(
             "addcocktail.html", ingredients=ingredients, types=types
         )
-    
+
     else:
         name = request.form.get('name')
         build = request.form.get('build')
@@ -335,7 +342,7 @@ def addcocktail():
         return render_template(
             "amounts.html", ingredients=ingredients, cocktail_id=cocktail_id
         )
-    
+
 @app.route("/amounts", methods=["GET", "POST"])
 @login_required
 def amounts():
@@ -357,7 +364,7 @@ def amounts():
                     amount,
                     ingredient_source,
                     session["user_id"])
-    
+
     return render_template(
         "cocktailsuccess.html"
     )
@@ -365,7 +372,7 @@ def amounts():
 
 
 
-    
+
 # @app.route('/debug', methods=["POST"])
     # def debug():
          #    print(f'Name: {ingredient_name} ID: {ingredient_id}, Checkbox: {value}')
