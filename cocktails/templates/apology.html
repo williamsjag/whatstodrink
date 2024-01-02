@@ -5,6 +5,8 @@
 {% endblock %}
 
 {% block main %}
+<div class="center-text">
     <!-- https://memegen.link/ -->
-    <img alt="{{ top }}" class="border img-fluid" src="http://memegen.link/custom/{{ top | urlencode }}/{{ bottom | urlencode }}.jpg?alt=https://i.imgur.com/qr3Yej1.jpg" title="{{ top }}">
-{% endblock %}
+    <img alt="{{ top }}" class="border center img-fluid" src="http://memegen.link/custom/{{ top | urlencode }}/{{ bottom | urlencode }}.jpg?alt=https://i.imgur.com/qr3Yej1.jpg" title="{{ top }}">
+</div>
+    {% endblock %}

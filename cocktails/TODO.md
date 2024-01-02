@@ -19,19 +19,23 @@ made common versions of every table to serve default options. User will add own 
 Made default ingredients and cocktails.
 Login, Logout, Register, Add Ingredients, Add Cocktail, Add Cocktail ingredient modal, and manage ingredients should all work. What's to drink Works.
 Finished Starter List of cocktails - done but needs to finish second half of amounts
+changed input method for add cocktail ingredients to autocomplete typing
 
 ## TODO
+
+
+
+
+
 
 ## Future Features
 
 Make sure they cant submit nothing on /amounts
 Make SQL query for cocktails you can almost make
-Database 'undo' if amounts abandoned
-fix order of add ingredients in add cocktail
+pass database add into amounts for add cocktail
 Add option to see all cocktails
 Add simplified name option to common ingredients and ingredient input for Ingredient sidebar
 Make add ingredient in Add Cocktail only refresh the select element it's in.
-change input method for add cocktail ingredients to autocomplete typing
 Option to include common ingreds and basic cocktails or not
 Modify Cocktail Button
 Make Query Page where you can search by many options

@@ -253,6 +253,7 @@ def ingredientmodal():
     
 
         return redirect(url_for("addcocktail"))
+        
       # User reached route via GET (as by clicking a link or via redirect)
      else:
         return render_template(
@@ -323,25 +324,22 @@ def addcocktail():
         build = request.form.get('build')
         source = request.form.get('source')
         family = request.form.get('family')
-        ingredients = request.form.getlist('ingredient')
+        rawingredients = request.form.getlist('q')
+        ingredients = list(filter(None, rawingredients))
+
+        if not name:
+            return apology("every good cocktail has a name")
+        if not ingredients:
+            return apology("an empty glass is not a cocktail")
         rows = db.execute(
             "SELECT name FROM cocktails WHERE name = ? AND user_id = ? UNION SELECT name FROM common_cocktails WHERE name = ?", name, session["user_id"], name
         )
         if rows:
             return apology("You already have a cocktail by that name", 400)
-        db.execute(
-            "INSERT INTO cocktails (name, build, source, family, user_id) VALUES(?, ?, ?, ?, ?)",
-            name,
-            build,
-            source,
-            family,
-            session["user_id"]
-            )
 
-        cocktail_id = db.execute("SELECT id from cocktails WHERE name = ? AND user_id = ?", name, session["user_id"])[0]['id']
 
         return render_template(
-            "amounts.html", ingredients=ingredients, cocktail_id=cocktail_id
+            "amounts.html", ingredients=ingredients, build=build, source=source, family=family, name=name
         )
     
 @app.route("/amounts", methods=["GET", "POST"])
@@ -351,13 +349,30 @@ def amounts():
     if request.method == "POST":
         for key, value, in request.form.items():
             if key.startswith('amount_'):
-                cocktail_id = request.form.get('cocktail_id')
+
                 ingredient_name = key.replace('amount_', '')
+                build = request.form.get('build')
+                source = request.form.get('source')
+                family = request.form.get('source')
+                name = request.form.get('name')
+                print(f'{name}, {build}, {source}, {family}')
                 ingredient_source = db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"])[0]['source']
                 amount = value
                 ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"]))[0]['id']
+                
+                # add cocktail to db
+                db.execute(
+                "INSERT INTO cocktails (name, build, source, family, user_id) VALUES(?, ?, ?, ?, ?)",
+                name,
+                build,
+                source,
+                family,
+                session["user_id"]
+                )
 
-                print(f"c.id: {cocktail_id} i.id: {ingredient_id} amount: {amount}")
+                # get cocktail id
+                cocktail_id = db.execute("SELECT id from cocktails WHERE name = ? AND user_id = ?", name, session["user_id"])[0]['id']
+                #add ingredients and amounts to db
                 db.execute(
                     "INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(?, ?, ?, ?, ?)",
                     cocktail_id,
@@ -365,13 +380,29 @@ def amounts():
                     amount,
                     ingredient_source,
                     session["user_id"])
+                
+
     
     return render_template(
         "cocktailsuccess.html"
     )
 
+@app.route("/ingredientsearch")
+def search():
+    q = request.args.get("q")
+    print(q)
 
+    if q:
+        results = db.execute("SELECT name FROM common_ingredients\
+                             WHERE name LIKE ?\
+                             UNION\
+                             SELECT name FROM ingredients\
+                             WHERE name LIKE ?\
+                             LIMIT 10", '%'+q+'%', '%'+q+'%')
+    else:
+        results = []
 
+    return render_template("ingredientsearch.html", results=results)
 
     
 # @app.route('/debug', methods=["POST"])

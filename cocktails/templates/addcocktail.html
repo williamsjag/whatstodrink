@@ -11,7 +11,7 @@
     <div class="container">
         <div class="item-left border border-info p-3 me-5">
             <p style="margin-bottom: 45px;"><strong>Cocktail Name: </strong>Name your cocktail</p>
-            <p><strong>Ingredients: </strong> Select the first ingredient from the list. To add more, click <span class="blue"><strong>More Ingredients</strong></span>. If you need an ingredient that is not in the list, select <strong>--Create New Ingredient-- </strong>from the menu.</p>
+            <p><strong>Ingredients: </strong> Start typing and select your ingredient from the list that appears to add an ingredient. If you need an ingredient that is not in the list, click <span class="blue"><strong>Create New Ingredient</strong></span>.</p>
             <p><strong>Build Instructions: </strong>Everything else you need to know to make the cocktail. Order of operations, special techniques, type of ice, garnish, etc... Don't worry about amounts for now, we'll cover that on the next page.</p>
             <p><strong>Source: </strong>Where the cocktail comes from. Perhaps a book, a classic, or your own invention.</p>
         </div><br>
@@ -38,32 +38,24 @@
                 <label for="name" class="form-label">Cocktail Name</label>
                 <input autocomplete="off" autofocus class="form-control" id="name" name="name" placeholder="Name" type="text">
             </div>
-                <!--ingredients menu -->
+                <!--ingredients list -->
             <div class="mb-3 form-group">
                 <label for="ingredient" class="form-label">Ingredients</label>
                 <ol name="ingredients" id="dynamicSelects">
-                    <!-- initial select menu -->
-                    <li class="select" id="ingredientmenu">
-                        <select name="ingredient" class="selectlink custom-select mb-3 form-select">
-                            <option value="" disabled selected>--Ingredient--</option>
-                            <option value="addingredient" href="/addingredient">--Create New Ingredient--</option>
-                            {% for type in types %}
-                            <optgroup label="{{ type.type }}">
-                                {% for ingredient in ingredients %}
-                                    {% if ingredient.type == type.type %}
-                                    <option value="{{ ingredient.name }}">{{ingredient.name|title }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </optgroup>
-                            {% endfor %}
-                        </select>
+                    <!-- first ingredient -->
+                    <li>
+                        <input type="text" class="form-control ingredientsmenu mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
                     </li>
                 </ol>
+                <table id ="searchtable" class="table table-borderless table-hover">
+                    <tbody id="results">
+                </table>
             </div>
             
-            <!-- More ingredients button -->
+            
+
             <div class="mb-3 text-center">
-                <button class="btn btn-primary btn-sm" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
+                <button class="btn btn-primary btn-sm" id="new_ingredient" type="button" onclick="makeModal()">Create New Ingredient</button>
             </div>
             <!-- Build instructions field -->
             <div class="form-group mb-3">
@@ -99,9 +91,10 @@
                 <button class="btn btn-primary btn-lg" type="submit">Add Cocktail</button>
             </div>
         </form>
+
+
         <!-- Modal for adding ingredient -->
         <div id="myModal" class="modal">
-
             <!-- Modal content -->
             <div class="modal-content" id="modalform">
             <span class="close">&times;</span>
@@ -130,7 +123,7 @@
                     <input id="stock" name="stock" type="checkbox">
                 </div>
                     <div class="mb-3 text-center">
-                        <button onclick="alertName(event)" id="modalbutton" class="btn btn-primary" type="submit">Add Ingredient</button>
+                        <button id="modalbutton" class="btn btn-primary" type="submit">Add Ingredient</button>
                     </div>
             </form>
             </div>
@@ -145,29 +138,24 @@
     var modal = document.getElementById("myModal");
     var span = document.getElementsByClassName("close")[0];
     // pull up modal when add new ingredient is selected
-    document.querySelector('.selectlink').onchange = function() {
-        var val = this.children[this.selectedIndex].getAttribute('href');
-        if (val[0] === "/") {
-            modal.style.display = "block";
-        }
-    }
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-    window.onclick = function(event) {
-        if (event.target == modal) {
+    function makeModal() {
+        modal.style.display = "block";
+
+        span.onclick = function() {
             modal.style.display = "none";
         }
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+       
     }
-    $(window).on('hidden.bs.modal', function() { 
-        $('#code').modal('hide');
-        alert('hidden');
-    });
-    // create new select fields on button press
-   
+    
+    // create new input search fields on button press
     function createNewDiv() {
-        // get original select field
-        var originalElement = document.getElementById('ingredientmenu');
+        // get original input field
+        var originalElement = document.getElementsByClassName("ingredientsmenu")[0];
 
         // create a new one
         var newDiv = document.createElement('li');
@@ -180,17 +168,47 @@
         // add new div to dynamicSelects
         var hostdiv = document.getElementById('dynamicSelects');
         hostdiv.appendChild(newDiv);
-
-
-
-        // add event listener to listen for link
-        var newSelect = newDiv.querySelector('.selectlink');
-        newSelect.onchange = function() {
-            var val = this.children[this.selectedIndex].getAttribute('href');
-            if (val[0] === "/") {
-                modal.style.display = "block";
-            }
-        }
     };
+
+    // listen for table clicks and fill form/make readonly
+    
+    document.getElementById('results').addEventListener('click', function(event) {
+
+        // check if click is a cell
+        if (event.target.tagName === "TD") {
+ 
+            // copy original empty field
+            var originalElement = document.querySelector("#dynamicSelects li:last-child");
+
+            // create a new one
+            var newDiv = document.createElement('li');
+
+            // copy original population into new
+            newDiv.innerHTML = originalElement.innerHTML;
+
+            // add new div to dynamicSelects
+            var hostdiv = document.getElementById('dynamicSelects');
+            hostdiv.appendChild(newDiv);
+            
+            // get content of clicked cell
+            var cellval = event.target.textContent;
+
+            // set old field to cellval
+            var newInput = document.querySelector("#dynamicSelects li:last-child input")
+            document.querySelector("#dynamicSelects li:nth-last-child(2) input").value = cellval;
+            // make readonly
+            document.querySelector("#dynamicSelects li:nth-last-child(2)").setAttribute('readonly', 'true');
+            // focus new field
+            newInput.focus();
+
+            // clear table
+            var table = document.getElementById('results');
+            table.innerHTML = '';
+
+            htmx.process(newInput);
+
+        }
+    });
+
 </script>
 {% endblock %}

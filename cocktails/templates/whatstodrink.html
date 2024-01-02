@@ -9,7 +9,7 @@
     <!-- imported from flask: cocktails, ingredients, amounts, families-->
     {% for family in families %}
     <h3 class="mb-3 center text-center"><span class="blue">{{ family }}</span></h3>
-    <div class="accordion" id="makeabledrinks">
+    <div class="accordion mb-3" id="makeabledrinks">
         {% for cocktail in cocktails %}
             {% if cocktail.family == family %}
                 <div class="accordion-item center-wide">
