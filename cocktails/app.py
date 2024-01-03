@@ -313,7 +313,7 @@ def manageingredients():
 def addcocktail():
 
     if request.method=="GET":
-        ingredients = db.execute("SELECT name, type FROM common_ingredients UNION SELECT name, type FROM ingredients ORDER BY name ASC")
+        ingredients = db.execute("SELECT name, type FROM common_ingredients UNION SELECT name, type FROM ingredients WHERE user_id = ? ORDER BY name ASC", session["user_id"])
         types = db.execute("SELECT type, COUNT(*) as type_count FROM (SELECT type FROM common_ingredients UNION SELECT DISTINCT type FROM ingredients) GROUP BY type ORDER BY type_count DESC")
         return render_template(
             "addcocktail.html", ingredients=ingredients, types=types
@@ -347,29 +347,28 @@ def addcocktail():
 def amounts():
     # reached via post
     if request.method == "POST":
+        build = request.form.get('build')
+        source = request.form.get('source')
+        family = request.form.get('family')
+        name = request.form.get('name')
+
+         # add cocktail to db
+        db.execute(
+        "INSERT INTO cocktails (name, build, source, family, user_id) VALUES(?, ?, ?, ?, ?)",
+        name,
+        build,
+        source,
+        family,
+        session["user_id"]
+        )
+
         for key, value, in request.form.items():
             if key.startswith('amount_'):
-
                 ingredient_name = key.replace('amount_', '')
-                build = request.form.get('build')
-                source = request.form.get('source')
-                family = request.form.get('source')
-                name = request.form.get('name')
-                print(f'{name}, {build}, {source}, {family}')
                 ingredient_source = db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"])[0]['source']
                 amount = value
                 ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"]))[0]['id']
                 
-                # add cocktail to db
-                db.execute(
-                "INSERT INTO cocktails (name, build, source, family, user_id) VALUES(?, ?, ?, ?, ?)",
-                name,
-                build,
-                source,
-                family,
-                session["user_id"]
-                )
-
                 # get cocktail id
                 cocktail_id = db.execute("SELECT id from cocktails WHERE name = ? AND user_id = ?", name, session["user_id"])[0]['id']
                 #add ingredients and amounts to db
@@ -397,13 +396,53 @@ def search():
                              WHERE name LIKE ?\
                              UNION\
                              SELECT name FROM ingredients\
-                             WHERE name LIKE ?\
-                             LIMIT 10", '%'+q+'%', '%'+q+'%')
+                             WHERE name LIKE ? AND user_id = ?\
+                             LIMIT 10", '%'+q+'%', '%'+q+'%', session["user_id"])
     else:
         results = []
 
     return render_template("ingredientsearch.html", results=results)
 
+@app.route("/modify_ingredient", methods=["GET", "POST"])
+def modify_ingredient():
+    ingredient = request.form.get('modifiedIngredientName')
+    new_name = request.form.get('renameText')
+
+    
+    if request.method == "POST":
+        if "renamebutton" in request.form:
+            if new_name:
+                db.execute("UPDATE ingredients SET name = ? WHERE name = ? AND user_id = ?", new_name, ingredient, session["user_id"])
+                return redirect(url_for('manageingredients'))
+            else:
+                return apology("An ingredient has not name")
+
+        elif "deletebutton" in request.form:
+            rows = db.execute("SELECT cocktails.name FROM cocktails \
+                              JOIN amounts ON cocktails.id = amounts.cocktail_id \
+                              LEFT JOIN ingredients ON amounts.ingredient_id = ingredients.id \
+                              WHERE ingredients.name = ? \
+                              GROUP BY cocktails.name", ingredient)
+            print(f"{ rows }")
+            if not rows:
+                return render_template(
+                    "areyousure.html", ingredient=ingredient
+                )
+            else:
+                return render_template(
+                    "cannotdelete.html", rows=rows, ingredient=ingredient
+                )
+
+        
+        elif "deleteconfirmed" in request.form:
+            ingredient_delete = request.form.get("ingredient_delete")
+            db.execute("DELETE FROM ingredients WHERE name = ? AND user_id = ?", ingredient_delete, session["user_id"])
+            return redirect(url_for("manageingredients"))
+        
+        elif "cancel" in request.form:
+            return redirect(url_for("manageingredients"))
+        elif "close" in request.form:
+            return redirect(url_for("manageingredients"))
     
 # @app.route('/debug', methods=["POST"])
     # def debug():

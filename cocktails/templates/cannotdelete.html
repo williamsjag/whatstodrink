@@ -1,0 +1,16 @@
+<form action="/modify_ingredient" method="POST">
+    <div class="text-center">
+        <h4 class="mb-3">Cannot Delete {{ ingredient }}.</strong></h4>
+        <p><strong>It is used in the following cocktails:</strong></p>
+    </div>
+    <div class="center">
+        <ul>
+            {% for row in rows %}
+            <li>{{ row.name }}</li>
+            {% endfor %}
+        </ul> 
+    </div>
+    <div class="text-center">
+        <button type="submit" name="close" class="btn btn-primary">Close</button>
+    </div>
+</form
