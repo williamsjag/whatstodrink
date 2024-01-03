@@ -3,7 +3,6 @@
 </div>
 <form>
     <div class="mb-3">
-        <p>Ingredients</p>
         <table class="table table-hover" id="ingredients" name="ingredients">
             <thead>
                 <tr>
@@ -16,14 +15,27 @@
                 {% for amount in amounts %}
                     <tr>
                         <td><input class="form-control" id="amt_{{ loop.index0 }}" name="amt_{{ loop.index0 }}" value="{{ amount.amount }}"></td>
-                        {% for ingredient in ingredients %}
-                        {% if ingredient.id == amount.ingredient_id %}
-                        <td><input class="form-control" id="ing_{{ loop.index0 }}" name="ing_{{ loop.index0 }}" value="{{ ingredient.name|capitalize }}"></td>
+                        <td><select name="ingredient" class="form-select">
+                                {% for type in types %}
+                                <optgroup label="{{ type.type }}">
+                                    {% for ingredient in ingredients %}
+                                        {% if ingredient.type == type.type %}
+                                            {% if ingredient.id == amount.ingredient_id %}
+                                                <option value="{{ ingredient.name }}" selected>{{ ingredient.name|title }}</option>
+                                            {% else %}
+                                                <option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </optgroup>
+                                {% endfor %}
+                            </select>
+                        </td>
                         <td class="button-cell text-right">
                             <button class="btn btn-primary" type="button">Remove</button>
                         </td>
-                        {% endif %}
-                        {% endfor %}
+                        
+                        
                     </tr>
                 {% endfor %}
             </tbody>

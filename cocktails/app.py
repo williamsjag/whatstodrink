@@ -542,12 +542,12 @@ def modify_cocktail():
         elif "changerecipe" in request.form:
             recipe = db.execute("SELECT id, name, build, source, family FROM cocktails WHERE name = ? AND user_id = ?", cocktail, session["user_id"])
             amounts = db.execute("SELECT ingredient_id, amount, ingredient_source FROM amounts WHERE cocktail_id = ?", recipe[0]['id'])
-            ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+            ingredients = db.execute("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = ?", session["user_id"])
             families = db.execute("SELECT family FROM common_cocktails GROUP BY family")
-            
+            types = db.execute("SELECT type FROM common_ingredients GROUP BY type")
             print(f"recipe: {recipe}")
             return render_template(
-                "changerecipe.html", cocktail=cocktail, recipe=recipe, amounts=amounts, ingredients=ingredients, families=families
+                "changerecipe.html", cocktail=cocktail, recipe=recipe, amounts=amounts, ingredients=ingredients, families=families, types=types
             )
         
 
