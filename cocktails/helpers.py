@@ -77,16 +77,5 @@ def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
 
-def check_common_ingredients(user_id):
-    # make sure user has stock values for all common ingredients on login
-    common_ingredients = db.execute("SELECT id FROM common_ingredients").fetchall()
-    # get all ids in common_ingredients
-    for ingredient in common_ingredients:
-        ingredient_id = ingredient['id']
-        # check if user is has ingredient in common_stock
-        result = db.execute("SELECT COUNT(*) FROM common_stock WHERE user_id = ? AND ingredient_id = ?", session["user_id"], ingredient_id).fetchone()
 
-        # if 0, insert a default
-        if result[0] == 0:
-            db.execute("INSERT INTO common_stock (user_id, ingredient_id, stock) VALUES (?, ?, ?)", user_id, ingredient_id, '')
 

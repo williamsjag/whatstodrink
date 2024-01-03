@@ -56,6 +56,10 @@ input[type=checkbox] {
   column-count: 6;
   column-width: 400px;
 }
+.cocktail-group {
+  column-count: 2;
+  column-width: 600px;
+}
 .blue {
   color: #537fbe;
 }
@@ -128,9 +132,9 @@ input[type=checkbox] {
   }
  .container {
   display: grid;
-  grid-template-areas: "left center .";
+  grid-template-areas: "left center right";
   grid-template-columns: 30% 40% 30%;
-  column-gap: 30px;
+  column-gap: 20px;
  }
  .item-left {
   grid-column-start: 1;
@@ -148,7 +152,8 @@ input[type=checkbox] {
  .item-right {
   grid-column-start: 3;
   grid-column-end: 4;
-  align-self: center;
+  align-self: start;
+  justify-self: end;
   grid-row: 1/2;
  }
  .table-container {
@@ -162,3 +167,6 @@ input[type=checkbox] {
   justify-self: stretch;
   grid-row: 1/2;  
  }
+ td.clickable {
+  cursor: pointer;
+}

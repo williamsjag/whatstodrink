@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    View Cocktails
+{% endblock %}
+
+{% block main %}
+    <!-- TODO: make query for all cocktails -->
+    <!-- imported from flask: cocktails, ingredients, amounts, families-->
+    <div class="text-center">
+        <div class="btn-group mb-4" role="group" aria-label="Basic outlined example">
+            <button hx-get="/viewuser" hx-target="#view" type="button" class="btn btn-outline-primary">My Cocktails</button>
+            <button hx-get="/viewall" hx-target="#view" type="button" class="btn btn-outline-primary">All Cocktails</button>
+            <button hx-get="/viewcommon" hx-target="#view" type="button" class="btn btn-outline-primary">Common Cocktails</button>
+        </div>
+    </div>
+    <div id="view">
+        <div class="text-center">
+            <p>Select which cocktails to view using the buttons above.</p>
+        </div>
+    </div>
+    
+{% endblock %}
+ 

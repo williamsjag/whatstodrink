@@ -65,8 +65,8 @@ def whatstodrink():
     )
 
    
-    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients")
-    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts")
+    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     families = set(cocktail['family'] for cocktail in cocktails)
 
     return render_template(
@@ -365,7 +365,14 @@ def amounts():
         for key, value, in request.form.items():
             if key.startswith('amount_'):
                 ingredient_name = key.replace('amount_', '')
-                ingredient_source = db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"])[0]['source']
+                ingredient_source = db.execute(\
+                    "SELECT 'common' AS source, id FROM common_ingredients \
+                    WHERE name = ? \
+                    UNION SELECT \
+                    'user' AS source, id \
+                    FROM ingredients \
+                    WHERE name = ? AND user_id = ?"\
+                    , ingredient_name, ingredient_name, session["user_id"])[0]['source']
                 amount = value
                 ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"]))[0]['id']
                 
@@ -443,7 +450,107 @@ def modify_ingredient():
             return redirect(url_for("manageingredients"))
         elif "close" in request.form:
             return redirect(url_for("manageingredients"))
+        
+@app.route("/viewcocktails", methods=["GET", "POST"])
+def viewcocktails():
+
+    return render_template(
+        "viewcocktails.html"
+    )
+  
+@app.route("/viewall")
+def viewall():
+    allcocktails = db.execute(
+       "SELECT 'user' AS csource, name, id, family, build, source \
+        FROM cocktails \
+        WHERE user_id = ? \
+        UNION \
+        SELECT 'common' AS csource, name, id, family, build, source \
+        FROM common_cocktails", session["user_id"]
+    )
+    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+    allfamilies = set(cocktail['family'] for cocktail in allcocktails) 
+    return render_template(
+        "viewall.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies
+    )
+
+@app.route("/viewcommon")
+def viewcommon():
+    commoncocktails = db.execute(
+        "SELECT name, id, family, build, source "
+        "FROM common_cocktails "
+    )
+    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+    allfamilies = set(cocktail['family'] for cocktail in commoncocktails)
     
+    return render_template(
+        "viewcommon.html", commoncocktails=commoncocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies
+    )
+    
+@app.route("/viewuser")
+def viewuser():
+    usercocktails = db.execute(
+        "SELECT name, id, family, build, source \
+        FROM cocktails \
+        WHERE user_id = ?", session["user_id"]
+    )
+    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+    userfamilies = set(cocktail['family'] for cocktail in usercocktails)
+
+    return render_template(
+        "viewuser.html", ingredients=ingredients, amounts=amounts, userfamilies=userfamilies, usercocktails=usercocktails
+    )
+    
+@app.route("/modify_cocktail", methods=["GET", "POST"])
+def modify_cocktail():
+    cocktail = request.form.get('modifiedCocktailName')
+    new_name = request.form.get('renameText')
+
+    
+    if request.method == "POST":
+        if "renamebutton" in request.form:
+            if new_name:
+                db.execute("UPDATE cocktails SET name = ? WHERE name = ? AND user_id = ?", new_name, cocktail, session["user_id"])
+                return redirect(url_for('viewcocktails'))
+            else:
+                return apology("A cocktail has not name")
+
+        elif "deletebutton" in request.form:
+            return render_template(
+                "areyousurecocktail.html", cocktail=cocktail
+            )
+
+        elif "deleteconfirmed" in request.form:
+            cocktail_delete = request.form.get("cocktail_delete")
+            db.execute("WITH CocktailToDelete AS \
+                       (SELECT id FROM cocktails WHERE name = ? AND user_id = ? LIMIT 1) \
+                       DELETE FROM amounts \
+                       WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)", cocktail_delete, session["user_id"]
+                       )
+            db.execute("DELETE FROM cocktails WHERE name = ? AND user_id = ?", cocktail_delete, session["user_id"])
+            return redirect(url_for("viewcocktails"))
+        
+        elif "cancel" in request.form:
+            return redirect(url_for("viewcocktails"))
+        
+        elif "close" in request.form:
+            return redirect(url_for("viewcocktails"))
+        
+        elif "changerecipe" in request.form:
+            recipe = db.execute("SELECT id, name, build, source, family FROM cocktails WHERE name = ? AND user_id = ?", cocktail, session["user_id"])
+            amounts = db.execute("SELECT ingredient_id, amount, ingredient_source FROM amounts WHERE cocktail_id = ?", recipe[0]['id'])
+            ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+            families = db.execute("SELECT family FROM common_cocktails GROUP BY family")
+            
+            print(f"recipe: {recipe}")
+            return render_template(
+                "changerecipe.html", cocktail=cocktail, recipe=recipe, amounts=amounts, ingredients=ingredients, families=families
+            )
+        
+
 # @app.route('/debug', methods=["POST"])
     # def debug():
          #    print(f'Name: {ingredient_name} ID: {ingredient_id}, Checkbox: {value}')
