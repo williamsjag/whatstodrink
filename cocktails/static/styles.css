@@ -133,6 +133,12 @@ input[type=checkbox] {
   grid-template-columns: 30% 40% 30%;
   column-gap: 20px;
  }
+ .container-bigcenter {
+  display: grid;
+  grid-template-areas: "left right";
+  grid-template-columns: 30% 70%;
+  column-gap: 20px;
+ }
  .item-left {
   grid-column-start: 1;
   grid-column-end: 2;

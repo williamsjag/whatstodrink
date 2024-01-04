@@ -6,8 +6,8 @@
                 <div class="accordion-item center-wide cocktail-group">
                     <h2 class="accordion-header" id="id_{{ loop.index0 }}">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
-                            <span class ="left-text"><strong>{{ cocktail.name|title }}</strong></span>
-                            <span class="right-text">
+                            <span class ="button-left-item"><strong>{{ cocktail.name|title }}</strong></span>
+                            <span class="button-right-item">
                                 {% set cocktail_ingredients = [] %}
                                 {% for ingredient in ingredients %}
                                     {% for amount in amounts %}

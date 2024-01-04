@@ -25,21 +25,27 @@ Make sure they cant submit nothing on /amounts
 Made 'modify ingredient' with rename and delete
 Added option to see all cocktails
 Made "modify cocktail" functionality with rename, delete, and change recipe
+Implemented simplified name
+Made viewcocktails default to all and added active class for buttons
+Made option for all cocktails or my cocktails in what's to drink?
+
 
 ## In Progress
 
-make amounts a modal
+Make SQL query for cocktails you can almost make
+    currently working on missingoneuser
+    cocktails query seems to work
+    missing ingredients query doesn't work. . Not sure if html in missingoneuser works
+    missingone not yet started except for copying placeholders
 
 ## Todo
-
-
-Make SQL query for cocktails you can almost make
-
-Add simplified name option to common ingredients and ingredient input for Ingredient sidebar
 Make add ingredient in Add Cocktail only refresh the select element it's in.
-Option to include common ingreds and basic cocktails or not
+
+make amounts a modal. very hard.
+
 
 Make Query Page where you can search by many options
 
 add tags tables: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
+
 select units imperial/metric for common cocktails
