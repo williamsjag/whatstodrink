@@ -24,14 +24,11 @@ Moved database add into amounts POST for add cocktail
 Make sure they cant submit nothing on /amounts
 Made 'modify ingredient' with rename and delete
 Added option to see all cocktails
-
+Made "modify cocktail" functionality with rename, delete, and change recipe
 
 ## In Progress
 
-Modify Cocktail Button
-
-
-
+make amounts a modal
 
 ## Todo
 
@@ -43,6 +40,6 @@ Make add ingredient in Add Cocktail only refresh the select element it's in.
 Option to include common ingreds and basic cocktails or not
 
 Make Query Page where you can search by many options
-Rename button in manage ingredients page that makes a modal to rename and update database for that id
+
 add tags tables: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
 select units imperial/metric for common cocktails

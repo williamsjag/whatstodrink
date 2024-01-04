@@ -64,8 +64,7 @@ def whatstodrink():
         "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)", session["user_id"], session["user_id"], session["user_id"]
     )
 
-   
-    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     families = set(cocktail['family'] for cocktail in cocktails)
 
@@ -73,7 +72,29 @@ def whatstodrink():
         "whatstodrink.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
     )
   
+@app.route("/whatstodrinkuser")
+@login_required
+def whatstodrinkuser():
 
+    cocktails = db.execute(
+        "SELECT c.name, c.id, c.family, c.build, c.source "
+        "FROM cocktails c "
+        "JOIN amounts a ON c.id = a.cocktail_id "
+        "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
+        "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
+        "WHERE (a.ingredient_source = 'user' AND i.stock = 'on' AND i.user_id = ?) "
+        "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND cs.user_id = ?) "
+        "GROUP BY c.id "
+        "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)", session["user_id"], session["user_id"]
+    )
+
+    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
+    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+    families = set(cocktail['family'] for cocktail in cocktails)
+
+    return render_template(
+        "whatstodrinkuser.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
+    )
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -203,11 +224,12 @@ def addingredient():
         else:
             # insert new ingredient into db
             db.execute(
-                "INSERT INTO ingredients (user_id, name, type, stock) VALUES(?, ?, ?, ?)",
+                "INSERT INTO ingredients (user_id, name, type, stock, short_name) VALUES(?, ?, ?, ?, ?)",
                 session["user_id"],
                 request.form.get("ingredientname"),
                 request.form.get("type"),
                 request.form.get("stock"),
+                request.form.get("short-name")
             )
         return render_template(
             "addingredient.html"
@@ -243,11 +265,12 @@ def ingredientmodal():
         else:
             # insert new ingredient into db
             db.execute(
-                "INSERT INTO ingredients (user_id, name, type, stock) VALUES(?, ?, ?, ?)",
+                "INSERT INTO ingredients (user_id, name, type, stock, short_name) VALUES(?, ?, ?, ?, ?)",
                 session["user_id"],
                 request.form.get("ingredientname"),
                 request.form.get("type"),
                 request.form.get("stock"),
+                request.form.get("short-name")
             )
 
     
@@ -451,14 +474,8 @@ def modify_ingredient():
         elif "close" in request.form:
             return redirect(url_for("manageingredients"))
         
-@app.route("/viewcocktails", methods=["GET", "POST"])
-def viewcocktails():
-
-    return render_template(
-        "viewcocktails.html"
-    )
   
-@app.route("/viewall")
+@app.route("/viewcocktails", methods=["GET", "POST"])
 def viewall():
     allcocktails = db.execute(
        "SELECT 'user' AS csource, name, id, family, build, source \
@@ -468,11 +485,11 @@ def viewall():
         SELECT 'common' AS csource, name, id, family, build, source \
         FROM common_cocktails", session["user_id"]
     )
-    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     allfamilies = set(cocktail['family'] for cocktail in allcocktails) 
     return render_template(
-        "viewall.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies
+        "viewcocktails.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies
     )
 
 @app.route("/viewcommon")
@@ -481,7 +498,7 @@ def viewcommon():
         "SELECT name, id, family, build, source "
         "FROM common_cocktails "
     )
-    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     allfamilies = set(cocktail['family'] for cocktail in commoncocktails)
     
@@ -496,7 +513,7 @@ def viewuser():
         FROM cocktails \
         WHERE user_id = ?", session["user_id"]
     )
-    ingredients = db.execute("SELECT id, name FROM common_ingredients UNION SELECT id, name FROM ingredients WHERE user_id = ?", session["user_id"])
+    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     userfamilies = set(cocktail['family'] for cocktail in usercocktails)
 

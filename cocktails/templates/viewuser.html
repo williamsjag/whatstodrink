@@ -12,7 +12,11 @@
                             {% for ingredient in ingredients %}
                                 {% for amount in amounts %}
                                     {% if amount.cocktail_id == cocktail.id and amount.ingredient_id == ingredient.id %}
-                                        {% set _ = cocktail_ingredients.append(ingredient.name|escape|capitalize) %}
+                                        {% if ingredient.short_name %}
+                                            {% set _ = cocktail_ingredients.append(ingredient.short_name|title) %}
+                                        {% else %}
+                                            {% set _ = cocktail_ingredients.append(ingredient.name|title) %}
+                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             {% endfor %}

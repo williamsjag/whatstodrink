@@ -56,10 +56,7 @@ input[type=checkbox] {
   column-count: 6;
   column-width: 400px;
 }
-.cocktail-group {
-  column-count: 2;
-  column-width: 600px;
-}
+
 .blue {
   color: #537fbe;
 }
