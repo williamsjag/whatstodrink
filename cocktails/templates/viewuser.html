@@ -19,7 +19,6 @@
                             {{ cocktail_ingredients|join(', ') }}
                         </span>
                     </button>
-                
                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
                     <div class="accordion-body">
                         <div class="container mb-3">
@@ -75,6 +74,7 @@
                         </div>
                         <br>
                         <div class="mb-3 text-center">
+                            <button hx-post="/modify_cocktail" hx-target="#body" id="changerecipe" name="changerecipe" class="btn btn-primary mb-3" type="submit">Change Recipe</button><br>
                             <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-primary" type="submit">Delete Cocktail</button>
                         </div>
                 </form>

@@ -545,11 +545,59 @@ def modify_cocktail():
             ingredients = db.execute("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = ?", session["user_id"])
             families = db.execute("SELECT family FROM common_cocktails GROUP BY family")
             types = db.execute("SELECT type FROM common_ingredients GROUP BY type")
-            print(f"recipe: {recipe}")
+
             return render_template(
                 "changerecipe.html", cocktail=cocktail, recipe=recipe, amounts=amounts, ingredients=ingredients, families=families, types=types
             )
         
+        elif "submit-changes" in request.form:
+            id = request.form.get('id')
+            build = request.form.get('build')
+            source = request.form.get('source')
+            family = request.form.get('family')
+
+            # update cocktail in db
+            db.execute("UPDATE cocktails \
+                       SET build = ?, \
+                       source = ?, \
+                       family = ? \
+                       WHERE (id = ? AND user_id = ?)"\
+                       , build, source, family, id, session["user_id"])
+
+            # get number of rows
+            amounts = request.form.getlist('amount[]')
+            ingredients = request.form.getlist('ingredient[]')
+
+            # check that amounts isn't empty
+            for i in range(len(amounts)):
+                if not amounts[i]:
+                    return apology("amounts cannot be empty")
+
+            # clear amounts for cocktail
+            db.execute("DELETE FROM amounts WHERE cocktail_id = ? AND user_id = ?", id, session["user_id"])
+            # for each table row...
+            for i in range(len(amounts)):
+                 # get values for amounts and ingredients
+                amount = amounts[i]
+                ingredient = ingredients[i]
+                # get ingredient source
+                ingredient_source = db.execute(\
+                    "SELECT 'common' AS source, id FROM common_ingredients \
+                    WHERE name = ? \
+                    UNION SELECT \
+                    'user' AS source, id \
+                    FROM ingredients \
+                    WHERE name = ? AND user_id = ?"\
+                    , ingredient, ingredient, session["user_id"])[0]['source']
+                # get ingredient id    
+                ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient, ingredient, session["user_id"]))[0]['id']
+
+                # write into database
+                db.execute("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source) \
+                           VALUES(?, ?, ?, ?, ?)", id, ingredient_id, amount, session["user_id"], ingredient_source)
+
+            return redirect(url_for("viewcocktails"))
+
 
 # @app.route('/debug', methods=["POST"])
     # def debug():

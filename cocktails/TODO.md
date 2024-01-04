@@ -23,23 +23,25 @@ changed input method for add cocktail ingredients to autocomplete typing
 Moved database add into amounts POST for add cocktail
 Make sure they cant submit nothing on /amounts
 Made 'modify ingredient' with rename and delete
-
-## TODO
-
+Added option to see all cocktails
 
 
+## In Progress
+
+Modify Cocktail Button
 
 
 
-## Future Features
+
+## Todo
 
 
 Make SQL query for cocktails you can almost make
-Add option to see all cocktails
+
 Add simplified name option to common ingredients and ingredient input for Ingredient sidebar
 Make add ingredient in Add Cocktail only refresh the select element it's in.
 Option to include common ingreds and basic cocktails or not
-Modify Cocktail Button
+
 Make Query Page where you can search by many options
 Rename button in manage ingredients page that makes a modal to rename and update database for that id
 add tags tables: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
