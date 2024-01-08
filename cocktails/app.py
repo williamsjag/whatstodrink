@@ -77,7 +77,7 @@ def whatstodrink():
 def missingone():
 
     cocktails = db.execute(
-        "SELECT cc.id "
+        "SELECT cc.id, cc.name, cc.family, cc.build, cc.source "
         "FROM common_cocktails cc "
         "JOIN common_amounts ca ON cc.id = ca.cocktail_id "
         "LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id "
@@ -86,7 +86,7 @@ def missingone():
         "GROUP BY cc.id "
         "HAVING COUNT(*) = 1 "
         "UNION "
-        "SELECT c.id "
+        "SELECT c.id, c.name, c.family, c.build, c.source "
         "FROM cocktails c "
         "JOIN amounts a ON c.id = a.cocktail_id "
         "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
@@ -112,8 +112,8 @@ def missingone():
             "JOIN amounts a ON c.id = a.cocktail_id "
             "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
             "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
-            "WHERE (a.ingredient_source = 'user' AND i.stock != 'on' AND i.user_id = ?) "
-            "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = ?) "
+            "WHERE (a.ingredient_source = 'user' AND i.stock != 'on' AND i.user_id = ? AND c.user_id = ?) "
+            "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = ? AND c.user_id = ?) "
             "GROUP BY c.id "
             "HAVING COUNT(*) = 1 \
         ), \
@@ -128,7 +128,7 @@ def missingone():
         JOIN common_stock cs ON ci.id = cs.ingredient_id \
         WHERE (cs.stock != 'on' AND cs.user_id = ? AND ci.id IN sad_amounts) \
         GROUP BY ci.id"\
-        , session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"]
+        , session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"]
     )
 
     ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
