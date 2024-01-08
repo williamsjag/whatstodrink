@@ -28,21 +28,24 @@ Made "modify cocktail" functionality with rename, delete, and change recipe
 Implemented simplified name
 Made viewcocktails default to all and added active class for buttons
 Made option for all cocktails or my cocktails in what's to drink?
+Made pages and backend for What's missing?
 
 
 ## In Progress
 
-Make SQL query for cocktails you can almost make
-    currently working on missingoneuser
-    cocktails query seems to work
-    missing ingredients query doesn't work. . Not sure if html in missingoneuser works
-    missingone not yet started except for copying placeholders
 
 ## Todo
-Make add ingredient in Add Cocktail only refresh the select element it's in.
+
+Redo modals for bootstrap 5:
+
+Make add ingredient in Add Cocktail only refresh the select element it's in:
+    Made form submit without reloading page
+    need to make modal close
+    then autofocus last text field
+
+Ensure correct input in modals with required tag and apologies
 
 make amounts a modal. very hard.
-
 
 Make Query Page where you can search by many options
 

@@ -98,7 +98,7 @@
             <!-- Modal content -->
             <div class="modal-content" id="modalform">
             <span class="close">&times;</span>
-            <form action="/ingredientmodal" id="addItemForm" method="post">
+            <form hx-post="/ingredientmodal" hx-swap="none" id="addItemForm" name="addItemForm">
                 <div class="form-group mb-3">
                     <label for="ingredientname" class="form-label">Ingredient Name</label>
                     <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
@@ -214,6 +214,8 @@
 
         }
     });
+
+
 
 </script>
 {% endblock %}

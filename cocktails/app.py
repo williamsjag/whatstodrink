@@ -395,7 +395,7 @@ def ingredientmodal():
 
     
 
-        return redirect(url_for("addcocktail"))
+        return '200: Sucess'
         
       # User reached route via GET (as by clicking a link or via redirect)
      else:
