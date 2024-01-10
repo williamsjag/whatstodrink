@@ -6,7 +6,6 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 import logging
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-import re
 from helpers import apology, login_required
 
 # Configure application

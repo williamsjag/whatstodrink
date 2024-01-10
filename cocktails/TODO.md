@@ -29,27 +29,23 @@ Implemented simplified name
 Made viewcocktails default to all and added active class for buttons
 Made option for all cocktails or my cocktails in what's to drink?
 Made pages and backend for What's missing?
---
 Made add ingredient in Add Cocktail update the search table without refreshing the page.
 Updated modal design
 started addcocktailWITHMODAL for switching amounts to a modal. Currently fades the page but doesn't open the mdoal.
 fixed readonly on add cocktail
+Made amounts a modal
 
 ## In Progress
 
-Redo modals for bootstrap 5:
-
-    clear modal instance on closing so that a different modal can be opened (view cocktails/manage ingredients)
-
-make amounts a modal:
-    amounts modal on add cocktail not loading for some reason
+clear modal instance on closing so that a different modal can be opened (view cocktails/manage ingredients)
 
 ## Todo
-
-Ensure correct input in modals with required tag and apologies
 
 Make Query Page where you can search by user defined options
 
 add tags option and tables: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
 
 select units imperial/metric for common cocktails
+
+Port database to MySQL and look into SQLAlchemy
+make login to email and do validation

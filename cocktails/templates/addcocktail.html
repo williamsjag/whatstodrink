@@ -106,7 +106,7 @@
                     <form id="addItemForm" name="addItemForm">
                         <div class="form-group mb-3">
                             <label for="ingredientname" class="form-label">Ingredient Name</label>
-                            <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
+                            <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
                         </div>
                         <div class="form-group mb-3">
                             <label for="short-name" class="form-label">Simplified Name (optional)</label>
@@ -115,7 +115,7 @@
                         </div>
                         <div class="mb-3 form-group">
                             <label for="type" class="form-label">Ingredient Type</label>
-                            <select name="type" id="type" class="form-select">
+                            <select name="type" id="type" class="form-select" required>
                                 <option value="" disabled selected>--Ingredient Type--</option>
                                 <option value="Spirit">Spirit</option>
                                 <option value="Liqueur">Liqueur</option>

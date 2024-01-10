@@ -12,12 +12,12 @@
             <p>Enter the name of the ingredient and select the type of ingredient it is.</p>
         </div>
         <div class="item-right border border-info p-3 ms-5">
-            <p>Simplified Name: This is what is displayed when extra information contained in the Ingredient Name is not necessary, like in the dropbdown displays in What's to drink? and View Cocktails</p>
+            <p>Simplified Name: This is what is displayed when extra information is not necessary, like in the dropbdown displays in What's to drink? and View Cocktails</p>
         </div>
         <form action="/addingredient" class="item-center" method="post">
             <div class="form-group mb-3">
                 <label for="ingredientname" class="form-label">Ingredient Name</label>
-                <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
+                <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
             </div>
             <div class="form-group mb-3">
                 <label for="short-name" class="form-label">Simplified Name (optional)</label>
@@ -26,7 +26,7 @@
             </div>
             <div class="form-group mb-3">
                 <label for="type" class="form-label">Ingredient Type</label>
-                <select name="type" id="type" class="form-select">
+                <select name="type" id="type" class="form-select" required>
                     <option value="" disabled selected>--Ingredient Type--</option>
                     <option value="Spirit">Spirit</option>
                     <option value="Liqueur">Liqueur</option>
