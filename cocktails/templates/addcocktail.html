@@ -98,8 +98,8 @@
     <div class="modal" id="ingredientModal" tabindex="-1" aria-labelledby="ingredientModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ingredientModalLabel">New Ingredient</h5>
+                <div class="modal-header text-center">
+                    <h5 class="modal-title w-100" id="ingredientModalLabel">New Ingredient</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -145,8 +145,8 @@
     <div class="modal fade" id="amountsModal" tabindex="-1" aria-labelledby="amountsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="amountsModalLabel">Amounts</h5>
+            <div class="modal-header text-center">
+              <h5 class="modal-title w-100" id="amountsModalLabel">Amounts</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -228,9 +228,6 @@
         var modal = bootstrap.Modal.getInstance(myModalEl)
         modal.hide()
         document.querySelector("#dynamicSelects li:last-child input").focus()
-    };
-    function trigger() {
-        htmx.trigger("#amounts-open", "submitted")
     };
 
 

@@ -62,8 +62,8 @@
 <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" id="modalform">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modifyModalLabel">Modify Cocktail</h5>
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100" id="modifyModalLabel">Modify Cocktail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="body">
@@ -82,7 +82,7 @@
                         <br>
                         <div class="mb-3 text-center">
                             <button hx-post="/modify_cocktail" hx-target="#body" id="changerecipe" name="changerecipe" class="btn btn-primary mb-3" type="submit">Change Recipe</button><br>
-                            <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-primary" type="submit">Delete Cocktail</button>
+                            <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-danger" type="submit">Delete Cocktail</button>
                         </div>
                     </form>
                 </div>

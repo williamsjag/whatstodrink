@@ -1,5 +1,5 @@
 <div class="form-group mb-3">
-    <form action="/amounts" class="table-item-center" method="post">
+    <form action="/amounts" id="amountsbody" class="table-item-center" method="post">
         <table>
                 <thead>
                 <tr>
@@ -21,7 +21,7 @@
         <input type="hidden" name="family" value="{{ family }}">
 
         <div class="mb-3 text-center">
-            <button class="btn btn-primary" type="submit">Submit</button>
+            <button hx-post="/amounts" hx-target="#amountsbody" class="btn btn-primary" type="submit">Submit</button>
         </div>
     </form>
 </div>
