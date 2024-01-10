@@ -31,7 +31,7 @@
                                     <td class="left-text">{{ ingredient.name }}</td>
                                     <td class="button-cell">
                                     {% if ingredient.source == 'user' %}
-                                    <button class="btn btn-outline-primary" type="button" onclick="makeModal();populateModal('{{ ingredient.name }}')">Modify</button></td>
+                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ ingredient.name }}')">Modify</button></td>
                                     {% endif %}
                                     {% if ingredient.stock == "on" %}
                                     <td class="right-text">
@@ -61,10 +61,14 @@
     </form>
 
 
-    <div id="modifyModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content" id="modalform">
-            <span class="close">&times;</span>
+    <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content" id="modal-form">
+            <div class="modal-header center-text">
+              <h5 class="modal-title" id="exampleModalLabel">Modify Ingredient</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
                 <div class="modal-body" id="body">
                     <form action="/modify_ingredient" method="POST" id="modifyForm">
                         <div class="modal-body">
@@ -75,7 +79,7 @@
                             <label for="renameText">Rename Ingredient</label>
                             <div class="input-group mb-5">
                                 <input type="text" class="form-control" placeholder="New name goes here" aria-label="New ingredient name" aria-describedby="renamebutton" name="renameText" id="renameText">
-                                <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename Ingredient</button>
+                                <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename</button>
 
                             </div>
                             <br>
@@ -87,26 +91,12 @@
             </div>
         </div>
     </div>
+
+
 {% endblock %}
 {% block javascript %}
 <script>
-    // Add modal for new ingredient
-    var modal = document.getElementById("modifyModal");
-    var span = document.getElementsByClassName("close")[0];
-    // pull up modal when add new ingredient is selected
-    function makeModal() {
-        modal.style.display = "block";
-
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-       
-    }
+   
     function populateModal(ingredientName) {
         document.getElementById('modifiedIngredientName').value = ingredientName;
     }

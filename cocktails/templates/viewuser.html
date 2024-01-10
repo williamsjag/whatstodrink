@@ -40,7 +40,7 @@
                             {% endfor %}
                             </div>
                             <div class="item-right text-right">
-                                <button class="btn btn-outline-primary me-4" type="button" onclick="makeModal();populateModal('{{ cocktail.name }}')">Modify</button></td>
+                                <button class="btn btn-outline-primary me-4" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button></td>
                             </div>
                         </div>
                         <div class="container mb-3">
@@ -59,13 +59,16 @@
 </div>
 {% endfor %}
 
-<div id="modifyModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content" id="modalform">
-        <span class="close">&times;</span>
+<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="modalform">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modifyModalLabel">Modify Cocktail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
             <div class="modal-body" id="body">
-                <form action="/modify_cocktail" method="POST" id="modifyForm">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form action="/modify_cocktail" method="POST" id="modifyForm">
                         <div class="mb-4">
                             <label for="modifiedCocktailName">Cocktail Name</label>
                             <input type="text" name="modifiedCocktailName" class="form-control" id="modifiedCocktailName" readonly>
@@ -73,7 +76,7 @@
                         <label for="renameText">Rename Cocktail</label>
                         <div class="input-group mb-5">
                             <input type="text" class="form-control" placeholder="New name goes here" aria-label="New cocktail name" aria-describedby="renamebutton" name="renameText" id="renameText">
-                            <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename Cocktail</button>
+                            <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename</button>
 
                         </div>
                         <br>
@@ -81,31 +84,14 @@
                             <button hx-post="/modify_cocktail" hx-target="#body" id="changerecipe" name="changerecipe" class="btn btn-primary mb-3" type="submit">Change Recipe</button><br>
                             <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-primary" type="submit">Delete Cocktail</button>
                         </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
     </div>
 </div>
 
 <script>
-// Add modal for new ingredient
-var modal = document.getElementById("modifyModal");
-var span = document.getElementsByClassName("close")[0];
-// pull up modal when add new ingredient is selected
-function makeModal() {
-    modal.style.display = "block";
-
-    span.onclick = function() {
-        modal.style.display = "none";
+    function populateModal(cocktailName) {
+        document.getElementById('modifiedCocktailName').value = cocktailName;
     }
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-   
-}
-function populateModal(cocktailName) {
-    document.getElementById('modifiedCocktailName').value = cocktailName;
-}
 </script>
