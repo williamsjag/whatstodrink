@@ -32,7 +32,7 @@
             <p><span class="blue">Orphans: </span>Creations that don't fit into a mold.</p>
         </div>
         <!-- Add cocktail form -->
-        <form id="amountsForm" hx-post="/addcocktail" hx-target="#amounts-body" hx-trigger="submitted" class="item-center" method="post">
+        <form action="/addcocktail" class="item-center" method="post">
                 <!-- name field -->
             <div class="form-group mb-3">
                 <label for="name" class="form-label">Cocktail Name</label>
@@ -40,11 +40,11 @@
             </div>
                 <!--ingredients list -->
             <div class="mb-3 form-group">
-                <label for="ingredient" class="form-label">Ingredients</label>
+                <label for="q0" class="form-label">Ingredients</label>
                 <ol name="ingredients" id="dynamicSelects">
                     <!-- first ingredient -->
                     <li>
-                        <input type="text" class="form-control ingredientsmenu mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
+                        <input id="q0" type="text" class="form-control ingredientsmenu mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
                     </li>
                 </ol>
                 <!-- ingredient search table -->
@@ -88,7 +88,7 @@
             </div>
             <!-- Submit button / open amounts modal -->
             <div class="mb-3 text-center">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#amountsModal" type="button">Add Cocktail</button>
+                <button class="btn btn-primary" type="submit">Add Cocktail</button>
             </div>
         </form>
     </div>
@@ -133,26 +133,11 @@
                             <input id="stock" name="stock" type="checkbox">
                         </div>
                             <div class="mb-3 text-center">
-                                <button id="modalbutton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#amountsModal" type="submit">Add Ingredient</button>
+                                <button id="modalbutton" class="btn btn-primary" onclick="hideIngredientModal()" type="submit">Add Ingredient</button>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Amounts Modal -->
-    <div class="modal fade" id="amountsModal" tabindex="-1" aria-labelledby="amountsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="amountsModalLabel">Amounts</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="amounts-body">
-            
-            </div>
-          </div>
         </div>
     </div>
     
@@ -179,6 +164,7 @@
 
     // listen for table clicks and fill form/make readonly
     
+    var counter = 1;
     document.getElementById('results').addEventListener('click', function(event) {
 
         // check if click is a cell
@@ -191,7 +177,8 @@
             var newDiv = document.createElement('li');
 
             // copy original population into new
-            newDiv.innerHTML = originalElement.innerHTML;
+            newDiv.innerHTML = originalElement.innerHTML.replace(/id="q\d+"/, 'id="q' + counter + '"');
+            counter++;
 
             // add new div to dynamicSelects
             var hostdiv = document.getElementById('dynamicSelects');
@@ -223,13 +210,8 @@
         modal.hide()
         document.querySelector("#dynamicSelects li:last-child input").focus()
     };
-    function showAmountsModal() {
-        var myModalEl = document.getElementById('amountsModal')
-        var modal = bootstrap.Modal.getOrCreateInstance(myModalEl)
-        modal.show()
-        htmx.trigger("#amountsForm", "submitted")
-    };
-
+    // clear modal when closed
+  
 
 </script>
 {% endblock %}

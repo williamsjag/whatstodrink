@@ -482,7 +482,7 @@ def addcocktail():
 
 
         return render_template(
-            "amounts.html", ingredients=ingredients, build=build, source=source, family=family, name=name
+            "amountsmodal.html", ingredients=ingredients, build=build, source=source, family=family, name=name
         )
     
 @app.route("/amounts", methods=["GET", "POST"])

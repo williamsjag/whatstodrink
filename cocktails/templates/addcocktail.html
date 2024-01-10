@@ -32,7 +32,7 @@
             <p><span class="blue">Orphans: </span>Creations that don't fit into a mold.</p>
         </div>
         <!-- Add cocktail form -->
-        <form action="/addcocktail" class="item-center" method="post">
+        <form id="amountsForm" class="item-center" method="post">
                 <!-- name field -->
             <div class="form-group mb-3">
                 <label for="name" class="form-label">Cocktail Name</label>
@@ -40,11 +40,11 @@
             </div>
                 <!--ingredients list -->
             <div class="mb-3 form-group">
-                <label for="ingredient" class="form-label">Ingredients</label>
-                <ol name="ingredients" id="dynamicSelects">
+                <label for="q0" class="form-label">Ingredients</label>
+                <ol id="dynamicSelects">
                     <!-- first ingredient -->
                     <li>
-                        <input type="text" class="form-control ingredientsmenu mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
+                        <input id="q0" type="text" class="form-control ingredientsmenu mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
                     </li>
                 </ol>
                 <!-- ingredient search table -->
@@ -88,7 +88,7 @@
             </div>
             <!-- Submit button / open amounts modal -->
             <div class="mb-3 text-center">
-                <button class="btn btn-primary" type="submit">Add Cocktail</button>
+                <button hx-post="/addcocktail" hx-target="#amounts-body" class="btn btn-primary" id='amounts-open' data-bs-toggle="modal" data-bs-target="#amountsModal" type="button">Add Cocktail</button>
             </div>
         </form>
     </div>
@@ -103,15 +103,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form hx-post="/ingredientmodal" hx-swap="none" id="addItemForm" name="addItemForm">
+                    <form id="addItemForm" name="addItemForm">
                         <div class="form-group mb-3">
                             <label for="ingredientname" class="form-label">Ingredient Name</label>
                             <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text">
                         </div>
                         <div class="form-group mb-3">
                             <label for="short-name" class="form-label">Simplified Name (optional)</label>
-                            <input autocomplete="off" autofocus class="form-control" id="short-name" name="short-name" placeholder="Simplified name" type="text" aria-describedby="short-help">
-                            <div class="form-text mb-3" id="short-help">E.g. "Campari" instead of "Amaro - Light - Campari"</span>
+                            <input autocomplete="off" class="form-control" id="short-name" name="short-name" placeholder="Simplified name" type="text" aria-describedby="short-help">
+                            <div class="form-text mb-3" id="short-help">E.g. "Campari" instead of "Amaro - Light - Campari"</div>
                         </div>
                         <div class="mb-3 form-group">
                             <label for="type" class="form-label">Ingredient Type</label>
@@ -132,12 +132,27 @@
                             <label for="stock">In Stock:</label>
                             <input id="stock" name="stock" type="checkbox">
                         </div>
-                            <div class="mb-3 text-center">
-                                <button id="modalbutton" class="btn btn-primary" onclick="hideIngredientModal()" type="submit">Add Ingredient</button>
+                        <div class="mb-3 text-center">
+                            <button hx-post="/ingredientmodal" hx-swap="none" id="modalbutton" class="btn btn-primary" onclick="hideIngredientModal()" type="submit">Add Ingredient</button>
                         </div>
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Amounts Modal -->
+    <div class="modal fade" id="amountsModal" tabindex="-1" aria-labelledby="amountsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="amountsModalLabel">Amounts</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="amounts-body"></div>
+            </div>
+          </div>
         </div>
     </div>
     
@@ -163,6 +178,9 @@
     };
 
     // listen for table clicks and fill form/make readonly
+
+    // counter variable for ids
+    var counter = 1;
     
     document.getElementById('results').addEventListener('click', function(event) {
 
@@ -176,7 +194,10 @@
             var newDiv = document.createElement('li');
 
             // copy original population into new
-            newDiv.innerHTML = originalElement.innerHTML;
+            newDiv.innerHTML = originalElement.innerHTML.replace(/id="q\d+"/, 'id="q' + counter + '"');
+
+            //increment counter
+            counter++;
 
             // add new div to dynamicSelects
             var hostdiv = document.getElementById('dynamicSelects');
@@ -208,8 +229,10 @@
         modal.hide()
         document.querySelector("#dynamicSelects li:last-child input").focus()
     };
-    // clear modal when closed
-  
+    function trigger() {
+        htmx.trigger("#amounts-open", "submitted")
+    };
+
 
 </script>
 {% endblock %}
