@@ -1,0 +1,58 @@
+{% for family in families %}
+    <h3 class="mb-3 center text-center"><span class="blue">{{ family }}</span></h3>
+    <div class="accordion mb-3" id="makeabledrinks">
+        {% for cocktail in cocktails %}
+            {% if cocktail.family == family %}
+                <div class="accordion-item center-wide cocktail-group">
+                    <h2 class="accordion-header" id="id_{{ loop.index0 }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
+                            <span class ="button-left-item"><strong>{{ cocktail.name|title }}</strong></span>
+                            <span class="button-right-item">
+                                {% set cocktail_ingredients = [] %}
+                                {% for ingredient in ingredients %}
+                                    {% for amount in amounts %}
+                                        {% if amount.cocktail_id == cocktail.id and amount.ingredient_id == ingredient.id %}
+                                            {% if ingredient.short_name %}
+                                                {% set _ = cocktail_ingredients.append(ingredient.short_name|title) %}
+                                            {% else %}
+                                                {% set _ = cocktail_ingredients.append(ingredient.name|title) %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                {{ cocktail_ingredients|join(', ') }}
+                            </span>
+                        </button>
+                    </h2>
+                <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
+                    <div class="accordion-body">
+                        <div class="container mb-3">
+                            <div class="category item-left">Ingredients: </div>
+                            <div class="item-center">
+                                {% for amount in amounts %}
+                                    {% if amount.cocktail_id == cocktail.id %}
+                                        {{ amount.amount|escape }}
+                                            {% for ingredient in ingredients %}
+                                                {% if ingredient.id == amount.ingredient_id %}
+                                                    {{ ingredient.name|title }}
+                                                {% endif %}
+                                            {% endfor %}<br>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>    
+                        </div>
+                        <div class="container mb-3">
+                            <div class="category item-left">Build: </div>
+                            <div class="item-center">{{ cocktail.build|escape }}</div>
+                        </div>
+                        <div class="container mb-3">
+                            <div class="category item-left">Source: </div>
+                            <div class="item-center">{{ cocktail.source|escape }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endfor %}

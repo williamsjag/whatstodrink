@@ -1,0 +1,119 @@
+<div class="text-center mb-3">
+    <h3 class="mb-3">Change Recipe: {{ cocktail }}</h3>
+</div>
+<form action="/modify_cocktail" method="POST">
+    <div class="mb-3" id="table-div">
+        <table class="table table-hover" id="ingredients" name="ingredients">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Ingredient</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="body">
+                {% for amount in amounts %}
+                    <tr>
+                        <td><input class="form-control" id="amount[]" name="amount[]" value="{{ amount.amount }}"></td>
+                        <td><div id="selectmenu"><select name="ingredient[]" class="form-select">
+                                <option value="disabled" disabled>--Ingredient--</option>
+                                {% for type in types %}
+                                <optgroup label="{{ type.type }}">
+                                    {% for ingredient in ingredients %}
+                                        {% if ingredient.type == type.type %}
+                                            {% if ingredient.id == amount.ingredient_id %}
+                                                <option value="{{ ingredient.name }}" selected>{{ ingredient.name|title }}</option>
+                                            {% else %}
+                                                <option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </optgroup>
+                                {% endfor %}
+                            </select></div>
+                        </td>
+                        <td class="button-cell text-right">
+                            <button class="btn btn-primary" type="button" onclick="removeRow(this)">Remove</button>
+                        </td>
+                        
+                        
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mb-3 text-center">
+        <button class="btn btn-primary btn-sm" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
+    </div>
+   
+    <div class="form-group mb-3">
+        <label for="build" class="form-label">Build Instructions</label>
+        <textarea autocomplete="off" class="form-control" id="build" name="build" rows="4">{{ recipe[0]['build'] }}</textarea>
+    </div>
+    <div class="form-group mb-3">
+        <label for="source" class="form-label">Source</label>
+        <input autocomplete="off" class="form-control" id="source" name="source" value="{{ recipe[0]['source'] }}" type="text">
+    </div>
+    <div class="mb-3 form-group">
+        <label for="family" class="form-label">Cocktail Family</label>
+        <select name="family" class="form-select ingredient_select" id="family">
+            {% for familydict in families %}
+                {% set family = familydict['family'] %}
+                {% if family == recipe[0]['family'] %}
+                    <option value="{{ family }}" selected>{{ family }}</option>
+                {% else %}
+                    <option value="{{ family }}">{{ family }}</option>
+                {% endif %}
+            {% endfor %}
+            
+        </select>
+    </div>
+    <input type="hidden" id="id" name="id" value="{{ recipe[0]['id'] }}">
+    <div class="mb-3 text-center">
+        <button name="submit-changes" class="btn btn-primary" type="submit">Submit Changes</button>
+    </div>
+</form>
+
+<script>
+    function createNewDiv() {
+
+    // Clone the first row
+    var newRow = $('#ingredients tbody tr:first').clone();
+
+    // Reset the input value in the new row
+    newRow.find('input').val('');
+
+    // Reset the select value in the new row
+    newRow.find('select').val('disabled').change();
+
+    // Append the new row to the table
+    $('#ingredients tbody').append(newRow);
+    }
+    
+    // Check if rows exist
+    var existingRows = $('#ingredients tbody tr');
+    // Create a row if no rows exist
+    if (existingRows.length === 0) {
+        var firstRow = document.createElement('tr');
+        var amountCell = document.createElement('td');
+        var ingredientCell = document.createElement('td');
+        var buttonCell = document.createElement('td');
+
+        // append elements to cells
+        amountCell.innerHTML = '<input class="form-control" id="amount[]" name="amount[]" value="">';
+        ingredientCell.innerHTML = '<div id="selectmenu"><select name="ingredient[]" class="form-select"><option value="disabled" selected disabled>--Ingredient--</option>{% for type in types %}<optgroup label="{{ type.type }}">{% for ingredient in ingredients %}{% if ingredient.type == type.type %}<option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>{% endif %}{% endfor %}</optgroup>{% endfor %}</select></div>';
+        buttonCell.innerHTML = '<button class="btn btn-primary" type="button" onclick="removeRow(this)">Remove</button>';
+
+        // append cells to row
+        firstRow.appendChild(amountCell);
+        firstRow.appendChild(ingredientCell);
+        firstRow.appendChild(buttonCell);
+
+        // append row to table
+        $('#ingredients tbody').append(firstRow);
+    }
+    function removeRow(button) {
+    // find row button was in and remove
+    $(button).closest('tr').remove();
+    }
+</script>

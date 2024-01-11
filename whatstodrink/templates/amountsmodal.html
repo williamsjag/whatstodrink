@@ -1,0 +1,27 @@
+<div class="form-group mb-3">
+    <form action="/amounts" id="amountsbody" class="table-item-center" method="post">
+        <table>
+                <thead>
+                <tr>
+                    <th>Ingredient</th>
+                    <th>Amount (with units)</th>
+                </tr> 
+                </thead>
+                {% for ingredient in ingredients %}
+                    <tr>
+                        <td>{{ ingredient }}</td>
+                        <td><input class="form-control" type="text" id="amount_{{ ingredient }}" name="amount_{{ ingredient }}" placeholder="1.5 oz | 2 dashes | 1 1/2 teaspoons" style="width: 350px;" required></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="hidden" name="source" value="{{ source }}">
+        <input type="hidden" name="build" value="{{ build }}">
+        <input type="hidden" name="family" value="{{ family }}">
+
+        <div class="mb-3 text-center">
+            <button hx-post="/amounts" hx-target="#amountsbody" class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    </form>
+</div>

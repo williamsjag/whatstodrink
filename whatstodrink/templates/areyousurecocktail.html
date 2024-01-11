@@ -1,0 +1,8 @@
+<form action="/modify_cocktail" method="POST" class="text-center">
+    <p>
+        This action cannot be undone. Are you sure you want to delete {{ cocktail }}?
+    </p>
+    <input type="hidden" name="cocktail_delete" value="{{ cocktail }}">
+    <button name="deleteconfirmed" formaction="/modify_cocktail" class="btn btn-danger">DELETE</button>
+    <button name="cancel" formaction="/modify_cocktail" class="btn btn-primary">Cancel</button>
+</form>
