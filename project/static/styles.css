@@ -1,0 +1,164 @@
+.center {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+.center-thin {
+  margin: auto;
+  width: 34%;
+  padding: 10px;
+}
+.center-wide {
+  margin: auto;
+  width: 60%;
+  padding: 10px;
+}
+/* Size for brand */
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+/* Colors for nav */
+nav .navbar-brand .blue
+{
+    color: #537fbe;
+}
+
+
+table {
+    background-color: transparent;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1rem;
+    width: 350px;
+}
+
+table th,
+table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    
+}
+
+input[type=checkbox] {
+  transform: scale(1.5);
+  margin-left: 1rem;
+}
+
+.form-group .control-label{
+  text-align: left !important;
+}
+.no-break {
+  break-inside: avoid-column;
+}
+.table-group {
+  column-count: 6;
+  column-width: 400px;
+}
+.blue {
+  color: #537fbe;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%; /* Could be more or less, depending on screen size */
+  }
+  
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* Accordion */
+  .accordion-button {
+    display: grid;
+    grid-template-columns: 1fr max-content max-content; 
+    align-items: center;
+    grid-gap: 10px; 
+  }
+ .text-pair {
+    display: flex;
+    justify-content: space-between;
+ }
+  .right-text {
+    text-align: right;
+  }
+  .left-text {
+    text-align: left;
+  }
+  .center-text {
+    text-align: center;
+  }
+  .category {
+    text-align: left;
+    font-weight: bold;
+  }
+  .table-text {
+    display: inline-block;
+    text-align: left;
+  }
+ .container {
+  display: grid;
+  grid-template-areas: "left center .";
+  grid-template-columns: 30% 40% 30%;
+  column-gap: 30px;
+ }
+ .item-left {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  align-self: start;
+  grid-row: 1/2;
+
+ }
+ .item-center {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  align-self: start;
+  grid-row: 1/2;
+ }
+ .item-right {
+  grid-column-start: 3;
+  grid-column-end: 4;
+  align-self: center;
+  grid-row: 1/2;
+ }
+ .table-container {
+  display: grid;
+  grid-template-areas: left center center;
+  grid-template-columns: 30% 40% 30%;
+  column-gap: 30px;
+ }
+ .table-item-center {
+  grid-area: center;
+  justify-self: stretch;
+  grid-row: 1/2;  
+ }
