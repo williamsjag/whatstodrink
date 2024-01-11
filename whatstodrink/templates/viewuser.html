@@ -25,7 +25,7 @@
                     </button>
                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
                     <div class="accordion-body">
-                        <div class="container mb-3">
+                        <div class="container-bigcenter mb-3">
                             <div class="category item-left">Ingredients: </div>
                             <div class="item-center">
                             {% for amount in amounts %}
@@ -43,11 +43,11 @@
                                 <button class="btn btn-outline-primary me-4" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button></td>
                             </div>
                         </div>
-                        <div class="container mb-3">
+                        <div class="container-bigcenter me-3 mb-3">
                             <div class="category item-left">Build: </div>
                             <div class="item-center">{{ cocktail.build|escape }}</div>
                         </div>
-                        <div class="container mb-3">
+                        <div class="container-bigcenter me-3 mb-3">
                             <div class="category item-left">Source: </div>
                             <div class="item-center">{{ cocktail.source|escape }}</div>
                         </div>

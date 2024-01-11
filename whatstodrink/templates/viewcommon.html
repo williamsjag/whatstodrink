@@ -26,7 +26,7 @@
                 
                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
                     <div class="accordion-body">
-                        <div class="container mb-3">
+                        <div class="container-bigcenter mb-3">
                             <div class="category item-left">Ingredients: </div>
                             <div class="item-center">
                             {% for amount in amounts %}
@@ -41,11 +41,11 @@
                             {% endfor %}
                             </div>
                         </div>
-                        <div class="container mb-3">
+                        <div class="container-bigcenter mb-3">
                             <div class="category item-left">Build: </div>
                             <div class="item-center">{{ cocktail.build|escape }}</div>
                         </div>
-                        <div class="container mb-3">
+                        <div class="container-bigcenter mb-3">
                             <div class="category item-left">Source: </div>
                             <div class="item-center">{{ cocktail.source|escape }}</div>
                         </div>
