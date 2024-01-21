@@ -1,0 +1,17 @@
+<form action="/modify_ingredient" method="POST" id="modifyForm">
+    <div class="modal-body">
+        <div class="mb-4">
+            <label for="modifiedIngredientName">Ingredient Name</label>
+            <input type="text" name="modifiedIngredientName" class="form-control" id="modifiedIngredientName" readonly>
+        </div>
+        <label for="renameText">Rename Ingredient</label>
+        <div class="input-group mb-5">
+            <input type="text" class="form-control" placeholder="New name goes here" aria-label="New ingredient name" aria-describedby="renamebutton" name="renameText" id="renameText">
+            <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename</button>
+
+        </div>
+        <br>
+        <div class="mb-3 text-center">
+            <button hx-post="/modify_ingredient" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-primary" type="submit">Delete Ingredient</button>
+        </div>
+</form>

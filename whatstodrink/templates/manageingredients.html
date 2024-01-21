@@ -31,7 +31,7 @@
                                     <td class="left-text">{{ ingredient.name }}</td>
                                     <td class="button-cell">
                                     {% if ingredient.source == 'user' %}
-                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ ingredient.name }}')">Modify</button></td>
+                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ ingredient.name }}')">View</button></td>
                                     {% endif %}
                                     {% if ingredient.stock == "on" %}
                                     <td class="right-text">
@@ -60,33 +60,17 @@
         </div>
     </form>
 
-
-    <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+    <!-- Modal for view ingredient -->
+    <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content" id="modal-form">
             <div class="modal-header center-text">
-              <h5 class="modal-title w-100" id="exampleModalLabel">Modify Ingredient</h5>
+              <h5 class="modal-title w-100" id="viewModalLabel">Modify Ingredient</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="modal-body" id="body">
-                    <form action="/modify_ingredient" method="POST" id="modifyForm">
-                        <div class="modal-body">
-                            <div class="mb-4">
-                                <label for="modifiedIngredientName">Ingredient Name</label>
-                                <input type="text" name="modifiedIngredientName" class="form-control" id="modifiedIngredientName" readonly>
-                            </div>
-                            <label for="renameText">Rename Ingredient</label>
-                            <div class="input-group mb-5">
-                                <input type="text" class="form-control" placeholder="New name goes here" aria-label="New ingredient name" aria-describedby="renamebutton" name="renameText" id="renameText">
-                                <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename</button>
-
-                            </div>
-                            <br>
-                            <div class="mb-3 text-center">
-                                <button hx-post="/modify_ingredient" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-primary" type="submit">Delete Ingredient</button>
-                            </div>
-                    </form>
+                    
                 </div>
             </div>
         </div>

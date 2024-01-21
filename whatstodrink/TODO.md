@@ -39,6 +39,8 @@ Made amounts a modal
 
 clear modal instance on closing so that a different modal can be opened (view cocktails/manage ingredients)
 
+Fix location of modify button in view cocktails
+
 ## Todo
 
 Make Query Page where you can search by user defined options
