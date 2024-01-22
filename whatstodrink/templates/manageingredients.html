@@ -31,7 +31,7 @@
                                     <td class="left-text">{{ ingredient.name }}</td>
                                     <td class="button-cell">
                                     {% if ingredient.source == 'user' %}
-                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ ingredient.name }}')">View</button></td>
+                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}')">View</button></td>
                                     {% endif %}
                                     {% if ingredient.stock == "on" %}
                                     <td class="right-text">
@@ -65,12 +65,28 @@
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content" id="modal-form">
             <div class="modal-header center-text">
-              <h5 class="modal-title w-100" id="viewModalLabel">Modify Ingredient</h5>
+              <h5 class="modal-title w-100" id="viewModalLabel"></h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="modal-body" id="body">
-                    
+                    <form>
+                        <div class="container-bigcenter me-3 mb-3">
+                            <div class="category item-left">Simplified Name: </div>
+                            <div class="item-center" id="ingredientShort"></div>
+                        </div>
+                        <div class="container-bigcenter me-3 mb-3">
+                            <div class="category item-left">Type: </div>
+                            <div class="item-center" id="ingredientType"></div>
+                        </div>
+                        <div class="container-bigcenter me-3 mb-3">
+                            <div class="category item-left">Notes: </div>
+                            <div class="item-center" id="ingredientNotes"></div>
+                        </div>
+                        <div class="text-center">
+                            <button hx-post="/modify_ingredient" hx-target="#body" id="modifybutton" name="modifybutton" class="btn btn-primary" type="submit">Modify Ingredient</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -81,8 +97,10 @@
 {% block javascript %}
 <script>
    
-    function populateModal(ingredientName) {
-        document.getElementById('modifiedIngredientName').value = ingredientName;
-    }
+    function populateModal(ingredientName, ingredientSource, ingredientType, ingredientShort) {
+        document.getElementById('viewModalLabel').textContent = ingredientName;
+        document.getElementById('ingredientType').textContent = ingredientType;
+        document.getElementById('ingredientShort').textContent = ingredientShort;
+    };
     </script>
 {% endblock %}

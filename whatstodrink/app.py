@@ -3,15 +3,12 @@ import os
 from cs50 import SQL
 import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-import logging
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 
 # Configure application
 app = Flask(__name__)
-
-app.logger.setLevel(logging.INFO)
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -21,6 +18,8 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///cocktails.db")
 app.config['db'] = '/cocktails.db'
+# New MySQL db
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Corpse Reviver #2@localhost/whatstodrink'
 
 
 @app.after_request
@@ -407,7 +406,7 @@ def ingredientmodal():
 def manageingredients():
     
     if request.method =="GET":
-        ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, cs.stock FROM common_ingredients ci LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.stock FROM ingredients i WHERE i.user_id = ? ORDER BY name ASC", session["user_id"], session["user_id"])
+        ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock FROM common_ingredients ci LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock FROM ingredients i WHERE i.user_id = ? ORDER BY name ASC", session["user_id"], session["user_id"])
         types = db.execute("SELECT DISTINCT type FROM common_ingredients")
 
         return render_template(
@@ -581,6 +580,7 @@ def modify_ingredient():
                 return render_template(
                     "cannotdelete.html", rows=rows, ingredient=ingredient
                 )
+        # elif "modifybutton" in request.form:
 
         
         elif "deleteconfirmed" in request.form:
