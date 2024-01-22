@@ -83,6 +83,10 @@
                             <div class="category item-left">Notes: </div>
                             <div class="item-center" id="ingredientNotes"></div>
                         </div>
+                        <input type="hidden" name="name" id="name">
+                        <input type="hidden" id="type" name="type">
+                        <input type="hidden" id="short" name="short">
+
                         <div class="text-center">
                             <button hx-post="/modify_ingredient" hx-target="#body" id="modifybutton" name="modifybutton" class="btn btn-primary" type="submit">Modify Ingredient</button>
                         </div>
@@ -101,6 +105,10 @@
         document.getElementById('viewModalLabel').textContent = ingredientName;
         document.getElementById('ingredientType').textContent = ingredientType;
         document.getElementById('ingredientShort').textContent = ingredientShort;
+        document.getElementById('name').value = ingredientName;
+        document.getElementById('type').value = ingredientType;
+        document.getElementById('short').value = ingredientShort;
+
     };
     </script>
 {% endblock %}

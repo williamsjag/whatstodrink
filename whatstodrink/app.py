@@ -560,10 +560,21 @@ def modify_ingredient():
     if request.method == "POST":
         if "renamebutton" in request.form:
             if new_name:
-                db.execute("UPDATE ingredients SET name = ? WHERE name = ? AND user_id = ?", new_name, ingredient, session["user_id"])
-                return redirect(url_for('manageingredients'))
+                check = db.execute("SELECT id FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT id FROM common_ingredients WHERE name = ?", new_name, session["user_id"], new_name)
+                if check:
+                    return apology("an ingredient with that name already exists")
+                else:
+                    db.execute("UPDATE ingredients SET name = ? WHERE name = ? AND user_id = ?", new_name, ingredient, session["user_id"])
+                    return redirect(url_for('manageingredients'))
             else:
                 return apology("An ingredient has not name")
+            
+        elif "submitbutton" in request.form:
+            newtype = request.form.get('type')
+            ingredient = request.form.get('modifiedIngredientName')
+            db.execute("UPDATE ingredients SET type = ? WHERE name = ? AND user_id = ?", newtype, ingredient, session["user_id"])
+            return redirect(url_for('manageingredients'))
+
 
         elif "deletebutton" in request.form:
             rows = db.execute("SELECT cocktails.name FROM cocktails \
@@ -571,7 +582,6 @@ def modify_ingredient():
                               LEFT JOIN ingredients ON amounts.ingredient_id = ingredients.id \
                               WHERE ingredients.name = ? \
                               GROUP BY cocktails.name", ingredient)
-            print(f"{ rows }")
             if not rows:
                 return render_template(
                     "areyousure.html", ingredient=ingredient
@@ -580,8 +590,14 @@ def modify_ingredient():
                 return render_template(
                     "cannotdelete.html", rows=rows, ingredient=ingredient
                 )
-        # elif "modifybutton" in request.form:
-
+        elif "modifybutton" in request.form:
+            name = request.form.get('name')
+            ingredient = db.execute("SELECT id, name, type, short_name FROM ingredients WHERE name = ? AND user_id = ?", name, session["user_id"])
+            types = db.execute("SELECT DISTINCT type FROM common_ingredients")
+            if ingredient:
+                return render_template("modifyingredient.html", ingredient=ingredient, types=types)
+            else:
+                return apology("Common Ingredients cannot be modified yet")
         
         elif "deleteconfirmed" in request.form:
             ingredient_delete = request.form.get("ingredient_delete")
