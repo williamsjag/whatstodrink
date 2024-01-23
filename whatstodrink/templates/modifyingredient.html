@@ -1,8 +1,8 @@
 <form action="/modify_ingredient" method="POST" id="modifyForm">
     <div class="modal-body">
         <div class="mb-4">
-            <label for="IngredientName">Ingredient Name</label>
-            <input type="text" name="modifiedIngredientName" class="form-control" value="{{ ingredient[0].name }}" readonly>
+            <label for="modifiedIngredientName">Ingredient Name</label>
+            <input type="text" name="modifiedIngredientName" id="modifiedIngredientName" class="form-control" value="{{ ingredient[0].name }}" readonly>
         </div>
         <label for="renameText">Rename Ingredient</label>
         <div class="input-group mb-5">
