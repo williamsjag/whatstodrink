@@ -42,33 +42,36 @@
                                 </button>
                             <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
                                 <div class="accordion-body">
-                                    <div class="container-bigcenter mb-3">
-                                        <div class="category item-left">Ingredients: </div>
-                                        <div class="item-center">
-                                        {% for amount in amounts %}
-                                            {% if amount.cocktail_id == cocktail.id %}
-                                                {{ amount.amount|escape }}
-                                                    {% for ingredient in ingredients %}
-                                                        {% if ingredient.id == amount.ingredient_id %}
-                                                            {{ ingredient.name|escape|capitalize }}
-                                                        {% endif %}
-                                                    {% endfor %}<br>
+                                    <div class="container mb-3">
+                                        <div class="row row-cols-auto mb-3">
+                                            <div class="category col-3">Ingredients: </div>
+                                            <div class="col-7">
+                                                {% for amount in amounts %}
+                                                    {% if amount.cocktail_id == cocktail.id %}
+                                                        {{ amount.amount }}
+                                                            {% for ingredient in ingredients %}
+                                                                {% if ingredient.id == amount.ingredient_id %}
+                                                                    {{ ingredient.name|capitalize }}
+                                                                {% endif %}
+                                                            {% endfor %}<br>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            {% if cocktail.csource == "user" %}
+                                                <!-- button to call modal -->
+                                                <div class="col-1 text-end">
+                                                    <button class="btn btn-outline-primary" type="button" hx-get="/modifycocktailmodal" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button>
+                                                </div>
                                             {% endif %}
-                                        {% endfor %}
                                         </div>
-                                        {% if cocktail.csource == "user" %}
-                                        <div class="item-right text-right">
-                                            <button class="btn btn-outline-primary me-4" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button></td>
-                                        </div>
-                                        {% endif %}
                                     </div>
-                                    <div class="container-bigcenter me-3 mb-3">
-                                        <div class="category item-left">Build: </div>
-                                        <div class="item-center">{{ cocktail.build|escape }}</div>
+                                    <div class="row row-cols-auto mb-3">
+                                        <div class="category col-3">Build: </div>
+                                        <div class="col-8">{{ cocktail.build }}</div>
                                     </div>
-                                    <div class="container-bigcenter me-3 mb-3">
-                                        <div class="category item-left">Source: </div>
-                                        <div class="item-center">{{ cocktail.source|escape }}</div>
+                                    <div class="row row-cols-auto mb-3">
+                                        <div class="category col-3">Source: </div>
+                                        <div class="col">{{ cocktail.source }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -77,38 +80,13 @@
                 {% endfor %}
             </div>
         {% endfor %}
-
-        <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content" id="modalform">
-                    <div class="modal-header text-center">
-                        <h5 class="modal-title w-100" id="modifyModalLabel">Modify Cocktail</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" id="body">
-                        <div class="modal-body">
-                            <form action="/modify_cocktail" method="POST" id="modifyForm">
-                                <div class="mb-4">
-                                    <label for="modifiedCocktailName">Cocktail Name</label>
-                                    <input type="text" name="modifiedCocktailName" class="form-control" id="modifiedCocktailName" readonly>
-                                </div>
-                                <label for="renameText">Rename Cocktail</label>
-                                <div class="input-group mb-5">
-                                    <input type="text" class="form-control" placeholder="New name goes here" aria-label="New cocktail name" aria-describedby="renamebutton" name="renameText" id="renameText">
-                                    <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename</button>
-
-                                </div>
-                                <br>
-                                <div class="mb-3 text-center">
-                                    <button hx-post="/modify_cocktail" hx-target="#body" id="changerecipe" name="changerecipe" class="btn btn-primary mb-3" type="submit">Change Recipe</button><br>
-                                    <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-danger" type="submit">Delete Cocktail</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-            </div>
-        </div>
     </div>
+
+<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="modalform"></div>
+    </div>
+</div>
 
 <script>
 // change active class on click
@@ -124,8 +102,10 @@ for (var i = 0; i < btns.length; i++) {
 }
 
 function populateModal(cocktailName) {
-    document.getElementById('modifiedCocktailName').value = cocktailName;
-}
+        document.addEventListener('htmx:afterRequest', function(evt) {
+            document.getElementById('modifiedCocktailName').value = cocktailName;
+        });
+    };
 </script>
     
 {% endblock %}
