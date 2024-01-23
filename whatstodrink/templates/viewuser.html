@@ -25,31 +25,33 @@
                     </button>
                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
                     <div class="accordion-body">
-                        <div class="container-bigcenter mb-3">
-                            <div class="category item-left">Ingredients: </div>
-                            <div class="item-center">
-                            {% for amount in amounts %}
-                                {% if amount.cocktail_id == cocktail.id %}
-                                    {{ amount.amount|escape }}
-                                        {% for ingredient in ingredients %}
-                                            {% if ingredient.id == amount.ingredient_id %}
-                                                {{ ingredient.name|escape|capitalize }}
-                                            {% endif %}
-                                        {% endfor %}<br>
-                                {% endif %}
-                            {% endfor %}
+                        <div class="container mb-3">
+                            <div class="row row-cols-auto mb-3">
+                                <div class="category col-3">Ingredients: </div>
+                                <div class="col-7">
+                                {% for amount in amounts %}
+                                    {% if amount.cocktail_id == cocktail.id %}
+                                        {{ amount.amount|escape }}
+                                            {% for ingredient in ingredients %}
+                                                {% if ingredient.id == amount.ingredient_id %}
+                                                    {{ ingredient.name|escape|capitalize }}
+                                                {% endif %}
+                                            {% endfor %}<br>
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button></td>
+                                </div>
                             </div>
-                            <div class="item-right text-right">
-                                <button class="btn btn-outline-primary me-4" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button></td>
+                            <div class="row row-cols-auto mb-3">
+                                <div class="category col-3">Build: </div>
+                                <div class="col-8">{{ cocktail.build }}</div>
                             </div>
-                        </div>
-                        <div class="container-bigcenter me-3 mb-3">
-                            <div class="category item-left">Build: </div>
-                            <div class="item-center">{{ cocktail.build|escape }}</div>
-                        </div>
-                        <div class="container-bigcenter me-3 mb-3">
-                            <div class="category item-left">Source: </div>
-                            <div class="item-center">{{ cocktail.source|escape }}</div>
+                            <div class="row row-cols-auto mb-3">
+                                <div class="category col-3">Source: </div>
+                                <div class="col">{{ cocktail.source }}</div>
+                            </div> 
                         </div>
                     </div>
                 </div>

@@ -37,6 +37,8 @@ Made amounts a modal
 Changed modify button to view in manage ingredients
 moved form from modify modal to new html template and changed modal to viewModal
 Capitalized Email in login and register
+upgraded to bootstrap 5.3
+moved modal in manageingredients to its own route to make it refresh every time it's opened. This will serve as a template for the others.
 
 ## In Progress
 

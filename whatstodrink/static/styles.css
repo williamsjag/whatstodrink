@@ -93,7 +93,7 @@ input[type=checkbox] {
     display: inline-block;
     text-align: left;
   }
- .container {
+ .containerOLD {
   display: grid;
   grid-template-areas: "left center right";
   grid-template-columns: 30% 40% 30%;

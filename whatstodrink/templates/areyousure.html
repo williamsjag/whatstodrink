@@ -1,8 +1,8 @@
 <form action="/modify_ingredient" method="POST" class="text-center">
-    <p>
+    <p class="mb-3">
         This action cannot be undone. Are you sure you want to delete {{ ingredient }}?
     </p>
     <input type="hidden" name="ingredient_delete" value="{{ ingredient }}">
-    <button name="deleteconfirmed" formaction="/modify_ingredient" class="btn btn-danger">DELETE</button>
-    <button name="cancel" formaction="/modify_ingredient" class="btn btn-primary">Cancel</button>
+    <button name="deleteconfirmed" formaction="/modify_ingredient" class="btn btn-danger mb-3">DELETE</button>
+    <button name="cancel" formaction="/modify_ingredient" class="btn btn-primary mb-3">Cancel</button>
 </form>
