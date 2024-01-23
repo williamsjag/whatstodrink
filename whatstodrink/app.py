@@ -655,7 +655,11 @@ def viewuser():
     return render_template(
         "viewuser.html", ingredients=ingredients, amounts=amounts, userfamilies=userfamilies, usercocktails=usercocktails
     )
-    
+
+@app.route("/viewingredientmodal", methods=["GET", "POST"])
+def viewingredientmodal():
+    return render_template("viewingredientmodal.html") 
+
 @app.route("/modify_cocktail", methods=["GET", "POST"])
 def modify_cocktail():
     cocktail = request.form.get('modifiedCocktailName')

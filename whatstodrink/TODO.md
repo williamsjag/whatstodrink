@@ -34,12 +34,22 @@ Updated modal design
 started addcocktailWITHMODAL for switching amounts to a modal. Currently fades the page but doesn't open the mdoal.
 fixed readonly on add cocktail
 Made amounts a modal
+Changed modify button to view in manage ingredients
+moved form from modify modal to new html template and changed modal to viewModal
+Capitalized Email in login and register
 
 ## In Progress
+
+make all modals htmx
+    -testing with view ingredient in manage
+Add notes field to ingredients
+
 
 clear modal instance on closing so that a different modal can be opened (view cocktails/manage ingredients)
 
 Fix location of modify button in view cocktails
+
+
 
 ## Todo
 

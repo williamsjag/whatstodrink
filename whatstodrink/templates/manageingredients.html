@@ -30,8 +30,10 @@
                                 {% if ingredient.type == type.type %}
                                     <td class="left-text">{{ ingredient.name }}</td>
                                     <td class="button-cell">
-                                    {% if ingredient.source == 'user' %}
-                                    <button class="btn btn-outline-primary viewbtn" type="button" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}')">View</button></td>
+                                        {% if ingredient.source == 'user' %}
+                                        <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}')">View</button>
+                                        <!-- <input type="hidden" value="{{ ingredient.name }}"> -->
+                                    </td>
                                     {% endif %}
                                     {% if ingredient.stock == "on" %}
                                     <td class="right-text">
@@ -63,36 +65,7 @@
     <!-- Modal for view ingredient -->
     <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content" id="modal-form">
-            <div class="modal-header center-text">
-              <h5 class="modal-title w-100" id="viewModalLabel"></h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-body" id="body">
-                    <form>
-                        <div class="container-bigcenter me-3 mb-3">
-                            <div class="category item-left">Simplified Name: </div>
-                            <div class="item-center" id="ingredientShort"></div>
-                        </div>
-                        <div class="container-bigcenter me-3 mb-3">
-                            <div class="category item-left">Type: </div>
-                            <div class="item-center" id="ingredientType"></div>
-                        </div>
-                        <div class="container-bigcenter me-3 mb-3">
-                            <div class="category item-left">Notes: </div>
-                            <div class="item-center" id="ingredientNotes"></div>
-                        </div>
-                        <input type="hidden" name="name" id="name">
-                        <input type="hidden" id="type" name="type">
-                        <input type="hidden" id="short" name="short">
-
-                        <div class="text-center">
-                            <button hx-post="/modify_ingredient" hx-target="#body" id="modifybutton" name="modifybutton" class="btn btn-primary" type="submit">Modify Ingredient</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <div class="modal-content" id="modal-form"></div>
         </div>
     </div>
 
@@ -100,25 +73,27 @@
 {% endblock %}
 {% block javascript %}
 <script>
-   
     function populateModal(ingredientName, ingredientSource, ingredientType, ingredientShort) {
-        document.getElementById('viewModalLabel').textContent = ingredientName;
-        document.getElementById('ingredientType').textContent = ingredientType;
-        document.getElementById('ingredientShort').textContent = ingredientShort;
-        document.getElementById('name').value = ingredientName;
-        document.getElementById('type').value = ingredientType;
-        document.getElementById('short').value = ingredientShort;
-
+        document.addEventListener('htmx:afterRequest', function(evt) {
+            document.getElementById('viewModalLabel').textContent = ingredientName;
+            document.getElementById('ingredientType').textContent = ingredientType;
+            document.getElementById('ingredientShort').textContent = ingredientShort;
+            document.getElementById('name').value = ingredientName;
+            document.getElementById('type').value = ingredientType;
+            document.getElementById('short').value = ingredientShort;
+        });
     };
+
+    
     // reset modal contents when hidden- try adding a listener to the open button that erases first
-    $(document).ready(function() { 
-             $(".viewbtn").click(function() { 
-                var viewModal =  
-                    bootstrap.Modal.getInstance($("#viewModal")[0]); 
-                $("#viewModal").modal("dispose");
-                var myModal = new bootstrap.Modal(document.getElementById("viewModal"), {});
-                myModal.show();
-            }); 
-        }); 
+    // $(document).ready(function() { 
+    //          $(".viewbtn").click(function() { 
+    //             var viewModal =  
+    //                 bootstrap.Modal.getInstance($("#viewModal")[0]); 
+    //             $("#viewModal").modal("dispose");
+    //             var myModal = new bootstrap.Modal(document.getElementById("viewModal"), {});
+    //             myModal.show();
+    //         }); 
+    //     }); 
     </script>
 {% endblock %}
