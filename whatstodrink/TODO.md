@@ -40,6 +40,7 @@ Capitalized Email in login and register
 upgraded to bootstrap 5.3
 moved modal in manageingredients to its own route to make it refresh every time it's opened. This will serve as a template for the others.
 Fix location of modify button in view cocktails and switched layout to use bootstrap grid
+Update whatsmissing pages to bootstrap grid
 
 ## In Progress
 

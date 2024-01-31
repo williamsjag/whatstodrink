@@ -26,6 +26,7 @@
                     <option value="" disabled selected>--Ingredient Type--</option>
                     <option value="Spirit">Spirit</option>
                     <option value="Liqueur">Liqueur</option>
+                    <option value="Liqueur">Amaro</option>
                     <option value="Wine/Vermouth/Sherry">Wine/Vermouth/Sherry</option>
                     <option value="Bitters">Bitters</option>
                     <option value="Syrup">Syrup</option>
@@ -46,4 +47,8 @@
 {% endblock %}
 
 {% block javascript %}
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
 {% endblock %}
