@@ -3,7 +3,7 @@
 {% for mi in missing_ingredients %}
     <h3 class="mb-3 center text-center"><span class="blue">{{ mi.name }}</span></h3>
     <div class="accordion mb-3" id="makeabledrinks">
-        <div class="accordion-item center-wide cocktail-group">
+        <div class="accordion-item center-accordion cocktail-group">
             {% for cocktail in cocktails %}
                 {% for amount in amounts %}
                     {% if amount.cocktail_id == cocktail.id %}
@@ -11,7 +11,7 @@
                             <h2 class="accordion-header" id="id_{{ loop.index0 }}">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
                                     <span class ="button-left-item"><strong>{{ cocktail.name|title }}</strong></span>
-                                    <span class="button-right-item">
+                                    <span class="button-right-item d-none d-sm-block">
                                         {% set cocktail_ingredients = [] %}
                                         {% for ingredient in ingredients %}
                                             {% for amount in amounts %}

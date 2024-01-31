@@ -12,6 +12,10 @@
   margin: auto;
   max-width: 500px;
 }
+.center-accordion {
+  margin: auto;
+  max-width: 800px;
+}
 
 nav .navbar-brand
 {

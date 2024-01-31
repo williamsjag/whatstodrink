@@ -50,13 +50,10 @@ Added active search to manage ingredients
 Added name and purpose headers to each page
 Added notes field to ingredients
 Moved explainer text into modals and added i icons to launch them
+Changed margin of forms to max-width 500px
+changed margin and height of modals
 
 ## In Progress
-
-Fix layout site-wide
-
-Fix Ingredients in database
-    - Figure out rum
 
 Validation for email in login
 
@@ -65,6 +62,9 @@ Add grouping options for cocktail views
 add request indicators for slow htmx requests
 
 user modifiability to all ingredients
+
+Make accordions drop ingredient summary on smaller viewports
+
 
 ## Todo
 
