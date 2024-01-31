@@ -1,5 +1,5 @@
 <div class="form-group mb-3">
-    <form action="/amounts" id="amountsbody" class="table-item-center" method="post">
+    <form action="/amounts" id="amountsbody" class="table-item-center center-form" method="post">
         <table>
                 <thead>
                 <tr>
@@ -10,7 +10,7 @@
                 {% for ingredient in ingredients %}
                     <tr>
                         <td>{{ ingredient }}</td>
-                        <td><input class="form-control" type="text" id="amount_{{ ingredient }}" name="amount_{{ ingredient }}" placeholder="1.5 oz | 2 dashes | 1 1/2 teaspoons" style="width: 350px;" required></td>
+                        <td><input class="form-control" type="text" id="amount_{{ ingredient }}" name="amount_{{ ingredient }}" placeholder="e.g. 1.5 oz, 2 dashes, 1 1/2 teaspoons" style="width: 350px;" required></td>
                     </tr>
                 {% endfor %}
             </table>

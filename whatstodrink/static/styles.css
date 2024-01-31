@@ -3,23 +3,22 @@
     width: 50%;
     padding: 10px;
 }
-.center-thin {
-  margin: auto;
-  width: 34%;
-  padding: 10px;
-}
 .center-wide {
   margin: auto;
   width: 60%;
   padding: 10px;
 }
-/* Size for brand */
+.center-form {
+  margin: auto;
+  max-width: 500px;
+}
+
 nav .navbar-brand
 {
     font-size: xx-large;
 }
 
-/* Colors for nav */
+
 nav .navbar-brand .blue
 {
     color: #537fbe;
