@@ -31,8 +31,8 @@
                                     <td class="left-text">{{ ingredient.name }}</td>
                                     <td class="button-cell">
                                         {% if ingredient.source == 'user' %}
+                                        <!-- button for calling modal -->
                                         <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}')">View</button>
-                                        <!-- <input type="hidden" value="{{ ingredient.name }}"> -->
                                     </td>
                                     {% endif %}
                                     {% if ingredient.stock == "on" %}
@@ -84,16 +84,5 @@
         });
     };
 
-    
-    // reset modal contents when hidden- try adding a listener to the open button that erases first
-    // $(document).ready(function() { 
-    //          $(".viewbtn").click(function() { 
-    //             var viewModal =  
-    //                 bootstrap.Modal.getInstance($("#viewModal")[0]); 
-    //             $("#viewModal").modal("dispose");
-    //             var myModal = new bootstrap.Modal(document.getElementById("viewModal"), {});
-    //             myModal.show();
-    //         }); 
-    //     }); 
     </script>
 {% endblock %}

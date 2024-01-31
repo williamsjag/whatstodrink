@@ -1,29 +1,29 @@
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" id="modalform">
-            <div class="modal-header text-center">
-                <h5 class="modal-title w-100" id="modifyModalLabel">Modify Cocktail</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="body">
-                <div class="modal-body">
-                    <form action="/modify_cocktail" method="POST" id="modifyForm">
-                        <div class="mb-4">
-                            <label for="modifiedCocktailName">Cocktail Name</label>
-                            <input type="text" name="modifiedCocktailName" class="form-control" id="modifiedCocktailName" readonly>
-                        </div>
-                        <label for="renameText">Rename Cocktail</label>
-                        <div class="input-group mb-5">
-                            <input type="text" class="form-control" placeholder="New name goes here" aria-label="New cocktail name" aria-describedby="renamebutton" name="renameText" id="renameText">
-                            <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename</button>
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" id="modalform">
+        <div class="modal-header text-center">
+            <h5 class="modal-title w-100" id="modifyModalLabel">Modify Cocktail</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="body">
+            <div class="modal-body">
+                <form action="/modify_cocktail" method="POST" id="modifyForm">
+                    <div class="mb-4">
+                        <label for="modifiedCocktailName">Cocktail Name</label>
+                        <input type="text" name="modifiedCocktailName" class="form-control" id="modifiedCocktailName" readonly>
+                    </div>
+                    <label for="renameText">Rename Cocktail</label>
+                    <div class="input-group mb-5">
+                        <input type="text" class="form-control" placeholder="New name goes here" aria-label="New cocktail name" aria-describedby="renamebutton" name="renameText" id="renameText">
+                        <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit">Rename</button>
 
-                        </div>
-                        <br>
-                        <div class="mb-3 text-center">
-                            <button hx-post="/modify_cocktail" hx-target="#body" id="changerecipe" name="changerecipe" class="btn btn-primary mb-3" type="submit">Change Recipe</button><br>
-                            <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-danger" type="submit">Delete Cocktail</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <br>
+                    <div class="mb-3 text-center">
+                        <button hx-post="/modify_cocktail" hx-target="#body" id="changerecipe" name="changerecipe" class="btn btn-primary mb-3" type="submit">Change Recipe</button><br>
+                        <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-danger" type="submit">Delete Cocktail</button>
+                    </div>
+                </form>
             </div>
-    </div>
+        </div>
+</div>
 </div>

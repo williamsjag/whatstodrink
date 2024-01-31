@@ -23,23 +23,22 @@
                             {{ cocktail_ingredients|join(', ') }}
                         </span>
                     </button>
-                
                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
                     <div class="accordion-body">
                         <div class="container mb-3">
                             <div class="row row-cols-auto mb-3">
                                 <div class="category col-3">Ingredients: </div>
                                 <div class="col-7">
-                                {% for amount in amounts %}
-                                    {% if amount.cocktail_id == cocktail.id %}
-                                        {{ amount.amount|escape }}
-                                            {% for ingredient in ingredients %}
-                                                {% if ingredient.id == amount.ingredient_id %}
-                                                    {{ ingredient.name|escape|capitalize }}
-                                                {% endif %}
-                                            {% endfor %}<br>
-                                    {% endif %}
-                                {% endfor %}
+                                    {% for amount in amounts %}
+                                        {% if amount.cocktail_id == cocktail.id %}
+                                            {{ amount.amount }}
+                                                {% for ingredient in ingredients %}
+                                                    {% if ingredient.id == amount.ingredient_id %}
+                                                        {{ ingredient.name|capitalize }}
+                                                    {% endif %}
+                                                {% endfor %}<br>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
                             </div>
                             <div class="row row-cols-auto mb-3">

@@ -39,17 +39,17 @@ moved form from modify modal to new html template and changed modal to viewModal
 Capitalized Email in login and register
 upgraded to bootstrap 5.3
 moved modal in manageingredients to its own route to make it refresh every time it's opened. This will serve as a template for the others.
+Fix location of modify button in view cocktails and switched layout to use bootstrap grid
 
 ## In Progress
 
-make all modals htmx
-    -testing with view ingredient in manage
+make all modals htmx:
+    - manage ingredients
+    - viewuser
+    - viewcocktails (still has indent before Ingredients:)
 Add notes field to ingredients
 
 
-clear modal instance on closing so that a different modal can be opened (view cocktails/manage ingredients)
-
-Fix location of modify button in view cocktails
 
 
 
