@@ -5,6 +5,10 @@
 {% endblock %}
 
 {% block main %}
+<h1 class="text-center mb-5">View/Edit Cocktails</h1>
+<div class="center text-center border border-info p-3 mb-5">
+    <p>See a list of all cocktails in the database and edit recipes of your own.</p>
+</div>
     <!-- TODO: make query for all cocktails -->
     <!-- imported from flask: cocktails, ingredients, amounts, families-->
     <div class="text-center">
@@ -83,6 +87,7 @@
         {% endfor %}
     </div>
 
+<!-- Modal -->
 <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" id="modalform"></div>

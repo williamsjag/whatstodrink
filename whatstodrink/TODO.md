@@ -45,6 +45,8 @@ Convert all modals to htmx
 Made names cleaner in db and added amaro type to amari
 Made all accordions except whatstodrink? (not necessary) fit into the bootstrap grid
 added rusty nail to cocktails
+Added active search to manage ingredients
+Added name and purpose headers to each page
 
 ## In Progress
 
@@ -59,9 +61,7 @@ Validation for email in login
 
 Add grouping options for cocktail views
 
-Add Livesearch filter to manage ingredients
-
-Add page titles
+add request indicators for slow htmx requests
 
 ## Todo
 
