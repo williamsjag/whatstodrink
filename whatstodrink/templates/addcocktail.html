@@ -51,7 +51,7 @@
             </div>
             <!-- Create new ingredient button -->
             <div class="mb-3 text-center">
-                <button class="btn btn-primary btn-sm" id="new_ingredient" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">Create New Ingredient</button>
+                <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">Create New Ingredient</button>
             </div>
             <!-- Build instructions field -->
             <div class="form-group mb-3">
@@ -92,49 +92,9 @@
 
 
     <!-- Modal for adding ingredient -->
-    <div class="modal" id="ingredientModal" tabindex="-1" aria-labelledby="ingredientModalLabel" aria-hidden="true">
+    <div class="modal fade" id="ingredientModal" tabindex="-1" aria-labelledby="ingredientModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header text-center">
-                    <h5 class="modal-title w-100" id="ingredientModalLabel">New Ingredient</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addItemForm" name="addItemForm">
-                        <div class="form-group mb-3">
-                            <label for="ingredientname" class="form-label">Ingredient Name</label>
-                            <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="short-name" class="form-label">Simplified Name (optional)</label>
-                            <input autocomplete="off" class="form-control" id="short-name" name="short-name" placeholder="Simplified name" type="text" aria-describedby="short-help">
-                            <div class="form-text mb-3" id="short-help">E.g. "Campari" instead of "Amaro - Light - Campari"</div>
-                        </div>
-                        <div class="mb-3 form-group">
-                            <label for="type" class="form-label">Ingredient Type</label>
-                            <select name="type" id="type" class="form-select" required>
-                                <option value="" disabled selected>--Ingredient Type--</option>
-                                <option value="Spirit">Spirit</option>
-                                <option value="Liqueur">Liqueur</option>
-                                <option value="Wine/Vermouth/Sherry">Wine/Vermouth/Sherry</option>
-                                <option value="Bitters">Bitters</option>
-                                <option value="Syrup">Syrup</option>
-                                <option value="Juice">Juice</option>
-                                <option value="Pantry/Fridge">Pantry/Fridge</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <br>
-                        <div class="mb-3 text-center form-check">
-                            <label for="stock">In Stock:</label>
-                            <input id="stock" name="stock" type="checkbox">
-                        </div>
-                        <div class="mb-3 text-center">
-                            <button hx-post="/ingredientmodal" hx-swap="none" id="modalbutton" class="btn btn-primary" onclick="hideIngredientModal()" type="submit">Add Ingredient</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <div class="modal-content" id="modal-form"></div>
         </div>
     </div>
 

@@ -41,18 +41,26 @@ upgraded to bootstrap 5.3
 moved modal in manageingredients to its own route to make it refresh every time it's opened. This will serve as a template for the others.
 Fix location of modify button in view cocktails and switched layout to use bootstrap grid
 Update whatsmissing pages to bootstrap grid
+Convert all modals to htmx
 
 ## In Progress
 
-make all modals htmx:
-    - manage ingredients
+make all accordions on bootstrap grid
     - viewuser
     - viewcocktails (still has indent before Ingredients:)
+    - missing one (indented)
+    - missing one user (indented)
+
 Add notes field to ingredients
 
+Fix layout site-wide
 
+Fix Ingredients in database
+    - Pare down
+    - fix name bloat
+    - amaro type
 
-
+Validation for email in login
 
 ## Todo
 

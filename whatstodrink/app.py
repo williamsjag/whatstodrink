@@ -658,14 +658,16 @@ def viewuser():
 
 @app.route("/viewingredientmodal")
 def viewingredientmodal():
-
     return render_template("viewingredientmodal.html")
 
 
 @app.route("/modifycocktailmodal")
 def modifycocktailmodal():
-
     return render_template("modifycocktailmodal.html")
+
+@app.route("/addingredientmodal")
+def addingredientmodal():
+    return render_template("addingredientmodal.html")
 
 @app.route("/modify_cocktail", methods=["GET", "POST"])
 def modify_cocktail():
