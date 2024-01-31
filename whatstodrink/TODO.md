@@ -62,6 +62,8 @@ Fix Ingredients in database
 
 Validation for email in login
 
+Add grouping options for cocktail views
+
 ## Todo
 
 Make Query Page where you can search by user defined options
