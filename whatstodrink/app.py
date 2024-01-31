@@ -418,11 +418,11 @@ def manageingredients():
                                     UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock \
                                     FROM ingredients i \
                                     WHERE i.user_id = ? AND i.name LIKE ?)", session["user_id"], '%'+q+'%', session["user_id"], '%'+q+'%')
-            ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock \
+            ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
                                     FROM common_ingredients ci \
                                     LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
                                     WHERE ci.name LIKE ?\
-                                    UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock \
+                                    UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock, i.notes \
                                     FROM ingredients i \
                                     WHERE i.user_id = ? AND i.name LIKE ?\
                                     ORDER BY name ASC", session["user_id"], '%'+q+'%', session["user_id"], '%'+q+'%'
@@ -435,10 +435,10 @@ def manageingredients():
         
         else:
             types = db.execute("SELECT DISTINCT type FROM common_ingredients")
-            ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock \
+            ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
                                      FROM common_ingredients ci \
                                      LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
-                                     UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock \
+                                     UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock, i.notes \
                                      FROM ingredients i \
                                      WHERE i.user_id = ? \
                                      ORDER BY name ASC", session["user_id"], session["user_id"])
@@ -597,8 +597,9 @@ def modify_ingredient():
             
         elif "submitbutton" in request.form:
             newtype = request.form.get('type')
+            newnotes = request.form.get('notes')
             ingredient = request.form.get('modifiedIngredientName')
-            db.execute("UPDATE ingredients SET type = ? WHERE name = ? AND user_id = ?", newtype, ingredient, session["user_id"])
+            db.execute("UPDATE ingredients SET type = ?, notes = ? WHERE name = ? AND user_id = ?", newtype, newnotes, ingredient, session["user_id"])
             return redirect(url_for('manageingredients'))
 
 
@@ -618,7 +619,7 @@ def modify_ingredient():
                 )
         elif "modifybutton" in request.form:
             name = request.form.get('name')
-            ingredient = db.execute("SELECT id, name, type, short_name FROM ingredients WHERE name = ? AND user_id = ?", name, session["user_id"])
+            ingredient = db.execute("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = ? AND user_id = ?", name, session["user_id"])
             types = db.execute("SELECT DISTINCT type FROM common_ingredients")
             if ingredient:
                 return render_template("modifyingredient.html", ingredient=ingredient, types=types)
