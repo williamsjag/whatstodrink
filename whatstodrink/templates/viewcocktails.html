@@ -7,7 +7,7 @@
 {% block main %}
 <h1 class="text-center mb-5">View/Edit Cocktails</h1>
 <div class="center text-center border border-info p-3 mb-5">
-    <p>See a list of all cocktails in the database and edit your recipes.</p>
+    <p>View all cocktails in the database and edit your recipes.</p>
 </div>
     <!-- TODO: make query for all cocktails -->
     <!-- imported from flask: cocktails, ingredients, amounts, families-->
@@ -64,7 +64,7 @@
                                             </div>
                                             {% if cocktail.csource == "user" %}
                                                 <!-- button to call modal -->
-                                                <div class="col-1 text-end">
+                                                <div class="col ms-auto">
                                                     <button class="btn btn-outline-primary" type="button" hx-get="/modifycocktailmodal" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button>
                                                 </div>
                                             {% endif %}

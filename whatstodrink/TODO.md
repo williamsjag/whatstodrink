@@ -52,6 +52,7 @@ Added notes field to ingredients
 Moved explainer text into modals and added i icons to launch them
 Changed margin of forms to max-width 500px
 changed margin and height of modals
+hid ingredient overview accordions on small viewports
 
 ## In Progress
 
@@ -62,8 +63,6 @@ Add grouping options for cocktail views
 add request indicators for slow htmx requests
 
 user modifiability to all ingredients
-
-Make accordions drop ingredient summary on smaller viewports
 
 
 ## Todo
