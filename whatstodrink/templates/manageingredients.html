@@ -9,10 +9,16 @@
         <p>Here you can update your inventory of the ingredients in your personal database. Check or uncheck to change stock. Once you've made all the changes you wish, click the update button at the bottom of the page to save your changes!</p>
         <p>You can also modify ingredients that you've added by clicking the Modify button.</p>
     </div>
+    <div class="container">
+        <form class="item-center form-group mb-3">
+            <label for="search" class="form-label">Filter Ingredients</label>
+            <input id="search" class="form-control" type="search" name="q" placeholder="Type to search" hx-get="/manageingredients" hx-target="#ingredientstable" hx-trigger="search, keyup changed delay:300ms"/>
+        </form>
+    </div>
+    
 
-
-    <form action="/manageingredients" method="post">
-        <div class="table-group mb-3">    
+    <form action="/manageingredients" id="ingredientstable" method="post">
+        <div class="table-group text-center mb-3">    
         {% for type in types %}
             <div class="no-break">
                 <h4>{{ type.type }}</h4>
@@ -26,30 +32,30 @@
                     </thead>
                     <tbody>
                         {% for ingredient in ingredients %}
+                        {% if ingredient.type == type.type %}
                             <tr>
-                                {% if ingredient.type == type.type %}
-                                    <td class="left-text">{{ ingredient.name }}</td>
-                                    <td class="button-cell">
-                                        {% if ingredient.source == 'user' %}
-                                        <!-- button for calling modal -->
+                                <td class="left-text">{{ ingredient.name }}</td>
+                                <td class="button-cell">
+                                    {% if ingredient.source == 'user' %}
+                                    <!-- button for calling modal -->
                                         <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}')">View</button>
-                                    </td>
                                     {% endif %}
-                                    {% if ingredient.stock == "on" %}
-                                    <td class="right-text">
-                                        <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" checked>
-                                        <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
-                                        <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
-                                    </td>
-                                    {% else %}
-                                    <td class="right-text">
-                                        <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" unchecked>
-                                        <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
-                                        <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
-                                    </td>
-                                    {% endif %}
+                                </td>
+                                {% if ingredient.stock == "on" %}
+                                <td class="right-text">
+                                    <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" checked>
+                                    <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
+                                    <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
+                                </td>
+                                {% else %}
+                                <td class="right-text">
+                                    <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" unchecked>
+                                    <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
+                                    <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
+                                </td>
                                 {% endif %}
                             </tr>
+                            {% endif %}
                         {% endfor %}
                         </tr>
                     </tbody>

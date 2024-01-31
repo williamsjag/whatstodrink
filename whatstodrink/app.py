@@ -406,19 +406,46 @@ def ingredientmodal():
 def manageingredients():
     
     if request.method =="GET":
-        ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock FROM common_ingredients ci LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock FROM ingredients i WHERE i.user_id = ? ORDER BY name ASC", session["user_id"], session["user_id"])
-        types = db.execute("SELECT DISTINCT type FROM common_ingredients")
+        q = request.args.get('q')
 
-        return render_template(
-            "manageingredients.html", ingredients=ingredients, types=types
-        )
+        # if filter bar is used
+        
+        if q is not None:
+            types = db.execute("SELECT DISTINCT type FROM (SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock \
+                                    FROM common_ingredients ci \
+                                    LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
+                                    WHERE ci.name LIKE ?\
+                                    UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock \
+                                    FROM ingredients i \
+                                    WHERE i.user_id = ? AND i.name LIKE ?)", session["user_id"], '%'+q+'%', session["user_id"], '%'+q+'%')
+            ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock \
+                                    FROM common_ingredients ci \
+                                    LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
+                                    WHERE ci.name LIKE ?\
+                                    UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock \
+                                    FROM ingredients i \
+                                    WHERE i.user_id = ? AND i.name LIKE ?\
+                                    ORDER BY name ASC", session["user_id"], '%'+q+'%', session["user_id"], '%'+q+'%'
+                                    )
+            if request.headers.get('HX-Trigger') == 'search':
+                return render_template("/ingredientstable.html", ingredients=ingredients, types=types)
+            else:
+                return render_template("/manageingredients.html", ingredients=ingredients, types=types)
+            
+        
+        else:
+            types = db.execute("SELECT DISTINCT type FROM common_ingredients")
+            ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock \
+                                     FROM common_ingredients ci \
+                                     LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
+                                     UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock \
+                                     FROM ingredients i \
+                                     WHERE i.user_id = ? \
+                                     ORDER BY name ASC", session["user_id"], session["user_id"])
+            return render_template(
+                "manageingredients.html", ingredients=ingredients, types=types
+            )
     elif request.method =="POST":
-        # set all stock to off
-        db.execute(
-            "UPDATE common_stock SET stock = 0 WHERE user_id = ?",
-            session["user_id"]
-        )
-        # turn checked stock on
         for key, value, in request.form.items():
             if key.startswith('stock_'):
                 ingredient_name = key.replace('stock_', '')
@@ -537,7 +564,6 @@ def amounts():
 @app.route("/ingredientsearch")
 def search():
     q = request.args.get("q")
-    print(q)
 
     if q:
         results = db.execute("SELECT name FROM common_ingredients\

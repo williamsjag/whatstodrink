@@ -53,7 +53,6 @@ Add notes field to ingredients
 Fix layout site-wide
 
 Fix Ingredients in database
-    - Pare down
     - Figure out rum
 
 Validation for email in login
@@ -61,6 +60,8 @@ Validation for email in login
 Add grouping options for cocktail views
 
 Add Livesearch filter to manage ingredients
+
+Add page titles
 
 ## Todo
 
