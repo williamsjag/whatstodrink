@@ -10,28 +10,6 @@
         <p>Add a new recipe to your database.</p>
     </div>
     <div class="container">
-        <div class="item-left border border-info p-3 me-5">
-            <p style="margin-bottom: 45px;"><strong>Cocktail Name: </strong>Name your cocktail</p>
-            <p><strong>Ingredients: </strong> Start typing and select your ingredient from the list that appears to add an ingredient. If you need an ingredient that is not in the list, click <span class="blue"><strong>Create New Ingredient</strong></span>.</p>
-            <p><strong>Build Instructions: </strong>Everything else you need to know to make the cocktail. Order of operations, special techniques, type of ice, garnish, etc... Don't worry about amounts for now, we'll cover that on the next step.</p>
-            <p><strong>Source: </strong>Where the cocktail comes from. Perhaps a book, a classic, or your own invention.</p>
-        </div><br>
-        <div class="item-right border border-info p-3 ms-5">
-            <p><strong>Cocktail Family: </strong>The type of cocktail.</p>
-            <p><span class="blue">Old Fashioneds: </span>The original cocktail. Spirit, sugar, and water.</p>
-            <p><span class="blue">Sours: </span>e.g. Gimlet, Margarita. They usually contain a sour element like lemon juice balanced by sugar.</p>
-            <p><span class="blue">Vermouth Cocktails: </span>Cocktails like Americanos that use vermouth prominently.</p>
-            <p><span class="blue">Amaro Cocktails: </span>Drinks like Negronis that feature Amari.</p>
-            <p><span class="blue">Duos and Trios: </span>Spirit and Mixer combos (think Rusty Nail). Add cream to make it a trio (White Russian).</p>
-            <p><span class="blue">Champagne Cocktails: </span>For something fizzy and festive, throw in some Champagne!</p>
-            <p><span class="blue">Highballs: </span>Longer drinks with a higher percentage of non-alcoholic mixers.</p>
-            <p><span class="blue">Juleps and Smashes: </span>Spirit forward and served over crushed ice, often with mint and/or extra fruit.</p>
-            <p><span class="blue">Hot Drinks: </span>Your Irish Coffees and Hot Toddies.</p>
-            <p><span class="blue">Flips and Nogs: </span>If it has a whole egg in it, it probably belongs here.</p>
-            <p><span class="blue">Tiki Cocktails: </span>You know it when you see it. It probably comes in a fun mug. </p>
-            <p><span class="blue">Punches: </span>Spirit, juice, sugar, spice water. Great for a party!</p>
-            <p><span class="blue">Orphans: </span>Creations that don't fit into a mold.</p>
-        </div>
         <!-- Add cocktail form -->
         <form id="amountsForm" class="item-center" method="post">
                 <!-- name field -->
@@ -60,7 +38,7 @@
             <!-- Build instructions field -->
             <div class="form-group mb-3">
                 <label for="build" class="form-label">Build Instructions</label>
-                <textarea autocomplete="off" class="form-control" id="build" name="build" placeholder="Build Instructions/Garnish/Notes" rows="4"></textarea>
+                <textarea autocomplete="off" class="form-control" id="build" name="build" placeholder="Build instructions/garnish/other notes. Don't worry about amounts for now, we'll cover that in the next step." rows="4"></textarea>
             </div>
             <!-- Source field -->
             <div class="form-group mb-3">
@@ -69,7 +47,7 @@
             </div>
             <!-- family field -->
             <div class="mb-3 form-group">
-                <label for="family" class="form-label">Cocktail Family</label>
+                <label for="family" class="form-label">Cocktail Family <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#familyModal"></i></label>
                 <select name="family" class="form-select" id="family">
                     <option value="" disabled selected>--Family--</option>
                     <option value="Old Fashioneds">Old Fashioneds</option>
@@ -116,6 +94,37 @@
           </div>
         </div>
     </div>
+
+    <!-- Family modal -->
+    <div class="modal fade" id="familyModal" tabindex="-1" aria-labelledby="familyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Cocktail Family</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The type of cocktail.</p>
+                <p><span class="blue">Old Fashioneds: </span>The original cocktail. Spirit, sugar, and water.</p>
+                <p><span class="blue">Sours: </span>e.g. Gimlet, Margarita. They usually contain a sour element like lemon juice balanced by sugar.</p>
+                <p><span class="blue">Vermouth Cocktails: </span>Cocktails like Americanos that use vermouth prominently.</p>
+                <p><span class="blue">Amaro Cocktails: </span>Drinks like Negronis that feature Amari.</p>
+                <p><span class="blue">Duos and Trios: </span>Spirit and Mixer combos (think Rusty Nail). Add cream to make it a trio (White Russian).</p>
+                <p><span class="blue">Champagne Cocktails: </span>For something fizzy and festive, throw in some Champagne!</p>
+                <p><span class="blue">Highballs: </span>Longer drinks with a higher percentage of non-alcoholic mixers.</p>
+                <p><span class="blue">Juleps and Smashes: </span>Spirit forward and served over crushed ice, often with mint and/or extra fruit.</p>
+                <p><span class="blue">Hot Drinks: </span>Your Irish Coffees and Hot Toddies.</p>
+                <p><span class="blue">Flips and Nogs: </span>If it has a whole egg in it, it probably belongs here.</p>
+                <p><span class="blue">Tiki Cocktails: </span>You know it when you see it. It probably comes in a fun mug. </p>
+                <p><span class="blue">Punches: </span>Spirit, juice, sugar, spice water. Great for a party!</p>
+                <p><span class="blue">Orphans: </span>Creations that don't fit into a mold.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     
 {% endblock %}
 {% block javascript %}

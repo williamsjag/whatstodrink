@@ -11,18 +11,14 @@
     </div>
     <!-- not sure/layout -->
     <div class="container">
-        <div class="item-right border border-info p-3 ms-5">
-            <p>Simplified Name: This is displayed when extra information is not necessary, like in the dropbdown displays in What's to drink? and View Cocktails</p>
-        </div>
         <form action="/addingredient" class="item-center" method="post">
             <div class="form-group mb-3">
                 <label for="ingredientname" class="form-label">Ingredient Name</label>
                 <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
             </div>
             <div class="form-group mb-3">
-                <label for="short-name" class="form-label">Simplified Name (optional) <i class="fa-solid fa-circle-info" data-bs-toggle="tooltip" data-bs-placement="top" title="This is displayed when extra information is not necessary, like in the dropbdown displays in What's to drink? and View Cocktails"></i></label>
-                <input autocomplete="off" autofocus class="form-control" id="short-name" name="short-name" placeholder="Simplified name" type="text" aria-describedby="short-help">
-                <div class="form-text mb-3" id="short-help">E.g. "Campari" instead of "Amaro - Light - Campari"</span>
+                <label for="short-name" class="form-label">Simplified Name (optional) <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i></label>
+                <input autocomplete="off" autofocus class="form-control" id="short-name" name="short-name" placeholder="Simplified name" type="text">
             </div>
             <div class="form-group mb-3">
                 <label for="type" class="form-label">Ingredient Type</label>
@@ -48,6 +44,27 @@
             </div>
         </form>
     </div>
+
+
+    <!-- Simplified name modal -->
+  <div class="modal fade" id="simpleModal" tabindex="-1" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Simplified Name</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>A shortened name that will appear when extra information is not necessary, such as in the ingredient summaries in "What's to drink?"</p>
+          <p>Here we see the Simplified Names in the header and the full Names in the description:</p>
+          <img class="center" src="/static/example1.png" alt="Example screenshot" style="width:600px;">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block javascript %}
