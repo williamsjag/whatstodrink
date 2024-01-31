@@ -42,14 +42,11 @@ moved modal in manageingredients to its own route to make it refresh every time 
 Fix location of modify button in view cocktails and switched layout to use bootstrap grid
 Update whatsmissing pages to bootstrap grid
 Convert all modals to htmx
+Made names cleaner in db and added amaro type to amari
+Made all accordions except whatstodrink? (not necessary) fit into the bootstrap grid
+added rusty nail to cocktails
 
 ## In Progress
-
-make all accordions on bootstrap grid
-    - viewuser
-    - viewcocktails (still has indent before Ingredients:)
-    - missing one (indented)
-    - missing one user (indented)
 
 Add notes field to ingredients
 
@@ -57,12 +54,13 @@ Fix layout site-wide
 
 Fix Ingredients in database
     - Pare down
-    - fix name bloat
-    - amaro type
+    - Figure out rum
 
 Validation for email in login
 
 Add grouping options for cocktail views
+
+Add Livesearch filter to manage ingredients
 
 ## Todo
 
