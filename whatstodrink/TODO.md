@@ -58,13 +58,14 @@ Made clear search link appear when a search is in the url in manageingredients
 
 ## In Progress
 
-Validation for email in login
 
 Add grouping options for cocktail views
 
 add request indicators for slow htmx requests
 
 user modifiability to all ingredients
+
+let user disable common cocktails
 
 Color/Theme/Prettify
 
