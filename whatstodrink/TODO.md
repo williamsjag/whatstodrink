@@ -53,6 +53,8 @@ Moved explainer text into modals and added i icons to launch them
 Changed margin of forms to max-width 500px
 changed margin and height of modals
 hid ingredient overview accordions on small viewports
+moved modify button in view/edit farther right
+Buy me a coffee link
 
 ## In Progress
 
@@ -63,6 +65,12 @@ Add grouping options for cocktail views
 add request indicators for slow htmx requests
 
 user modifiability to all ingredients
+
+Color/Theme/Prettify
+
+Home Page with links and blurbs
+    - fold in add ingredient
+    - fold in add cocktail
 
 
 ## Todo

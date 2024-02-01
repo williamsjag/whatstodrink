@@ -142,3 +142,9 @@ input[type=checkbox] {
  td.clickable {
   cursor: pointer;
 }
+.coffeebutton {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+
+}
