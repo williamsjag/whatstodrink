@@ -14,7 +14,12 @@
     <div class="container">
         <form class="item-center center-form form-group mb-5">
             <label for="search" class="form-label">Filter Ingredients:</label>
-            <input id="search" class="form-control" type="search" name="q" placeholder="Type to search" hx-get="/manageingredients" hx-target="#ingredientstable" hx-trigger="search, keyup changed delay:300ms"/>
+            <div class="input-group mb-5">
+                <input id="search" class="form-control" type="search" name="q" placeholder="Type to search" hx-get="/manageingredients" hx-target="#ingredientstable" hx-trigger="search, keyup changed delay:300ms" value="{{ request.args.get('q') or '' }}"/>
+                {% if request.args.get('q') %}
+                <a href="/manageingredients" type="button" class="btn btn-outline-primary">Clear Search</a>
+                {% endif %}
+            </div>
         </form>
     </div>
     
