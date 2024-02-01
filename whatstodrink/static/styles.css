@@ -48,6 +48,12 @@ input[type=checkbox] {
   transform: scale(1.5);
   margin-left: 1rem;
 }
+.bmc-btn {
+  transform: scale(.67);
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
 
 .form-group .control-label{
   text-align: left !important;
@@ -141,10 +147,4 @@ input[type=checkbox] {
  }
  td.clickable {
   cursor: pointer;
-}
-.coffeebutton {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-
 }

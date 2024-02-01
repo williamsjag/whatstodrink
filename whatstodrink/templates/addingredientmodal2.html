@@ -1,4 +1,4 @@
-<!-- This route is for when a page reload is not desired -->
+<!-- This route is for when a submission results in a page reload -->
 <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-header text-center">
@@ -6,7 +6,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <form id="addItemForm" class="center-form" name="addItemForm">
+            <form action="/addingredientmodal2" method="POST" id="addItemForm" class="center-form" name="addItemForm">
                 <div class="form-group mb-3">
                     <label for="ingredientname" class="form-label">Ingredient Name</label>
                     <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
@@ -41,7 +41,7 @@
                     <input id="stock" name="stock" type="checkbox">
                 </div>
                 <div class="mb-3 text-center">
-                    <button hx-post="/ingredientmodal" hx-swap="none" id="modalbutton" class="btn btn-primary" onclick="hideIngredientModal()" type="submit">Add Ingredient</button>
+                    <button id="modalbutton" class="btn btn-primary" type="submit">Add Ingredient</button>
                 </div>
             </form>
         </div>

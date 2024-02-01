@@ -42,7 +42,6 @@ moved modal in manageingredients to its own route to make it refresh every time 
 Fix location of modify button in view cocktails and switched layout to use bootstrap grid
 Update whatsmissing pages to bootstrap grid
 Convert all modals to htmx
---
 Made names cleaner in db and added amaro type to amari
 Made all accordions except whatstodrink? (not necessary) fit into the bootstrap grid
 added rusty nail to cocktails
@@ -55,6 +54,7 @@ changed margin and height of modals
 hid ingredient overview accordions on small viewports
 moved modify button in view/edit farther right
 Buy me a coffee link
+Made clear search link appear when a search is in the url in manageingredients
 
 ## In Progress
 
@@ -71,6 +71,9 @@ Color/Theme/Prettify
 Home Page with links and blurbs
     - fold in add ingredient
     - fold in add cocktail
+
+make cocktail pages/add notes field
+
 
 
 ## Todo

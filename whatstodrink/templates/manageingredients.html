@@ -12,15 +12,19 @@
     </div>
     <!-- Filter Bar -->
     <div class="container">
-        <form class="item-center center-form form-group mb-5">
+        <form class="item-center center-form form-group mb-3">
             <label for="search" class="form-label">Filter Ingredients:</label>
-            <div class="input-group mb-5">
+            <div class="input-group mb-3">
                 <input id="search" class="form-control" type="search" name="q" placeholder="Type to search" hx-get="/manageingredients" hx-target="#ingredientstable" hx-trigger="search, keyup changed delay:300ms" value="{{ request.args.get('q') or '' }}"/>
+                <!-- Clear search button when a search has been entered -->
                 {% if request.args.get('q') %}
                 <a href="/manageingredients" type="button" class="btn btn-outline-primary">Clear Search</a>
                 {% endif %}
             </div>
         </form>
+        <div class="text-center">
+            <button class="btn btn-primary mb-5" hx-get="/addingredientmodal2" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">Add Ingredient</button>
+        </div>
     </div>
     
 
@@ -82,6 +86,12 @@
         </div>
     </div>
 
+    <!-- Modal for add ingredient -->
+    <div class="modal fade" id="ingredientModal" tabindex="-1" aria-labelledby="ingredientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" id="modal-form"></div>
+        </div>
+    </div>
 
 {% endblock %}
 {% block javascript %}
