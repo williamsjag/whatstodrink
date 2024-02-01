@@ -739,6 +739,10 @@ def modifycocktailmodal():
 def addingredientmodal():
     return render_template("addingredientmodal.html")
 
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
 @app.route("/modify_cocktail", methods=["GET", "POST"])
 def modify_cocktail():
     cocktail = request.form.get('modifiedCocktailName')

@@ -6,14 +6,14 @@
 
 {% block main %}
     <h1 class="text-center mb-5">Manage Ingredients</h1>
-    <div class="center mb-5 border border-info p-3">
+    <div class="center explainer mb-5 p-3">
         <p>Update your inventory of the ingredients in your database. Check or uncheck to change stock, then click the update button at the bottom of the page to save your changes.</p>
         <p>Click 'View' to view and modify ingredients you've added.</p>
     </div>
     <!-- Filter Bar -->
     <div class="container">
         <form class="item-center center-form form-group mb-3">
-            <label for="search" class="form-label">Filter Ingredients:</label>
+            <label for="search" class="form-label">Filter:</label>
             <div class="input-group mb-3">
                 <input id="search" class="form-control" type="search" name="q" placeholder="Type to search" hx-get="/manageingredients" hx-target="#ingredientstable" hx-trigger="search, keyup changed delay:300ms" value="{{ request.args.get('q') or '' }}"/>
                 <!-- Clear search button when a search has been entered -->

@@ -27,7 +27,33 @@ nav .navbar-brand .blue
 {
     color: #537fbe;
 }
-
+.homeitem {
+  box-sizing: border-box;
+  border: solid;
+  border-color: #537fbe;
+  border-width: 2px;
+  margin: 30px;
+  padding: 20px;
+  width: calc(100% - 60px);
+}
+.explainer {
+  box-sizing: border-box;
+  border: solid;
+  border-color: #537fbe;
+  border-width: 2px;
+  margin: auto;
+  padding: 20px;
+  max-width: 500px;
+}
+.hometext {
+  width: calc(100% - 60px);
+  margin-left: 40;
+  text-align: center;
+}
+.homeitem a {
+  color: #537fbe;
+  text-decoration: none;
+}
 
 table {
     background-color: transparent;
@@ -48,8 +74,9 @@ input[type=checkbox] {
   transform: scale(1.5);
   margin-left: 1rem;
 }
+/* buy me a coffee button */
 .bmc-btn {
-  transform: scale(.67);
+  transform: scale(.75);
   position: absolute;
   right: 10px;
   bottom: 10px;
