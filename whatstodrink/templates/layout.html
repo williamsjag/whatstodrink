@@ -29,10 +29,23 @@
                     {% if session["user_id"] %}
                         <ul class="navbar-nav me-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/manageingredients">Manage Ingredients</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/viewcocktails">All Cocktails</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/missingone">What's Missing?</a></li>
                             <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/manageingredients">Manage Ingredients</a></li>
+                                    <li><a class="dropdown-item" href="/addingredient">Add Ingredient</a></li>
+                                    <li><a class="dropdown-item" href="/addcocktail">Add Cocktail</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">View</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/whatstodrink">What's to Drink?</a></li>
+                                    <li><a class="dropdown-item" href="/missingone">What's Missing?</a></li>
+                                    <li><a class="dropdown-item" href="/viewcocktails">All Cocktails</a></li>
+                                </ul>
+                            </li>                       
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>

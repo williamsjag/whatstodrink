@@ -69,19 +69,19 @@ let user disable common cocktails
 
 Color/Theme/Prettify
 
-Home Page with links and blurbs
-    - fold in add ingredient
-    - fold in add cocktail
-
 make cocktail pages/add notes field
 
 implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
 
-recipe share sheet that opens a url like /cocktails-userid-cocktailid.html that can be created dynamically from the url
+recipe share page that opens a url like /cocktails-userid-cocktailid.html that can be created dynamically from the url
+    -button to login to save to your cocktails
+    -once logged in replace with save to your cocktails
 
 Menu bar dropdowns: Manage-> Manage Ingreds/new cocktail/new ingred, View->Viewcocktails, whatsmissing, whatstodrink
 
 ingredient added flash message on add ingredients page
+
+make navbar active class work
 
 ## Todo 
 
