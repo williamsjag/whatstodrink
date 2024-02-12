@@ -55,6 +55,8 @@ hid ingredient overview accordions on small viewports
 moved modify button in view/edit farther right
 Buy me a coffee link
 Made clear search link appear when a search is in the url in manageingredients
+Made about page and created about link on home page
+Added dropdowns to menu bar
 
 ## In Progress
 
@@ -69,15 +71,13 @@ let user disable common cocktails
 
 Color/Theme/Prettify
 
-make cocktail pages/add notes field
+add notes field for cocktails
 
 implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
 
 recipe share page that opens a url like /cocktails-userid-cocktailid.html that can be created dynamically from the url
     -button to login to save to your cocktails
     -once logged in replace with save to your cocktails
-
-Menu bar dropdowns: Manage-> Manage Ingreds/new cocktail/new ingred, View->Viewcocktails, whatsmissing, whatstodrink
 
 ingredient added flash message on add ingredients page
 
