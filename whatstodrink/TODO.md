@@ -63,7 +63,7 @@ Add grouping options for cocktail views
 
 add request indicators for slow htmx requests
 
-user modifiability to all ingredients
+user modifiability to all ingredients (incl. hide)
 
 let user disable common cocktails
 
@@ -75,16 +75,14 @@ Home Page with links and blurbs
 
 make cocktail pages/add notes field
 
+implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
 
+recipe share sheet that opens a url like /cocktails-userid-cocktailid.html that can be created dynamically from the url
 
-## Todo
+Menu bar dropdowns: Manage-> Manage Ingreds/new cocktail/new ingred, View->Viewcocktails, whatsmissing, whatstodrink
 
-Make Query Page where you can search by user defined options
+ingredient added flash message on add ingredients page
 
-add tags option and tables: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
-
-select units imperial/metric for common cocktails
+## Todo 
 
 Port database to MySQL and look into SQLAlchemy
-make login to email and do validation
-menus feature?

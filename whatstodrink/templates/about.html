@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    About
+{% endblock %}
+
+{% block main %}
+<div class="center">
+
+    <h1>Why another cocktail app?</h1>
+
+    <p>Cocktail apps are great. Cocktail apps also suck.</p>
+
+    <p>
+        Do you want a social network to discover and share cocktail recipes? Do you want an encyclopedic overview of cocktail history? Does your daquiri recipe call for white rum or pot still lightly aged rum?
+        The answers to these questions all have a huge impact on how you want an app to work. I set out to make one that is great in the ways I care about and sucks in the way I don't.
+    </p>
+
+    <h1>So what is this one for?</h1>
+
+    <p><span class="blue"><strong>What's to Drink?</strong></span> is a recipe and ingredient management app. Use it to keep track of the recipes you care about and show you what you can make with what you have.</p>
+    <p>
+        This site is not meant for discovering new recipes, it's meant for storing ones you already like. 
+        I don't like most recipes I find on the internet, and I don't want to see them as options when I'm deciding what I want to make next. Also, since these all YOUR recipes, every ingredient that goes in them is up to you,
+        so each one can be as specific or as general as you wish for that particular recipe.
+        There is a short list of classic cocktails included to get you started, but you can disable either all of them or just the ones you don't want whenever you want.
+    </p>
+
+    <h1>So how do I use it?</h1>
+
+        <h2 class="blue" id="manage">Manage Ingredients</h2>
+
+            <p>
+                Here you can select the ingredients that you have on hand. Checked ingredients are saved as "in stock" and this is used to show you the cocktails you can make in <span class="blue">What's to Drink?</span>.
+                After you've made all the changes you need, click update on the bottom of the page to save your changes.
+                You can use the filter bar by typing into it to limit the results if you're looking for something specific, and if what you need isn't already in the list, click "<strong>Add Ingredient</strong>" to create a new one.
+                More about that <a href="#addIngredient">later</a>. Be as specific or as general as you prefer with these ingredients. If you have varying levels of specificity for different cocktails it may be a good idea
+                to have "Whiskey" and "Bonded Bourbon" as two separate ingredients and to check them off depending on your needs.
+            </p>
+            <p>
+                For ingredients that you've added, "<strong>View</strong>" will open a popup that shows more information about that ingredient. From there, "<strong>Modify Ingredient</strong>" will let you rename it or otherwise
+                change anything about it that you wish, including deleting it entirely.
+            </p>
+        
+        <h2 class="blue" id="whatstodrink">What's to Drink?</h2>
+
+            <p>
+                Here you'll see all of the cocktails in your database that you can make with the ingredients you have "in stock." This uses the information you've saved in <a href="manage">Manage Ingredients</a> to generate the list.
+                For ease of reference the recipe windows are loaded collapsed, only showing an overview of the ingredients. Click the dropdown header to reveal the recipe. These results are grouped by cocktail family by default.
+            </p>
+        
+        <h2 class="blue" id="whatsmissing">What's Missing?</h2>
+
+            <p>
+                This page shows you all the cocktails in your database that could be made with one more ingredient. You can use this page for inspiration on what bottle to pick up next, or maybe to see cocktails you actually
+                can make, you just might have one ingredient in stock that you missed. The results here are grouped by the ingredient that's missing.
+            </p>
+        
+        <h2 class="blue" id="viewcocktails">View/Edit Cocktails</h2>
+
+            <p>
+                Here you can see a list of every cocktail in your database, whether you can make it or not. When a recipe is revealed on this page, there will be a "<strong>Modify</strong>" button, which allows you to rename
+                the recipe, or even delete it entirely. "<strong>Change Recipe</strong>" will allow you to modify anything you wish about the recipe. "<strong>Remove</strong>" will delete that ingredient from the recipe completely,
+                 and "<strong>More Ingredients</strong>" will let you add another ingredient. "<strong>Submit Changes</strong>" will save all of the modifications you've made.
+            </p>
+
+        <h2 class="blue" id="addIngredient">Add Ingredient</h2>
+
+            <p>
+                This page lets you add a new ingredient to the ingredient list used throughout the site. You can also do this in <a href="#manage">Manage Ingredients</a> and <a href="#addCocktail"></a>, but if you have several 
+                ingredients to add at once, it may be easier to do here as the page reloads ready to add another when "<strong>Add Ingredient</strong>" is clicked. Use the notes field for whatever you wish, but it is especially
+                useful for saving the recipe for homemade ingredients you may need to recreate later.
+            </p>
+
+        <h2 class="blue" id="addCocktail">Add Cocktail</h2>
+
+            <p>
+                This is where you add new recipes to your database. To add an ingredient to the recipe, start typing in the Ingredient search box and ingredients in your ingredients list that match your search will appear below.
+                Click the one you want and a new ingredient search box will appear ready to add another ingredient. If what you need isn't already in your database, "<strong>Create New Ingredient</strong>" will allow you to add it
+                without leaving the page or reloading what you've already entered. Once created, it can be found in the Ingredient search box.
+            </p>
+            <p>
+                Don't use the build field for amounts, that will be done once "<strong>Add Cocktail</strong>"is clicked. That will open a popup window where you add the amounts for each ingredient already selected. 
+                If you've made a mistake and need to add another ingredient, just close the popup and add it. It will be there when you open it again. Don't forget to add the unit of measurement for each amount. 
+                This is important because the app doesn't force any particular units of measurement, it allows you to use what you prefer. This avoids
+                the need for awkward translations from 1.5 ounces to 44.36 ml. Once you're satisfied, the "<strong>Submit</strong>" button will save the recipe to your database.
+            </p>
+
+    <h1>Upcoming Features</h1>
+
+        <p>This app is still very much in development, here is a peek at what you can expect to see here soon:</p>
+        <h3>Database Technology Upgrade</h3>
+            <p>
+                This is the least sexy but the most necessary feature. This will make all of the database queries (What's to Drink?, What's Missing?, View/Edit Cocktails) function much faster, especially when multiple users are connected.
+            </p>
+        <h3>User Interface Improvements/Prettification</h3>
+            <p>
+                Changes to visual identity/color scheme, as well as accessibility improvements, mobile formatting, and quality of life improvements like indicatiors for in-progress requests, navigation
+                improvements, and confirmation messages for successful operations.
+            </p>
+        <h3>Allow modification to all ingredients</h3>
+            <p>
+                This will allow users to modify all ingredients in the list, not just ones that they've added. This will include rename as well as hide options.
+            </p>
+        <h3>Option to disable default cocktails</h3>
+            <p>
+                This will let you hide either some or all of the default cocktails included with every account.
+            </p>
+        <h3>View Recipe as Page Option</h3>
+            <p>
+                Open a recipe as a page to itself that will enable sharing via its url.
+            </p>
+        <h3>Cocktail Notes field</h3>
+            <p>
+                A notes field for each cocktail that will allow further information like ideas for improvement, substitutions, opinions, whatever else you want.
+            </p>
+        <h3>Recipe Tags</h3>
+            <p>
+                This will allow tags to be associated with recipes, which will then be a selectable grouping option for pages that list cocktails. This can be used for creating user-defined groups of cocktails,
+                maybe events, menus, subcategories, personal favorites, family member favorites, etc...
+            </p>
+</div>
+
+
+{% endblock %}
