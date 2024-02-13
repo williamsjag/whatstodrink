@@ -556,7 +556,7 @@ def addcocktail():
         if not ingredients:
             return apology("an empty glass is not a cocktail")
         rows = db.execute(
-            "SELECT name FROM cocktails WHERE name = ? AND user_id = ? UNION SELECT name FROM common_cocktails WHERE name = ?", name, session["user_id"], name
+            "SELECT name FROM cocktails WHERE name = ? AND user_id = ?", name, session["user_id"]
         )
         if rows:
             return apology("You already have a cocktail by that name", 400)
