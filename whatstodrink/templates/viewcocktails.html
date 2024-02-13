@@ -11,6 +11,7 @@
 </div>
     <!-- TODO: make query for all cocktails -->
     <!-- imported from flask: cocktails, ingredients, amounts, families-->
+    {% if defaults %}
     <div class="text-center">
         <div class="btn-group mb-4" id="buttons" role="group" aria-label="Button Group">
             <button hx-get="/viewuser" hx-target="#view" type="button" role="group" class="btn btn-outline-primary">My Cocktails</button>
@@ -87,6 +88,10 @@
             </div>
         {% endfor %}
     </div>
+    {% else %}
+        <script hx-trigger="load" hx-get="/viewuser" hx-target="#view"></script>
+        <div id="view"></div>
+    {% endif %}
 
 <!-- Modal -->
 <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">

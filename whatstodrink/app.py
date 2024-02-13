@@ -143,7 +143,7 @@ def missingone():
     ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     return render_template(
-        "missingone.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, missing_ingredients=missing_ingredients
+        "missingone.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, missing_ingredients=missing_ingredients, defaults=session["defaults"]
     )
 @app.route("/missingoneuser")
 @login_required
@@ -736,7 +736,7 @@ def viewuser():
     userfamilies = set(cocktail['family'] for cocktail in usercocktails)
 
     return render_template(
-        "viewuser.html", ingredients=ingredients, amounts=amounts, userfamilies=userfamilies, usercocktails=usercocktails
+        "viewuser.html", ingredients=ingredients, amounts=amounts, userfamilies=userfamilies, usercocktails=usercocktails, defaults=session["defaults"]
     )
 
 @app.route("/viewingredientmodal")
