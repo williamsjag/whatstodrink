@@ -57,6 +57,7 @@ Buy me a coffee link
 Made clear search link appear when a search is in the url in manageingredients
 Made about page and created about link on home page
 Added dropdowns to menu bar
+Implemented "hide common cocktails" and updated all cocktail views to account for this
 
 ## In Progress
 
@@ -66,10 +67,6 @@ Add grouping options for cocktail views
 add request indicators for slow htmx requests
 
 user modifiability to all ingredients (incl. hide)
-
-let user disable common cocktails
-    -Made switch and updated session data in flask
-    Still need to update all cocktail views to account for this
 
 Color/Theme/Prettify
 
