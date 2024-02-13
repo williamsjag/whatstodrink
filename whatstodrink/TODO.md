@@ -61,24 +61,22 @@ Implemented "hide common cocktails" and updated all cocktail views to account fo
 
 ## In Progress
 
+user modifiability to all ingredients (incl. hide)
 
-Add grouping options for cocktail views
+ingredient added flash message on add ingredients page
 
 add request indicators for slow htmx requests
-
-user modifiability to all ingredients (incl. hide)
 
 Color/Theme/Prettify
 
 add notes field for cocktails
 
 implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
+    - Add grouping options for cocktail views
 
 recipe share page that opens a url like /cocktails-userid-cocktailid.html that can be created dynamically from the url
     -button to login to save to your cocktails
     -once logged in replace with save to your cocktails
-
-ingredient added flash message on add ingredients page
 
 make navbar active class work
 
