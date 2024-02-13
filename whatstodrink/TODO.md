@@ -68,6 +68,8 @@ add request indicators for slow htmx requests
 user modifiability to all ingredients (incl. hide)
 
 let user disable common cocktails
+    -Made switch and updated session data in flask
+    Still need to update all cocktail views to account for this
 
 Color/Theme/Prettify
 

@@ -78,7 +78,7 @@ def whatstodrink():
     families = set(cocktail['family'] for cocktail in cocktails)
 
     return render_template(
-        "whatstodrink.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
+        "whatstodrink.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families, defaults=session["defaults"]
     )
 
 @app.route("/missingone")
