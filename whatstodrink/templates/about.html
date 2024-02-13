@@ -5,9 +5,12 @@
 {% endblock %}
 
 {% block main %}
-<div class="center">
+<div class="text-center mb-5">
+    <h1>About</h1>
+</div>
+<div class="center-accordion">
 
-    <h1>Why another cocktail app?</h1>
+    <h2 class="mb-4">Why another cocktail app?</h2>
 
     <p>Cocktail apps are great. Cocktail apps also suck.</p>
 
@@ -16,7 +19,7 @@
         The answers to these questions all have a huge impact on how you want an app to work. I set out to make one that is great in the ways I care about and sucks in the way I don't.
     </p>
 
-    <h1>So what is this one for?</h1>
+    <h2 class="mb-4">So what is this one for?</h3>
 
     <p><span class="blue"><strong>What's to Drink?</strong></span> is a recipe and ingredient management app. Use it to keep track of the recipes you care about and show you what you can make with what you have.</p>
     <p>
@@ -26,9 +29,9 @@
         There is a short list of classic cocktails included to get you started, but you can disable either all of them or just the ones you don't want whenever you want.
     </p>
 
-    <h1>So how do I use it?</h1>
+    <h2 class="mb-4">How do I use it?</h2>
 
-        <h2 class="blue" id="manage">Manage Ingredients</h2>
+        <h3 class="blue mb-3" id="manage">Manage Ingredients</h3>
 
             <p>
                 Here you can select the ingredients that you have on hand. Checked ingredients are saved as "in stock" and this is used to show you the cocktails you can make in <span class="blue">What's to Drink?</span>.
@@ -42,21 +45,21 @@
                 change anything about it that you wish, including deleting it entirely.
             </p>
         
-        <h2 class="blue" id="whatstodrink">What's to Drink?</h2>
+        <h3 class="blue mb-3" id="whatstodrink">What's to Drink?</h3>
 
             <p>
                 Here you'll see all of the cocktails in your database that you can make with the ingredients you have "in stock." This uses the information you've saved in <a href="manage">Manage Ingredients</a> to generate the list.
                 For ease of reference the recipe windows are loaded collapsed, only showing an overview of the ingredients. Click the dropdown header to reveal the recipe. These results are grouped by cocktail family by default.
             </p>
         
-        <h2 class="blue" id="whatsmissing">What's Missing?</h2>
+        <h3 class="blue mb-3" id="whatsmissing">What's Missing?</h3>
 
             <p>
                 This page shows you all the cocktails in your database that could be made with one more ingredient. You can use this page for inspiration on what bottle to pick up next, or maybe to see cocktails you actually
                 can make, you just might have one ingredient in stock that you missed. The results here are grouped by the ingredient that's missing.
             </p>
         
-        <h2 class="blue" id="viewcocktails">View/Edit Cocktails</h2>
+        <h3 class="blue mb-3" id="viewcocktails">View/Edit Cocktails</h3>
 
             <p>
                 Here you can see a list of every cocktail in your database, whether you can make it or not. When a recipe is revealed on this page, there will be a "<strong>Modify</strong>" button, which allows you to rename
@@ -64,7 +67,7 @@
                  and "<strong>More Ingredients</strong>" will let you add another ingredient. "<strong>Submit Changes</strong>" will save all of the modifications you've made.
             </p>
 
-        <h2 class="blue" id="addIngredient">Add Ingredient</h2>
+        <h3 class="blue mb-3" id="addIngredient">Add Ingredient</h3>
 
             <p>
                 This page lets you add a new ingredient to the ingredient list used throughout the site. You can also do this in <a href="#manage">Manage Ingredients</a> and <a href="#addCocktail"></a>, but if you have several 
@@ -72,7 +75,7 @@
                 useful for saving the recipe for homemade ingredients you may need to recreate later.
             </p>
 
-        <h2 class="blue" id="addCocktail">Add Cocktail</h2>
+        <h3 class="blue mb-3" id="addCocktail">Add Cocktail</h3>
 
             <p>
                 This is where you add new recipes to your database. To add an ingredient to the recipe, start typing in the Ingredient search box and ingredients in your ingredients list that match your search will appear below.
@@ -86,7 +89,7 @@
                 the need for awkward translations from 1.5 ounces to 44.36 ml. Once you're satisfied, the "<strong>Submit</strong>" button will save the recipe to your database.
             </p>
 
-    <h1>Upcoming Features</h1>
+    <h2 class="mb-4">Upcoming Features</h2>
 
         <p>This app is still very much in development, here is a peek at what you can expect to see here soon:</p>
         <h3>Database Technology Upgrade</h3>
