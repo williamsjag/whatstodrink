@@ -13,17 +13,23 @@
     A cocktail recipe management application build to work how you want it to.
   </p>
 </div>
+<!-- Settings Pane -->
 <div class="container text-center mt-5 mx-auto">
   <div class="row justify-content-center">
     <div class="col-sm homeitem" style="max-width:600px;">
       <h2 class="mb-3">Settings</h2>
-      <div class="list-group">
+      <form class="list-group">
         <label class="list-group-item form-switch" for="flexSwitchCheckChecked">Enable default cocktails:
-          <input class="form-check-input float-end" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked="">
+          {% if defaults %}
+            <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked hx-post="/" hx-trigger="click">
+          {% else %}
+            <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" hx-post="/" hx-trigger="click">
+          {% endif %}
         </label>
-      </div>
+      </form>
     </div>
   </div>
+  <!-- Link Boxes -->
   <div class="row justify-content-center">
     <div class="col-sm homeitem" style="max-width:600px;">
       <h2 class="blue mb-3"><a href="/about">About</a></h2>
@@ -66,10 +72,10 @@
     </div>
   </div>
 </div>
-
-  <div class="coffeebutton">
-    <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jacksonwilliams" data-color="#5F7FFF" data-emoji="🍸️"  data-font="Arial" data-text="Buy me a cocktail" data-outline-color="#000000" data-font-color="#ffffff" data-coffee-color="#FFDD00" ></script>
-  </div>
+<!-- Coffee Button (needs fixing on mobile)-->
+<div class="coffeebutton">
+  <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="jacksonwilliams" data-color="#5F7FFF" data-emoji="🍸️"  data-font="Arial" data-text="Buy me a cocktail" data-outline-color="#000000" data-font-color="#ffffff" data-coffee-color="#FFDD00" ></script>
+</div>
 {% endblock %}
 {% block javascript %}
 {% endblock %}

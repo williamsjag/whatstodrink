@@ -30,12 +30,23 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
-    return render_template(
-        "index.html"
-    )
+    if request.method == "GET":
+        return render_template(
+            "index.html", defaults=session["defaults"]
+        )
+    elif request.method == "POST":
+        cocktails = request.form.get('cocktailswitch')
+        if cocktails:
+            db.execute("UPDATE users SET default_cocktails = ? WHERE id = ?", 'on', session["user_id"])
+            session["defaults"] = 'on'
+        else:
+            db.execute("UPDATE users SET default_cocktails = ? WHERE id = ?", '', session["user_id"])
+            session["defaults"] = ''
+        print(f"{cocktails}")
+        return render_template("index.html")
 
 @app.route("/whatstodrink")
 @login_required
@@ -244,6 +255,8 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
+        # Check default cocktail setting
+        session["defaults"] = rows[0]["default_cocktails"]
 
         # make sure user has stock values for all common ingredients on login
         common_ingredients = db.execute("SELECT id FROM common_ingredients")
