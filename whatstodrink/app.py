@@ -669,7 +669,13 @@ def modify_ingredient():
         
   
 @app.route("/viewcocktails", methods=["GET", "POST"])
-def viewcocktails():
+def viewcocktails(): 
+    return render_template(
+        "viewcocktails.html", defaults=session["defaults"]
+    )
+
+@app.route("/viewallcocktails")
+def viewallcocktails():
     allcocktails = db.execute(
        "SELECT 'user' AS csource, name, id, family, build, source \
         FROM cocktails \
@@ -680,9 +686,10 @@ def viewcocktails():
     )
     ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
-    allfamilies = set(cocktail['family'] for cocktail in allcocktails) 
+    allfamilies = set(cocktail['family'] for cocktail in allcocktails)
+
     return render_template(
-        "viewcocktails.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies, defaults=session["defaults"]
+        "viewallcocktails.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies, defaults=session["defaults"]
     )
 
 @app.route("/viewcommon")
@@ -757,9 +764,10 @@ def whatstodrinkall():
     ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     families = set(cocktail['family'] for cocktail in cocktails)
-    print(f"{families}")
 
-    return render_template("whatstodrinkall.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families)
+    return render_template(
+        "whatstodrinkall.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
+        )
 
 @app.route("/modify_cocktail", methods=["GET", "POST"])
 def modify_cocktail():

@@ -9,88 +9,27 @@
 <div class="center text-center explainer p-3 mb-5">
     <p>View all cocktails in the database and edit your recipes.</p>
 </div>
-    <!-- TODO: make query for all cocktails -->
-    <!-- imported from flask: cocktails, ingredients, amounts, families-->
     {% if defaults %}
     <div class="text-center">
         <div class="btn-group mb-4" id="buttons" role="group" aria-label="Button Group">
-            <button hx-get="/viewuser" hx-target="#view" type="button" role="group" class="btn btn-outline-primary">My Cocktails</button>
-            <a href="/viewcocktails"  type="button" role="group" class="btn btn-outline-primary active">All Cocktails</a>
-            <button hx-get="/viewcommon" hx-target="#view" type="button" role="group" class="btn btn-outline-primary">Common Cocktails</button>
+            <button hx-get="/viewuser" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">My Cocktails</button>
+            <button hx-get="/viewallcocktails" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary active">All Cocktails</a>
+            <button hx-get="/viewcommon" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">Common Cocktails</button>
         </div>
     </div>
+    <script hx-trigger="load" hx-get="/viewallcocktails" hx-indicator="#spinner" hx-target="#view"></script>
     <div id="view">
-        {% for family in allfamilies %}
-            <h3 class="mb-3 center text-center"><span class="blue">{{ family }}</span></h3>
-            <div class="accordion mb-3" id="userlist">
-                {% for cocktail in allcocktails %}
-                    {% if cocktail.family == family %}
-                        <div class="accordion-item center-accordion cocktail-group">
-                            <h2 class="accordion-header" id="id_{{ loop.index0 }}">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
-                                    <span class ="left-text"><strong>{{ cocktail.name|title }}</strong></span>
-                                    <span class="right-text d-none d-sm-block">
-                                        {% set cocktail_ingredients = [] %}
-                                        {% for ingredient in ingredients %}
-                                            {% for amount in amounts %}
-                                                {% if amount.cocktail_id == cocktail.id and amount.ingredient_id == ingredient.id %}
-                                                    {% if ingredient.short_name %}
-                                                        {% set _ = cocktail_ingredients.append(ingredient.short_name|title) %}
-                                                    {% else %}
-                                                        {% set _ = cocktail_ingredients.append(ingredient.name|title) %}
-                                                    {% endif %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endfor %}
-                                        {{ cocktail_ingredients|join(', ') }}
-                                    </span>
-                                </button>
-                            </h2>
-                            <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
-                                <div class="accordion-body">
-                                    <div class="container mb-3">
-                                        <div class="row row-cols-auto mb-3">
-                                            <div class="category col-3">Ingredients: </div>
-                                            <div class="col-7">
-                                                {% for amount in amounts %}
-                                                    {% if amount.cocktail_id == cocktail.id %}
-                                                        {{ amount.amount }}
-                                                            {% for ingredient in ingredients %}
-                                                                {% if ingredient.id == amount.ingredient_id %}
-                                                                    {{ ingredient.name|capitalize }}
-                                                                {% endif %}
-                                                            {% endfor %}<br>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </div>
-                                            {% if cocktail.csource == "user" %}
-                                                <!-- button to call modal -->
-                                                <div class="col ms-auto">
-                                                    <button class="btn btn-outline-primary" type="button" hx-get="/modifycocktailmodal" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    
-                                        <div class="row row-cols-auto mb-3">
-                                            <div class="category col-3">Build: </div>
-                                            <div class="col-8">{{ cocktail.build }}</div>
-                                        </div>
-                                        <div class="row row-cols-auto mb-3">
-                                            <div class="category col-3">Source: </div>
-                                            <div class="col">{{ cocktail.source }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endfor %}
+        <div class="center-text">
+            <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
+        </div>
     </div>
     {% else %}
-        <script hx-trigger="load" hx-get="/viewuser" hx-target="#view"></script>
-        <div id="view"></div>
+        <script hx-trigger="load" hx-get="/viewuser" hx-indicator="#spinner2" hx-target="#view"></script>
+        <div id="view">
+            <div class="center-text">
+                <svg id="spinner2" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
+            </div>
+        </div>
     {% endif %}
 
 <!-- Modal -->
