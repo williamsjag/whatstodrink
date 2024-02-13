@@ -60,6 +60,15 @@ def whatstodrink():
 @login_required
 def missingone():
 
+   
+    return render_template(
+        "missingone.html", defaults=session["defaults"]
+    )
+
+@app.route("/missingoneall")
+@login_required
+def missingoneall():
+     
     cocktails = db.execute(
         "SELECT cc.id, cc.name, cc.family, cc.build, cc.source "
         "FROM common_cocktails cc "
@@ -114,12 +123,13 @@ def missingone():
         GROUP BY ci.id"\
         , session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"]
     )
-
     ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+
     return render_template(
-        "missingone.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, missing_ingredients=missing_ingredients, defaults=session["defaults"]
+        "missingoneall.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, missing_ingredients=missing_ingredients, defaults=session["defaults"]
     )
+
 @app.route("/missingoneuser")
 @login_required
 def missingoneuser():
