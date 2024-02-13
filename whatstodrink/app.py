@@ -707,7 +707,7 @@ def viewcocktails():
     amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     allfamilies = set(cocktail['family'] for cocktail in allcocktails) 
     return render_template(
-        "viewcocktails.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies
+        "viewcocktails.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies, defaults=session["defaults"]
     )
 
 @app.route("/viewcommon")
@@ -736,7 +736,7 @@ def viewuser():
     userfamilies = set(cocktail['family'] for cocktail in usercocktails)
 
     return render_template(
-        "viewuser.html", ingredients=ingredients, amounts=amounts, userfamilies=userfamilies, usercocktails=usercocktails, defaults=session["defaults"]
+        "viewuser.html", ingredients=ingredients, amounts=amounts, userfamilies=userfamilies, usercocktails=usercocktails
     )
 
 @app.route("/viewingredientmodal")
