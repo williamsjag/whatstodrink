@@ -61,6 +61,8 @@ Implemented "hide common cocktails" and updated all cocktail views to account fo
 
 ## In Progress
 
+move default views from cocktail views to external pages for use of spinners
+
 user modifiability to all ingredients (incl. hide)
 
 ingredient added flash message on add ingredients page

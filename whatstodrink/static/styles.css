@@ -175,3 +175,4 @@ input[type=checkbox] {
  td.clickable {
   cursor: pointer;
 }
+.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}
