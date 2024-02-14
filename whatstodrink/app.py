@@ -145,6 +145,7 @@ def index():
         return render_template("index.html")
 
 @app.route("/whatstodrink")
+# No Database Operations
 @login_required
 def whatstodrink():
 
@@ -153,6 +154,7 @@ def whatstodrink():
     )
 
 @app.route("/missingone")
+# No Database Operations
 @login_required
 def missingone():
 
@@ -307,6 +309,7 @@ def whatstodrinkuser():
     )
 
 @app.route("/login", methods=["GET", "POST"])
+# Migration Finished
 def login():
     """Log user in"""
 
@@ -372,6 +375,7 @@ def login():
 
 
 @app.route("/logout")
+# No Database Operations
 def logout():
     """Log user out"""
 
@@ -384,6 +388,7 @@ def logout():
 
 
 @app.route("/register", methods=["GET", "POST"])
+# Migration Finished
 def register():
     """Register user"""
 
@@ -405,13 +410,17 @@ def register():
 
         # check to see if user exists
         uname = request.form.get("username")
-        rows = db.execute("SELECT username FROM users WHERE username = ?", uname)
+        rows = db2.session.scalars(select(User.username).where(User.username == uname)).first()
+        # rows = db.execute("SELECT username FROM users WHERE username = ?", uname)
         if not rows:
             # insert into users table
             hash = generate_password_hash(
                 request.form.get("password"), method="pbkdf2", salt_length=16
             )
-            db.execute("INSERT INTO users (username, hash) VALUES(?, ?)", uname, hash)
+            newuser = User(username=uname, hash=hash, default_cocktails='on')
+            db2.session.add(newuser)
+            db2.session.commit()
+            # db.execute("INSERT INTO users (username, hash) VALUES(?, ?)", uname, hash)
             # assign default ingredients to stock
 
         else:
@@ -786,6 +795,7 @@ def modify_ingredient():
         
   
 @app.route("/viewcocktails", methods=["GET", "POST"])
+# No Database Operations
 def viewcocktails(): 
     return render_template(
         "viewcocktails.html", defaults=session["defaults"]
@@ -839,19 +849,23 @@ def viewuser():
     )
 
 @app.route("/viewingredientmodal")
+# No Database Operations
 def viewingredientmodal():
     return render_template("viewingredientmodal.html")
 
 
 @app.route("/modifycocktailmodal")
+# No Database Operations
 def modifycocktailmodal():
     return render_template("modifycocktailmodal.html")
 
 @app.route("/addingredientmodal")
+# No Database Operations
 def addingredientmodal():
     return render_template("addingredientmodal.html")
 
 @app.route("/about")
+# No Database Operations
 def about():
     return render_template("about.html")
 
