@@ -1,7 +1,7 @@
 <div class="table-group text-center mb-3">    
     {% for type in types %}
         <div class="no-break">
-            <h4>{{ type.type }}</h4>
+            <h4>{{ type }}</h4>
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -12,7 +12,7 @@
                 </thead>
                 <tbody>
                     {% for ingredient in ingredients %}
-                    {% if ingredient.type == type.type %}
+                    {% if ingredient.type == type %}
                         <tr>
                             <td class="left-text">{{ ingredient.name }}</td>
                             <td class="button-cell">

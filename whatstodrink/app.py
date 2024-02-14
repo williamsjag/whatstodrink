@@ -4,7 +4,7 @@ from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import select
+from sqlalchemy import select, union, literal_column
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 
@@ -568,13 +568,43 @@ def manageingredients():
         # if filter bar is used
         
         if q is not None:
-            types = db.execute("SELECT DISTINCT type FROM (SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock \
-                                    FROM common_ingredients ci \
-                                    LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
-                                    WHERE ci.name LIKE ?\
-                                    UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock \
-                                    FROM ingredients i \
-                                    WHERE i.user_id = ? AND i.name LIKE ?)", session["user_id"], '%'+q+'%', session["user_id"], '%'+q+'%')
+            common_query = (
+                select(CommonIngredient.type.distinct())
+                .select_from(CommonIngredient)
+                .outerjoin(CommonStock, (CommonIngredient.id == CommonStock.ingredient_id) & (CommonStock.user_id == session["user_id"]))
+                .where(CommonIngredient.name.like('%' + q + '%'))
+            )
+            user_query = (
+                select(Ingredient.type.distinct())
+                .select_from(Ingredient)
+                .where((Ingredient.user_id == session["user_id"]) & (Ingredient.name.like('%' + q + '%')))
+                )
+            query = union(common_query, user_query)
+
+            types = db2.session.scalars(query).all()
+            print(f"{types}")
+
+            # types = db.execute("SELECT DISTINCT type FROM (SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock \
+            #                         FROM common_ingredients ci \
+            #                         LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
+            #                         WHERE ci.name LIKE ?\
+            #                         UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock \
+            #                         FROM ingredients i \
+            #                         WHERE i.user_id = ? AND i.name LIKE ?)", session["user_id"], '%'+q+'%', session["user_id"], '%'+q+'%')
+            
+
+            # common_query = (
+            #     select([literal_column('common').label('source'), CommonIngredient.id, CommonIngredient.name, CommonIngredient.type])
+            #     .select_from(CommonIngredient
+            #         .outerjoin(CommonStock, (CommonIngredient.id == CommonStock.ingredient_id) & (CommonStock.user_id == session["user_id"]))
+            #         .where(CommonIngredient.name.like('%' + q + '%'))
+            #     )
+            # )
+            # user_query = (
+            #     select([literal_column('user').label('source'), Ingredient.id, Ingredient.name, Ingredient.type])
+            #     .where((Ingredient.user_id == session["user_id"]) & (Ingredient.name.like('%' + q + '%')))
+            #     )
+            # query = union(common_query, user_query)
             ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
                                     FROM common_ingredients ci \
                                     LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
