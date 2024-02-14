@@ -4,12 +4,15 @@ from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import select
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 
+
 # Configure application
 app = Flask(__name__)
+
+
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -20,6 +23,7 @@ Session(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///whatstodrink.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db2 = SQLAlchemy(app)
+
 
 class User(db2.Model):
     __tablename__ = 'users'
@@ -41,10 +45,6 @@ class Amount(db2.Model):
     user_id = db2.Column(db2.Integer, db2.ForeignKey('users.id'), primary_key=True)
     ingredient_source = db2.Column(db2.String(50), primary_key=True)
 
-    ingredient = db2.relationship('Ingredient', back_populates='amounts', foreign_keys=[ingredient_id],
-                                  primaryjoin="and_(Amount.ingredient_id == Ingredient.id, Amount.ingredient_source == 'user')")
-    common_ingredient = db2.relationship('CommonIngredient', back_populates='amounts', foreign_keys=[ingredient_id],
-                                        primaryjoin="and_(Amount.ingredient_id == CommonIngredient.id, Amount.ingredient_source == 'common')")
     
 
 class Cocktail(db2.Model):
@@ -57,17 +57,8 @@ class Cocktail(db2.Model):
     user_id = db2.Column(db2.Integer, db2.ForeignKey('users.id'), nullable=False)
     family = db2.Column(db2.String(50), default="Orphans")
     
-    @hybrid_property
-    def ingredients(self):
-        if self.amounts:
-            ingredient_source = self.amounts[0].ingredient_source
-            if ingredient_source == 'user':
-                return [amount.ingredient for amount in self.amounts if amount.ingredient_source == 'user']
-            elif ingredient_source == 'common':
-                return [amount.common_ingredient for amount in self.amounts if amount.ingredient_source == 'common']
-        return []
 
-    amounts = db2.relationship('Amount', backref='cocktails')
+
 
 class Ingredient(db2.Model):
     __tablename__ = 'ingredients'
@@ -80,7 +71,7 @@ class Ingredient(db2.Model):
     short_name = db2.Column(db2.String(50))
     notes = db2.Column(db2.String(1000))
 
-    amount = db2.relationship('Amount', back_populates='ingredients')
+    
 
 class CommonAmount(db2.Model):
     __tablename__ = 'common_amounts'
@@ -99,7 +90,6 @@ class CommonIngredient(db2.Model):
     short_name = db2.Column(db2.String(50))
     notes = db2.Column(db2.String(1000))
 
-    amount = db2.relationship('Amount', back_populates='common_ingredients')
 
 class CommonStock(db2.Model):
     __tablename__ = 'common_stock'
@@ -334,32 +324,43 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute(
-            "SELECT * FROM users WHERE username = ?", request.form.get("username")
-        )
+        uname = request.form.get("username")
+        password = request.form.get("password")
+        stmt = select(User).where(User.username == uname)
+        rows = db2.session.scalars(stmt).first()
+        # rows = db2.session.scalar(db2.select(User).where(User.username == uname))
+
+        # rows = db.execute(
+        #     "SELECT * FROM users WHERE username = ?", request.form.get("username")
+        # )
 
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(
-            rows[0]["hash"], request.form.get("password")
+        if not rows or not check_password_hash(
+            rows.hash, password
         ):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = rows.id
         # Check default cocktail setting
-        session["defaults"] = rows[0]["default_cocktails"]
+        session["defaults"] = rows.default_cocktails
 
         # make sure user has stock values for all common ingredients on login
-        common_ingredients = db.execute("SELECT id FROM common_ingredients")
+        query = select(CommonIngredient.id)
+        common_ingredients = db2.session.scalars(query).all()
+        # common_ingredients = db.execute("SELECT id FROM common_ingredients")
         # get all ids in common_ingredients
         for ingredient in common_ingredients:
-            ingredient_id = ingredient['id']
             # check if user has ingredient in common_stock
-            result = db.execute("SELECT ingredient_id FROM common_stock WHERE user_id = ? AND ingredient_id = ?", session["user_id"],  ingredient_id)
+            result = db2.session.scalars(select(CommonStock.ingredient_id).where(CommonStock.user_id == session["user_id"]).where(CommonStock.ingredient_id == ingredient)).first()
+            # result = db.execute("SELECT ingredient_id FROM common_stock WHERE user_id = ? AND ingredient_id = ?", session["user_id"],  ingredient)
 
-            # if 0, insert a default
-            if len(result) == 0:
-                db.execute("INSERT INTO common_stock (user_id, ingredient_id, stock) VALUES (?, ?, ?)", session["user_id"], ingredient_id, '')
+            # if not, insert a default
+            if not result:
+                newingredient = CommonStock(ingredient_id=ingredient, user_id = session["user_id"], stock='')
+                db2.session.add(newingredient)
+                db2.session.commit()
+                # db.execute("INSERT INTO common_stock (user_id, ingredient_id, stock) VALUES (?, ?, ?)", session["user_id"], ingredient_id, '')
 
 
         # Redirect user to home page
