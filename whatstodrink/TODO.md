@@ -58,6 +58,8 @@ Made clear search link appear when a search is in the url in manageingredients
 Made about page and created about link on home page
 Added dropdowns to menu bar
 Implemented "hide common cocktails" and updated all cocktail views to account for this
+Updated all cocktail views to load fragments of html with htmx by default instead of having it included in the page
+Added spinners to all those views
 
 ## In Progress
 
@@ -68,6 +70,8 @@ user modifiability to all ingredients (incl. hide)
 ingredient added flash message on add ingredients page
 
 add request indicators for slow htmx requests
+    - still need to do type to search in manage
+    - and type to search in add cocktail
 
 Color/Theme/Prettify
 

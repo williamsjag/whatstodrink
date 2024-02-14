@@ -1,9 +1,10 @@
 import os
 
 from cs50 import SQL
-import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 
@@ -14,6 +15,111 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+# Configure DB connection in SQLAlchemy and Python classes
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///whatstodrink.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db2 = SQLAlchemy(app)
+
+class User(db2.Model):
+    __tablename__ = 'users'
+
+    id = db2.Column(db2.Integer, primary_key=True, nullable=False, autoincrement=True)
+    username = db2.Column(db2.String(50), nullable=False, unique=True)
+    hash = db2.Column(db2.String(100), nullable=False)
+    default_cocktails = db2.Column(db2.Integer, default="on")
+
+    cocktails = db2.relationship('Cocktail', backref='users')
+    common_stock = db2.relationship('CommonStock', backref='users')
+
+class Amount(db2.Model):
+    __tablename__ = 'amounts'
+
+    cocktail_id = db2.Column(db2.Integer, db2.ForeignKey('cocktails.id'), primary_key=True)
+    amount = db2.Column(db2.String(50))
+    ingredient_id = db2.Column(db2.Integer, primary_key=True)
+    user_id = db2.Column(db2.Integer, db2.ForeignKey('users.id'), primary_key=True)
+    ingredient_source = db2.Column(db2.String(50), primary_key=True)
+
+    ingredient = db2.relationship('Ingredient', back_populates='amounts', foreign_keys=[ingredient_id],
+                                  primaryjoin="and_(Amount.ingredient_id == Ingredient.id, Amount.ingredient_source == 'user')")
+    common_ingredient = db2.relationship('CommonIngredient', back_populates='amounts', foreign_keys=[ingredient_id],
+                                        primaryjoin="and_(Amount.ingredient_id == CommonIngredient.id, Amount.ingredient_source == 'common')")
+    
+
+class Cocktail(db2.Model):
+    __tablename__ = 'cocktails'
+
+    id = db2.Column(db2.Integer, primary_key=True, nullable=False, autoincrement=True)
+    name = db2.Column(db2.String(50), nullable=False)
+    build = db2.Column(db2.String(1000))
+    source = db2.Column(db2.String(50))
+    user_id = db2.Column(db2.Integer, db2.ForeignKey('users.id'), nullable=False)
+    family = db2.Column(db2.String(50), default="Orphans")
+    
+    @hybrid_property
+    def ingredients(self):
+        if self.amounts:
+            ingredient_source = self.amounts[0].ingredient_source
+            if ingredient_source == 'user':
+                return [amount.ingredient for amount in self.amounts if amount.ingredient_source == 'user']
+            elif ingredient_source == 'common':
+                return [amount.common_ingredient for amount in self.amounts if amount.ingredient_source == 'common']
+        return []
+
+    amounts = db2.relationship('Amount', backref='cocktails')
+
+class Ingredient(db2.Model):
+    __tablename__ = 'ingredients'
+
+    id = db2.Column(db2.Integer, primary_key=True, nullable=False, autoincrement=True)
+    name = db2.Column(db2.String(50), nullable=False)
+    type = db2.Column(db2.String(50))
+    stock = db2.Column(db2.Integer)
+    user_id = db2.Column(db2.Integer)
+    short_name = db2.Column(db2.String(50))
+    notes = db2.Column(db2.String(1000))
+
+    amount = db2.relationship('Amount', back_populates='ingredients')
+
+class CommonAmount(db2.Model):
+    __tablename__ = 'common_amounts'
+
+    cocktail_id = db2.Column(db2.Integer, db2.ForeignKey('common_cocktails.id'), primary_key=True)
+    amount = db2.Column(db2.String(50))
+    ingredient_id = db2.Column(db2.Integer, db2.ForeignKey('common_ingredients.id'), primary_key=True)
+
+
+class CommonIngredient(db2.Model):
+    __tablename__ = 'common_ingredients'
+
+    id = db2.Column(db2.Integer, primary_key=True, nullable=False, autoincrement=True)
+    name = db2.Column(db2.String(50), nullable=False)
+    type = db2.Column(db2.String(50))
+    short_name = db2.Column(db2.String(50))
+    notes = db2.Column(db2.String(1000))
+
+    amount = db2.relationship('Amount', back_populates='common_ingredients')
+
+class CommonStock(db2.Model):
+    __tablename__ = 'common_stock'
+
+    ingredient_id = db2.Column(db2.Integer, db2.ForeignKey('common_ingredients.id'), primary_key=True, nullable=False)
+    user_id = db2.Column(db2.Integer, db2.ForeignKey('users.id'), primary_key=True, nullable=False)
+    stock = db2.Column(db2.Integer)
+
+class CommonCocktail(db2.Model):
+    __tablename__ = 'common_cocktails'
+
+    id = db2.Column(db2.Integer, primary_key=True, nullable=False, autoincrement=True)
+    name = db2.Column(db2.String(50), nullable=False)
+    build = db2.Column(db2.String(1000))
+    source = db2.Column(db2.String(50))
+    family = db2.Column(db2.String(50))
+
+    ingredients = db2.relationship('CommonIngredient', secondary='common_amounts')
+
+
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///cocktails.db")
