@@ -531,24 +531,26 @@ def ingredientmodal2():
 
         # Query database for ingredient
         rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :ingredientname")
-        rows = db2.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "username": session["user_id"]}).fetchall()
+        rows = db2.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "user_id": session["user_id"]}).fetchall()
 
         # Ensure username exists and password is correct
         if rows:
             return apology("ingredient already exists", 400)
         else:
             # insert new ingredient into db
-            db.execute(
-                "INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(?, ?, ?, ?, ?, ?)",
-                session["user_id"],
-                request.form.get("ingredientname"),
-                request.form.get("type"),
-                request.form.get("stock"),
-                request.form.get("short-name"),
-                request.form.get("notes")
+            new_ingredient = Ingredient(
+                user_id=session["user_id"],
+                name=request.form.get("ingredientname"),
+                type=request.form.get("type"),
+                stock=request.form.get("stock"),
+                short_name=request.form.get("short-name"),
+                notes=request.form.get("notes"),
             )
-        
-        return redirect(url_for("manageingredients"))
+            db2.session.add(new_ingredient)
+            db2.session.commit()    
+            
+    
+        return redirect("manageingredients.html")
         
       # User reached route via GET (as by clicking a link or via redirect)
      
