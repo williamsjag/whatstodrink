@@ -777,16 +777,24 @@ def amounts():
     )
 
 @app.route("/ingredientsearch")
+# Migrated
 def search():
     q = request.args.get("q")
 
     if q:
-        results = db.execute("SELECT name FROM common_ingredients\
-                             WHERE name LIKE ?\
+        resultsquery = text("SELECT name FROM common_ingredients\
+                             WHERE name LIKE :q\
                              UNION\
                              SELECT name FROM ingredients\
-                             WHERE name LIKE ? AND user_id = ?\
-                             LIMIT 10", '%'+q+'%', '%'+q+'%', session["user_id"])
+                             WHERE name LIKE :q AND user_id = :user_id\
+                             LIMIT 10")
+        results = db2.session.execute(resultsquery, {"q": '%'+q+'%', "user_id": session["user_id"]}).fetchall()
+        # results = db.execute("SELECT name FROM common_ingredients\
+                            #  WHERE name LIKE ?\
+                            #  UNION\
+                            #  SELECT name FROM ingredients\
+                            #  WHERE name LIKE ? AND user_id = ?\
+                            #  LIMIT 10", '%'+q+'%', '%'+q+'%', session["user_id"])
     else:
         results = []
 

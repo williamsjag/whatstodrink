@@ -68,6 +68,9 @@ Port database to MySQL and look into SQLAlchemy
     - login route finished
     - register finished
     - manage ingredients finished
+    - modify ingredient finished
+
+bug: manage ingreds page can't scroll after redirect after editing an ingredient
 
 
 ## Todo 
