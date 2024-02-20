@@ -516,6 +516,7 @@ def ingredientmodal():
         )
 
 @app.route("/addingredientmodal2", methods=["GET", "POST"])
+#Migration Complete
 @login_required
 def ingredientmodal2():
 
@@ -550,7 +551,7 @@ def ingredientmodal2():
             db2.session.commit()    
             
     
-        return redirect("manageingredients.html")
+        return redirect(url_for("manageingredients"))
         
       # User reached route via GET (as by clicking a link or via redirect)
      
@@ -792,6 +793,7 @@ def search():
     return render_template("ingredientsearch.html", results=results)
 
 @app.route("/modify_ingredient", methods=["GET", "POST"])
+# Migration Finished
 def modify_ingredient():
     ingredient = request.form.get('modifiedIngredientName')
     new_name = request.form.get('renameText')
@@ -799,30 +801,47 @@ def modify_ingredient():
     
     if request.method == "POST":
         if "renamebutton" in request.form:
+        # done
             if new_name:
-                check = db.execute("SELECT id FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT id FROM common_ingredients WHERE name = ?", new_name, session["user_id"], new_name)
+                checkquery = text("SELECT id FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT id FROM common_ingredients WHERE name = :name")
+                check = db2.session.execute(checkquery, {"name": new_name, "user_id": session["user_id"]}).fetchall()
+                # check = db.execute("SELECT id FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT id FROM common_ingredients WHERE name = ?", new_name, session["user_id"], new_name)
                 if check:
                     return apology("an ingredient with that name already exists")
                 else:
-                    db.execute("UPDATE ingredients SET name = ? WHERE name = ? AND user_id = ?", new_name, ingredient, session["user_id"])
+                    renamequery = text("UPDATE ingredients SET name = :name WHERE name = :old_name AND user_id = :user_id")
+                    db2.session.execute(renamequery, {"name": new_name, "old_name": ingredient, "user_id": session["user_id"]})
+                    db2.session.commit()
+                    # db.execute("UPDATE ingredients SET name = ? WHERE name = ? AND user_id = ?", new_name, ingredient, session["user_id"])
                     return redirect(url_for('manageingredients'))
             else:
                 return apology("An ingredient has not name")
             
         elif "submitbutton" in request.form:
+        # done
             newtype = request.form.get('type')
             newnotes = request.form.get('notes')
             ingredient = request.form.get('modifiedIngredientName')
-            db.execute("UPDATE ingredients SET type = ?, notes = ? WHERE name = ? AND user_id = ?", newtype, newnotes, ingredient, session["user_id"])
+            updatequery = text("UPDATE ingredients SET type = :type, notes = :notes WHERE name = :name AND user_id = :user_id")
+            db2.session.execute(updatequery,  {"type": newtype, "notes": newnotes, "name": ingredient, "user_id": session["user_id"]})
+            db2.session.commit()                  
+            # db.execute("UPDATE ingredients SET type = ?, notes = ? WHERE name = ? AND user_id = ?", newtype, newnotes, ingredient, session["user_id"])
             return redirect(url_for('manageingredients'))
 
 
         elif "deletebutton" in request.form:
-            rows = db.execute("SELECT cocktails.name FROM cocktails \
+        # done
+            rowsquery = text("SELECT cocktails.name FROM cocktails \
                               JOIN amounts ON cocktails.id = amounts.cocktail_id \
                               LEFT JOIN ingredients ON amounts.ingredient_id = ingredients.id \
-                              WHERE ingredients.name = ? \
-                              GROUP BY cocktails.name", ingredient)
+                              WHERE ingredients.name = :name \
+                              GROUP BY cocktails.name")
+            # rows = db.execute("SELECT cocktails.name FROM cocktails \
+                            #   JOIN amounts ON cocktails.id = amounts.cocktail_id \
+                            #   LEFT JOIN ingredients ON amounts.ingredient_id = ingredients.id \
+                            #   WHERE ingredients.name = ? \
+                            #   GROUP BY cocktails.name", ingredient)
+            rows = db2.session.execute(rowsquery, {"name": ingredient}).fetchall()
             if not rows:
                 return render_template(
                     "areyousure.html", ingredient=ingredient
@@ -832,17 +851,26 @@ def modify_ingredient():
                     "cannotdelete.html", rows=rows, ingredient=ingredient
                 )
         elif "modifybutton" in request.form:
+        # done
             name = request.form.get('name')
-            ingredient = db.execute("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = ? AND user_id = ?", name, session["user_id"])
-            types = db.execute("SELECT DISTINCT type FROM common_ingredients")
+            ingredientquery = text("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = :name AND user_id = :user_id")
+            ingredient = db2.session.execute(ingredientquery, {"name": name, "user_id": session["user_id"]}).fetchall()
+            # ingredient = db.execute("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = ? AND user_id = ?", name, session["user_id"])
+            typesquery = text("SELECT DISTINCT type FROM common_ingredients")
+            types = db2.session.execute(typesquery)
             if ingredient:
                 return render_template("modifyingredient.html", ingredient=ingredient, types=types)
             else:
                 return apology("Common Ingredients cannot be modified yet")
         
         elif "deleteconfirmed" in request.form:
+        # done
             ingredient_delete = request.form.get("ingredient_delete")
-            db.execute("DELETE FROM ingredients WHERE name = ? AND user_id = ?", ingredient_delete, session["user_id"])
+            deletequery = text("DELETE FROM ingredients WHERE name = :name AND user_id = :user_id")
+            db2.session.execute(deletequery, {"name": ingredient_delete, "user_id": session["user_id"]})
+            db2.session.commit()
+
+            # db.execute("DELETE FROM ingredients WHERE name = ? AND user_id = ?", ingredient_delete, session["user_id"])
             return redirect(url_for("manageingredients"))
         
         elif "cancel" in request.form:
