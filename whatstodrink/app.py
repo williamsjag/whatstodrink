@@ -4,7 +4,7 @@ from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import select, union, literal_column
+from sqlalchemy import select, union, text
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 
@@ -530,9 +530,8 @@ def ingredientmodal2():
             return apology("must select ingredient type", 400)
 
         # Query database for ingredient
-        rows = db.execute(
-            "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
-        )
+        rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :ingredientname")
+        rows = db2.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "username": session["user_id"]}).fetchall()
 
         # Ensure username exists and password is correct
         if rows:
@@ -559,6 +558,7 @@ def ingredientmodal2():
         )
 
 @app.route("/manageingredients", methods=["GET", "POST"])
+# Migration finished
 @login_required
 def manageingredients():
     
@@ -582,7 +582,7 @@ def manageingredients():
             query = union(common_query, user_query)
 
             types = db2.session.scalars(query).all()
-            print(f"{types}")
+           
 
             # types = db.execute("SELECT DISTINCT type FROM (SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock \
             #                         FROM common_ingredients ci \
@@ -596,8 +596,8 @@ def manageingredients():
             # common_query = (
             #     select([literal_column('common').label('source'), CommonIngredient.id, CommonIngredient.name, CommonIngredient.type])
             #     .select_from(CommonIngredient
-            #         .outerjoin(CommonStock, (CommonIngredient.id == CommonStock.ingredient_id) & (CommonStock.user_id == session["user_id"]))
-            #         .where(CommonIngredient.name.like('%' + q + '%'))
+        #         .outerjoin(CommonStock, (CommonIngredient.id == CommonStock.ingredient_id) & (CommonStock.user_id == session["user_id"]))
+        #         .where(CommonIngredient.name.like('%' + q + '%'))
             #     )
             # )
             # user_query = (
@@ -605,15 +605,27 @@ def manageingredients():
             #     .where((Ingredient.user_id == session["user_id"]) & (Ingredient.name.like('%' + q + '%')))
             #     )
             # query = union(common_query, user_query)
-            ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
+            ingredientsquery = text("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
                                     FROM common_ingredients ci \
-                                    LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
-                                    WHERE ci.name LIKE ?\
+                                    LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = :user_id \
+                                    WHERE ci.name LIKE :q\
                                     UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock, i.notes \
                                     FROM ingredients i \
-                                    WHERE i.user_id = ? AND i.name LIKE ?\
-                                    ORDER BY name ASC", session["user_id"], '%'+q+'%', session["user_id"], '%'+q+'%'
-                                    )
+                                    WHERE i.user_id = :user_id AND i.name LIKE :q\
+                                    ORDER BY name ASC")
+            ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"], "q": '%'+q+'%'}).fetchall()
+            
+            # ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
+            #                         FROM common_ingredients ci \
+            #                         LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
+            #                         WHERE ci.name LIKE ?\
+            #                         UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock, i.notes \
+            #                         FROM ingredients i \
+            #                         WHERE i.user_id = ? AND i.name LIKE ?\
+            #                         ORDER BY name ASC", session["user_id"], '%'+q+'%', session["user_id"], '%'+q+'%'
+            #                         )
+            
+
             if request.headers.get('HX-Trigger') == 'search':
                 return render_template("/ingredientstable.html", ingredients=ingredients, types=types)
             else:
@@ -621,14 +633,16 @@ def manageingredients():
             
         
         else:
-            types = db.execute("SELECT DISTINCT type FROM common_ingredients")
-            ingredients = db.execute("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
+            typesquery = text("SELECT DISTINCT type FROM common_ingredients")
+            types = db2.session.execute(typesquery).fetchall()
+            ingredientsquery = text("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
                                      FROM common_ingredients ci \
-                                     LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = ? \
+                                     LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = :user_id \
                                      UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock, i.notes \
                                      FROM ingredients i \
-                                     WHERE i.user_id = ? \
-                                     ORDER BY name ASC", session["user_id"], session["user_id"])
+                                     WHERE i.user_id = :user_id \
+                                     ORDER BY name ASC")
+            ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
             return render_template(
                 "manageingredients.html", ingredients=ingredients, types=types
             )
@@ -651,10 +665,21 @@ def manageingredients():
                 id_column = "ingredient_id" if ingredient_source == "common" else "id"
                 stock = 'on' if ingredient_stock == 'on' else ''
 
-                sql_query = f"UPDATE {table_name} SET stock = ? WHERE {id_column} = ? AND user_id = ?"
-            
-                # Update the stock value
-                db.execute(sql_query, stock, ingredient_id, session["user_id"])
+                print(f"{table_name}")
+                print(f"{id_column}")
+                print(f"{stock}")
+                print(f"{ingredient_id}")
+                try:
+                    with db2.session.begin():
+                        sql_query = text(f"UPDATE {table_name} SET stock = :stock WHERE {id_column} = :ingredient_id AND user_id = :user_id")
+                    
+                        # Update the stock value
+                        db2.session.execute(sql_query, {"stock": stock, "ingredient_id": ingredient_id, "user_id": session["user_id"]})
+
+                    db2.session.commit()
+                except Exception as e:
+                    db2.session.rollback()
+                    print(f"An error occured: {e}")
 
                 
         return redirect(url_for(

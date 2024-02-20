@@ -63,7 +63,14 @@ Added spinners to all those views
 
 ## In Progress
 
-move default views from cocktail views to external pages for use of spinners
+Port database to MySQL and look into SQLAlchemy
+    Leaving all old code commented out, to be cleaned up once it's clear everything works
+    - login route finished
+    - register finished
+    - manage ingredients finished
+
+
+## Todo 
 
 user modifiability to all ingredients (incl. hide)
 
@@ -85,7 +92,3 @@ recipe share page that opens a url like /cocktails-userid-cocktailid.html that c
     -once logged in replace with save to your cocktails
 
 make navbar active class work
-
-## Todo 
-
-Port database to MySQL and look into SQLAlchemy
