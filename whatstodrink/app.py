@@ -692,14 +692,20 @@ def manageingredients():
 
 
 @app.route("/addcocktail", methods=["GET", "POST"])
+# Migration finished
 @login_required
 def addcocktail():
 
     if request.method=="GET":
-        ingredients = db.execute("SELECT name, type FROM common_ingredients UNION SELECT name, type FROM ingredients WHERE user_id = ? ORDER BY name ASC", session["user_id"])
-        types = db.execute("SELECT type, COUNT(*) as type_count FROM (SELECT type FROM common_ingredients UNION SELECT DISTINCT type FROM ingredients) GROUP BY type ORDER BY type_count DESC")
+        # query not needed with no select menu for add ingredient
+        # ingredientsquery = text("SELECT name, type FROM common_ingredients UNION SELECT name, type FROM ingredients WHERE user_id = :user_id ORDER BY name ASC")
+        # ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]})
+        # ingredients = db.execute("SELECT name, type FROM common_ingredients UNION SELECT name, type FROM ingredients WHERE user_id = ? ORDER BY name ASC", session["user_id"])
+        # typesquery = text("SELECT type, COUNT(*) as type_count FROM (SELECT type FROM common_ingredients UNION SELECT DISTINCT type FROM ingredients) GROUP BY type ORDER BY type_count DESC")
+        # types = db2.session.execute(typesquery).fetchall()
+        # types = db.execute("SELECT type, COUNT(*) as type_count FROM (SELECT type FROM common_ingredients UNION SELECT DISTINCT type FROM ingredients) GROUP BY type ORDER BY type_count DESC")
         return render_template(
-            "addcocktail.html", ingredients=ingredients, types=types
+            "addcocktail.html"
         )
     
     else:
@@ -714,9 +720,11 @@ def addcocktail():
             return apology("every good cocktail has a name")
         if not ingredients:
             return apology("an empty glass is not a cocktail")
-        rows = db.execute(
-            "SELECT name FROM cocktails WHERE name = ? AND user_id = ?", name, session["user_id"]
-        )
+        rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
+        rows = db2.session.execute(rowsquery, {"name": name, "user_id": session["user_id"]}).fetchall()
+        # rows = db.execute(
+        #     "SELECT name FROM cocktails WHERE name = ? AND user_id = ?", name, session["user_id"]
+        # )
         if rows:
             return apology("You already have a cocktail by that name", 400)
 
@@ -726,6 +734,7 @@ def addcocktail():
         )
     
 @app.route("/amounts", methods=["GET", "POST"])
+# Migration Finished
 @login_required
 def amounts():
     # reached via post
@@ -736,44 +745,62 @@ def amounts():
         name = request.form.get('name')
 
          # add cocktail to db
-        db.execute(
-        "INSERT INTO cocktails (name, build, source, family, user_id) VALUES(?, ?, ?, ?, ?)",
-        name,
-        build,
-        source,
-        family,
-        session["user_id"]
-        )
+        addquery = text("INSERT INTO cocktails (name, build, source, family, user_id) VALUES(:name, :build, :source, :family, :user_id)")
+        db2.session.execute(addquery, {"name": name, "build": build, "source": source, "family": family, "user_id": session["user_id"]})
+        db2.session.commit()
+        # db.execute(
+        # "INSERT INTO cocktails (name, build, source, family, user_id) VALUES(?, ?, ?, ?, ?)",
+        # name,
+        # build,
+        # source,
+        # family,
+        # session["user_id"]
+        # )
 
         for key, value, in request.form.items():
             if key.startswith('amount_'):
                 ingredient_name = key.replace('amount_', '')
-                ingredient_source = db.execute(\
-                    "SELECT 'common' AS source, id FROM common_ingredients \
-                    WHERE name = ? \
+                sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
+                    WHERE name = :name \
                     UNION SELECT \
                     'user' AS source, id \
                     FROM ingredients \
-                    WHERE name = ? AND user_id = ?"\
-                    , ingredient_name, ingredient_name, session["user_id"])[0]['source']
+                    WHERE name = :name AND user_id = :user_id")
+                id_source = db2.session.execute(sourcequery, {"name": ingredient_name, "user_id": session["user_id"]}).fetchone()
+                # ingredient_source = db.execute(\
+                #     "SELECT 'common' AS source, id FROM common_ingredients \
+                #     WHERE name = ? \
+                #     UNION SELECT \
+                #     'user' AS source, id \
+                #     FROM ingredients \
+                #     WHERE name = ? AND user_id = ?"\
+                #     , ingredient_name, ingredient_name, session["user_id"])[0]['source']
                 amount = value
-                ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"]))[0]['id']
+                # idquery = text("SELECT 'common' AS source, id FROM common_ingredients WHERE name = :name UNION SELECT 'user' AS source, id FROM ingredients WHERE name = :name AND user_id = :user_id")
+                # ingredient_id = db2.session.execute(idquery, {"name": ingredient_name, "user_id": session["user_id"]}).fetchone()
+                # ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient_name, ingredient_name, session["user_id"]))[0]['id']
                 
                 # get cocktail id
-                cocktail_id = db.execute("SELECT id from cocktails WHERE name = ? AND user_id = ?", name, session["user_id"])[0]['id']
+                c_id_query = text("SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id")
+                cocktail_id = db2.session.execute(c_id_query, {"name": name, "user_id": session["user_id"]}).fetchone()
+                # cocktailidquery = text("SELECT id from cocktails WHERE name = :name AND user_id = ?")
+                # cocktail_id = db.execute("SELECT id from cocktails WHERE name = ? AND user_id = ?", name, session["user_id"])[0]['id']
                 #add ingredients and amounts to db
-                db.execute(
-                    "INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(?, ?, ?, ?, ?)",
-                    cocktail_id,
-                    ingredient_id,
-                    amount,
-                    ingredient_source,
-                    session["user_id"])
+                insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
+                db2.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source['id'], "amount": amount, "ingredient_source": id_source["source"], "user_id": session["user_id"]})
+                # db.execute(
+                #     "INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(?, ?, ?, ?, ?)",
+                #     cocktail_id,
+                #     ingredient_id,
+                #     amount,
+                #     ingredient_source,
+                #     session["user_id"])
+                flash('Success! Cocktail Added')
                 
 
     
     return render_template(
-        "cocktailsuccess.html"
+        "addcocktail.html"
     )
 
 @app.route("/ingredientsearch")

@@ -69,8 +69,11 @@ Port database to MySQL and look into SQLAlchemy
     - register finished
     - manage ingredients finished
     - modify ingredient finished
+    - add cocktail finished
+    - amounts finished
 
 bug: manage ingreds page can't scroll after redirect after editing an ingredient
+bug: redirect not working with errors on add cocktail when duplicate is present due to modal behavior
 
 
 ## Todo 

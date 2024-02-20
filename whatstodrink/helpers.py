@@ -1,4 +1,4 @@
-from flask import redirect, render_template, session
+from flask import redirect, url_for, render_template, session
 from functools import wraps
 
 
@@ -14,7 +14,7 @@ def apology(message, code=400):
                          ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
             s = s.replace(old, new)
         return s
-    return render_template("apology.html", top=code, bottom=escape(message)), code
+    return redirect(url_for("apology", top=code, bottom=escape(message))), code
 
 
 def login_required(f):
