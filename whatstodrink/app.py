@@ -655,7 +655,7 @@ def ingredientmodal():
             #     request.form.get("notes")
             # )
         
-            flash('Success! Ingredient Added')
+            # flash('Success! Ingredient Added')
             return "200"
         
       # User reached route via GET (as by clicking a link or via redirect)
@@ -699,9 +699,9 @@ def ingredientmodal2():
             db2.session.add(new_ingredient)
             db2.session.commit()    
             
-        flash("Success! Ingredient Added")
+        # flash("Success! Ingredient Added")
 
-        return redirect(url_for("manageingredients"))
+        return redirect(url_for("manageingredients", _reload=int(time.time())))
         
       # User reached route via GET (as by clicking a link or via redirect)
      
@@ -716,11 +716,6 @@ def ingredientmodal2():
 def manageingredients():
     
     if request.method =="GET":
-
-        # check for ingredient add sucess and flash
-        success = request.args.get("success")
-        if success:
-            flash("Success! Ingredient Added")
 
         # check for search queries 
         q = request.args.get('q')
@@ -1006,6 +1001,7 @@ def modify_ingredient():
                     db2.session.execute(renamequery, {"name": new_name, "old_name": ingredient, "user_id": session["user_id"]})
                     db2.session.commit()
                     # db.execute("UPDATE ingredients SET name = ? WHERE name = ? AND user_id = ?", new_name, ingredient, session["user_id"])
+                    # flash("Ingredient Renamed")
                     return redirect(url_for('manageingredients', _reload=int(time.time())))
             else:
                 return apology("An ingredient has not name")
@@ -1064,9 +1060,9 @@ def modify_ingredient():
             db2.session.execute(deletequery, {"name": ingredient_delete, "user_id": session["user_id"]})
             db2.session.commit()
 
-            flash('Ingredient Deleted')
+            # flash('Ingredient Deleted')
             # db.execute("DELETE FROM ingredients WHERE name = ? AND user_id = ?", ingredient_delete, session["user_id"])
-            return redirect(url_for("manageingredients"))
+            return redirect(url_for("manageingredients", _reload=int(time.time())))
         
         elif "cancel" in request.form:
             return redirect(url_for("manageingredients", _reload=int(time.time())))
@@ -1078,13 +1074,6 @@ def modify_ingredient():
 # No Database Operations
 def viewcocktails():
 
-    # check for reload paramater
-    reload_param = request.args.get('_reload')
-    if reload_param:
-        # force reload and remove param and flash passed message
-        # flash(message)
-        return redirect(url_for('viewcocktails'))
-         
     return render_template(
         "viewcocktails.html", defaults=session["defaults"]
     )
@@ -1298,7 +1287,7 @@ def modify_cocktail():
             #            WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)", cocktail_delete, session["user_id"]
             #            )
             # db.execute("DELETE FROM cocktails WHERE name = ? AND user_id = ?", cocktail_delete, session["user_id"])
-            flash('Cocktail Deleted')
+            # flash('Cocktail Deleted')
             return redirect(url_for("viewcocktails", _reload=int(time.time())))
         
         elif "cancel" in request.form:
