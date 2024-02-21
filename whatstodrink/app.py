@@ -621,47 +621,55 @@ def addingredient():
             "addingredient.html"
         )
 
-# @app.route("/ingredientmodal", methods=["GET", "POST"])
-# @login_required
-# def ingredientmodal():
+@app.route("/ingredientmodal", methods=["GET", "POST"])
+# Migration Finished
+@login_required
+def ingredientmodal():
 
-#     # reached via post
-#      if request.method == "POST":
-#         # Ensure ingredient was submitted
-#         if not request.form.get("ingredientname"):
-#             return apology("must add ingredient", 400)
+    # reached via post
+    if request.method == "POST":
+        # Ensure ingredient was submitted
+        if not request.form.get("ingredientname"):
+            return apology("must add ingredient", 400)
 
-#         # Ensure type was submitted
-#         elif not request.form.get("type"):
-#             return apology("must select ingredient type", 400)
+        # Ensure type was submitted
+        elif not request.form.get("type"):
+            return apology("must select ingredient type", 400)
 
-#         # Query database for ingredient
-#         rows = db.execute(
-#             "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
-#         )
+        # Query database for ingredient
 
-#         # Ensure username exists and password is correct
-#         if rows:
-#             return apology("ingredient already exists", 400)
-#         else:
-#             # insert new ingredient into db
-#             db.execute(
-#                 "INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(?, ?, ?, ?, ?, ?)",
-#                 session["user_id"],
-#                 request.form.get("ingredientname"),
-#                 request.form.get("type"),
-#                 request.form.get("stock"),
-#                 request.form.get("short-name"),
-#                 request.form.get("notes")
-#             )
+        rowsquery = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
+        rows = db2.session.execute(rowsquery, {"name": request.form.get("ingredientname"), "user_id": session["user_id"]}).fetchall()
+        # rows = db.execute(
+        #     "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
+        # )
+
+        # Ensure username exists and password is correct
+        if rows:
+            return apology("ingredient already exists", 400)
+        else:
+            # insert new ingredient into db
+            insertquery = text("INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(:user_id, :name, :type, :stock, :short_name, :notes)")
+            db2.session.execute(insertquery, {"user_id": session["user_id"], "name": request.form.get("ingredientname"), "type": request.form.get("type"), "stock": request.form.get("stock"), "short_name": request.form.get("short-name"), "notes": request.form.get("notes)")})
+            db2.session.commit()
+            # db.execute(
+            #     "INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(?, ?, ?, ?, ?, ?)",
+            #     session["user_id"],
+            #     request.form.get("ingredientname"),
+            #     request.form.get("type"),
+            #     request.form.get("stock"),
+            #     request.form.get("short-name"),
+            #     request.form.get("notes")
+            # )
         
-#         return '200: Sucess'
+            flash('Success! Ingredient Added')
+            return "200"
         
-#       # User reached route via GET (as by clicking a link or via redirect)
-#      else:
-#         return render_template(
-#             "addingredient.html"
-#         )
+      # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        return render_template(
+            "addingredient.html"
+        )
 
 @app.route("/addingredientmodal2", methods=["GET", "POST"])
 #Migration Complete
@@ -1232,6 +1240,7 @@ def whatstodrinkall():
         )
 
 @app.route("/modify_cocktail", methods=["GET", "POST"])
+# Migration Complete
 def modify_cocktail():
     cocktail = request.form.get('modifiedCocktailName')
     new_name = request.form.get('renameText')

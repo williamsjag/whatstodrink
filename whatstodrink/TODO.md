@@ -60,23 +60,16 @@ Added dropdowns to menu bar
 Implemented "hide common cocktails" and updated all cocktail views to account for this
 Updated all cocktail views to load fragments of html with htmx by default instead of having it included in the page
 Added spinners to all those views
+All database interactions ported to sqlalchemy to enable mysql transition
 
 ## In Progress
 
-Port database to MySQL and look into SQLAlchemy
-    Leaving all old code commented out, to be cleaned up once it's clear everything works
-    - login route finished
-    - register finished
-    - manage ingredients finished
-    - modify ingredient finished
-    - add cocktail finished
-    - amounts finished
-    - add ingredient finished
+transition to mysql
 
-bug: manage ingreds page can't scroll after redirect after editing an ingredient
+bug: manage ingreds page can't scroll after redirect after editing an ingredient- also true from link clicking but not reload
 bug: redirect not working with errors on add cocktail when duplicate is present due to modal behavior
-flash successful ingredient add and cocktail add message
-bug: added cocktail not finished with amounts can be re-added over and over
+flash successful ingredient add and cocktail add message- duplicates?
+bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
 
 ## Todo 
