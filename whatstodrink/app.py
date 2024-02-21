@@ -119,6 +119,7 @@ app.config['db'] = '/cocktails.db'
 
 
 @app.after_request
+# No database operations
 def after_request(response):
     """Ensure responses aren't cached"""
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -832,7 +833,7 @@ def amounts():
     )
 
 @app.route("/ingredientsearch")
-# Migrated
+# Migration Complete
 def search():
     q = request.args.get("q")
 
@@ -982,20 +983,35 @@ def viewcommon():
         "viewcommon.html", commoncocktails=commoncocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies
     )
     
+
+
 @app.route("/viewuser")
+# Migration Finished
 def viewuser():
+    cocktailquery = text("SELECT name, id, family, build, source \
+                        FROM cocktails \
+                        WHERE user_id = :user_id")
+   
+    usercocktails = db2.session.execute(cocktailquery, {"user_id": session["user_id"]}).fetchall()
+    print(f"{usercocktails}")
     usercocktails = db.execute(
         "SELECT name, id, family, build, source \
         FROM cocktails \
         WHERE user_id = ?", session["user_id"]
     )
-    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
-    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+    ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
+    ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    # ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
+        
+    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
+    amounts = db2.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    # amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
     userfamilies = set(cocktail['family'] for cocktail in usercocktails)
 
     return render_template(
-        "viewuser.html", ingredients=ingredients, amounts=amounts, userfamilies=userfamilies, usercocktails=usercocktails
+        "viewuser.html", ingredients=ingredients, amounts=amounts, usercocktails=usercocktails, userfamilies=userfamilies
     )
+
 
 @app.route("/viewingredientmodal")
 # No Database Operations
