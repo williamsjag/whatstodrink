@@ -63,6 +63,7 @@ Added spinners to all those views
 All database interactions ported to sqlalchemy to enable mysql transition
 Fix scroll by adding javascript to modals which gets rid of modal classes on click
 fixed flash repeating bug
+Added ingredient added flash message on add ingredients page
 
 ## In Progress
 
@@ -70,12 +71,11 @@ transition to mysql
 
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
+Want more flash messages but have to figure out how to keep modal formatting from applying on pages without reload first
 
 ## Todo 
 
 user modifiability to all ingredients (incl. hide)
-
-ingredient added flash message on add ingredients page
 
 add request indicators for slow htmx requests
     - still need to do type to search in manage
