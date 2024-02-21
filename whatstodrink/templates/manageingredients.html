@@ -108,6 +108,11 @@
             document.getElementById('notes').value = ingredientNotes;
         });
     };
+    $('#viewModal').on('hide.bs.modal', function () {
+        // Remove modal backdrop
+        $('.modal-backdrop').remove();
+    });
+   
 
     </script>
 {% endblock %}

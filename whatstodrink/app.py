@@ -1,6 +1,5 @@
 import os
 
-from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
@@ -108,14 +107,6 @@ class CommonCocktail(db2.Model):
     family = db2.Column(db2.String(50))
 
     ingredients = db2.relationship('CommonIngredient', secondary='common_amounts')
-
-
-
-# Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///cocktails.db")
-app.config['db'] = '/cocktails.db'
-# New MySQL db
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Corpse Reviver #2@localhost/whatstodrink'
 
 
 @app.after_request
@@ -707,7 +698,8 @@ def ingredientmodal2():
             db2.session.add(new_ingredient)
             db2.session.commit()    
             
-    
+        flash("Success! Ingredient Added")
+
         return redirect(url_for("manageingredients"))
         
       # User reached route via GET (as by clicking a link or via redirect)
@@ -723,6 +715,13 @@ def ingredientmodal2():
 def manageingredients():
     
     if request.method =="GET":
+
+        # check for ingredient add sucess and flash
+        success = request.args.get("success")
+        if success:
+            flash("Success! Ingredient Added")
+
+        # check for search queries 
         q = request.args.get('q')
 
         # if filter bar is used
@@ -1064,6 +1063,7 @@ def modify_ingredient():
             db2.session.execute(deletequery, {"name": ingredient_delete, "user_id": session["user_id"]})
             db2.session.commit()
 
+            flash('Ingredient Deleted')
             # db.execute("DELETE FROM ingredients WHERE name = ? AND user_id = ?", ingredient_delete, session["user_id"])
             return redirect(url_for("manageingredients"))
         

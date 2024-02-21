@@ -41,9 +41,18 @@
                     <input id="stock" name="stock" type="checkbox">
                 </div>
                 <div class="mb-3 text-center">
-                    <button id="modalbutton" class="btn btn-primary" type="submit">Add Ingredient</button>
+                    <button id="modalbutton" class="btn btn-primary" onclick="RemoveBackdrop()" type="submit">Add Ingredient</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<script>
+    function RemoveBackdrop() {
+
+    // Remove modal backdrop
+    $('.modal-backdrop').remove();
+    $('#ingredientModal').modal('hide');
+    $('body').removeClass('modal-open');
+  }
+</script>
