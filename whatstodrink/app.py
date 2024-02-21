@@ -127,6 +127,7 @@ def after_request(response):
     return response
 
 @app.route("/", methods=["GET", "POST"])
+# Migration Finished
 @login_required
 def index():
     if request.method == "GET":
@@ -136,10 +137,23 @@ def index():
     elif request.method == "POST":
         cocktails = request.form.get('cocktailswitch')
         if cocktails:
-            db.execute("UPDATE users SET default_cocktails = ? WHERE id = ?", 'on', session["user_id"])
+            # Update database defaults for next login
+            cocktailupdate = text("UPDATE users SET default_cocktails = 'on' WHERE id = :user_id")
+            db2.session.execute(cocktailupdate, {"user_id": session["user_id"]})
+            db2.session.commit()
+
+            # db.execute("UPDATE users SET default_cocktails = ? WHERE id = ?", 'on', session["user_id"])
+
+            # Update current session defaults
             session["defaults"] = 'on'
         else:
-            db.execute("UPDATE users SET default_cocktails = ? WHERE id = ?", '', session["user_id"])
+            # Update database defaults for next login
+            cocktailupdate = text("UPDATE users SET default_cocktails = '' WHERE id = :user_id")
+            db2.session.execute(cocktailupdate, {"user_id": session["user_id"]})
+            db2.session.commit()
+            # db.execute("UPDATE users SET default_cocktails = ? WHERE id = ?", '', session["user_id"])
+
+            # Update current session defaults
             session["defaults"] = ''
         print(f"{cocktails}")
         return render_template("index.html")
