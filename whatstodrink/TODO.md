@@ -61,13 +61,13 @@ Implemented "hide common cocktails" and updated all cocktail views to account fo
 Updated all cocktail views to load fragments of html with htmx by default instead of having it included in the page
 Added spinners to all those views
 All database interactions ported to sqlalchemy to enable mysql transition
+Fix scroll by adding javascript to modals which gets rid of modal classes on click
+fixed flash repeating bug
 
 ## In Progress
 
 transition to mysql
 
-bug: manage ingreds page can't scroll after redirect after editing an ingredient- also true from link clicking but not reload
-flash successful ingredient add and cocktail add message- duplicates?
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
 

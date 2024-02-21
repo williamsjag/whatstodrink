@@ -40,6 +40,10 @@
 </div>
 
 <script>
+// listen for need to reload
+if (window.location.search.includes('_reload')) {
+    window.location.href = window.location.href.split('?')[0];
+}
 // change active class on click
 var button_group = document.getElementById("buttons");
 var btns = button_group.getElementsByClassName("btn");

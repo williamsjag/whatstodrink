@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select, union, text
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
+import time
 
 
 # Configure application
@@ -1005,7 +1006,7 @@ def modify_ingredient():
                     db2.session.execute(renamequery, {"name": new_name, "old_name": ingredient, "user_id": session["user_id"]})
                     db2.session.commit()
                     # db.execute("UPDATE ingredients SET name = ? WHERE name = ? AND user_id = ?", new_name, ingredient, session["user_id"])
-                    return redirect(url_for('manageingredients'))
+                    return redirect(url_for('manageingredients', _reload=int(time.time())))
             else:
                 return apology("An ingredient has not name")
             
@@ -1018,7 +1019,7 @@ def modify_ingredient():
             db2.session.execute(updatequery,  {"type": newtype, "notes": newnotes, "name": ingredient, "user_id": session["user_id"]})
             db2.session.commit()                  
             # db.execute("UPDATE ingredients SET type = ?, notes = ? WHERE name = ? AND user_id = ?", newtype, newnotes, ingredient, session["user_id"])
-            return redirect(url_for('manageingredients'))
+            return redirect(url_for('manageingredients', _reload=int(time.time())))
 
 
         elif "deletebutton" in request.form:
@@ -1068,14 +1069,22 @@ def modify_ingredient():
             return redirect(url_for("manageingredients"))
         
         elif "cancel" in request.form:
-            return redirect(url_for("manageingredients"))
+            return redirect(url_for("manageingredients", _reload=int(time.time())))
         elif "close" in request.form:
-            return redirect(url_for("manageingredients"))
+            return redirect(url_for("manageingredients", _reload=int(time.time())))
         
   
 @app.route("/viewcocktails", methods=["GET", "POST"])
 # No Database Operations
-def viewcocktails(): 
+def viewcocktails():
+
+    # check for reload paramater
+    reload_param = request.args.get('_reload')
+    if reload_param:
+        # force reload and remove param and flash passed message
+        # flash(message)
+        return redirect(url_for('viewcocktails'))
+         
     return render_template(
         "viewcocktails.html", defaults=session["defaults"]
     )
@@ -1289,15 +1298,16 @@ def modify_cocktail():
             #            WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)", cocktail_delete, session["user_id"]
             #            )
             # db.execute("DELETE FROM cocktails WHERE name = ? AND user_id = ?", cocktail_delete, session["user_id"])
-            return redirect(url_for("viewcocktails"))
+            flash('Cocktail Deleted')
+            return redirect(url_for("viewcocktails", _reload=int(time.time())))
         
         elif "cancel" in request.form:
             # No DB Actions
-            return redirect(url_for("viewcocktails"))
+            return redirect(url_for("viewcocktails", _reload=int(time.time())))
         
         elif "close" in request.form:
             # No DB Actions
-            return redirect(url_for("viewcocktails"))
+            return redirect(url_for("viewcocktails", _reload=int(time.time())))
         
         elif "changerecipe" in request.form:
             # done
@@ -1396,7 +1406,7 @@ def modify_cocktail():
                 # db.execute("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source) \
                 #            VALUES(?, ?, ?, ?, ?)", id, ingredient_id, amount, session["user_id"], ingredient_source)
 
-            return redirect(url_for("viewcocktails"))
+            return redirect(url_for("viewcocktails", _reload=int(time.time())))
 
 
 # @app.route('/debug', methods=["POST"])
