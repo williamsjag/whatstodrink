@@ -403,24 +403,40 @@ def missingoneuser():
     )
   
 @app.route("/whatstodrinkuser")
+# Migration Complete
 @login_required
 def whatstodrinkuser():
 
-    cocktails = db.execute(
-        "SELECT c.name, c.id, c.family, c.build, c.source "
+    cocktailsquery = text("SELECT c.name, c.id, c.family, c.build, c.source "
         "FROM cocktails c "
         "JOIN amounts a ON c.id = a.cocktail_id "
         "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
         "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
-        "WHERE (a.ingredient_source = 'user' AND i.stock = 'on' AND i.user_id = ? AND c.user_id = ?) "
-        "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND cs.user_id = ? AND c.user_id = ?) "
+        "WHERE (a.ingredient_source = 'user' AND i.stock = 'on' AND i.user_id = :user_id AND c.user_id = :user_id) "
+        "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND cs.user_id = :user_id AND c.user_id = :user_id) "
         "GROUP BY c.id "
-        "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)", session["user_id"], session["user_id"], session["user_id"], session["user_id"]
-    )
+        "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)")
+    cocktails = db2.session.execute(cocktailsquery, {"user_id": session["user_id"]}).fetchall()
+    # cocktails = db.execute(
+    #     "SELECT c.name, c.id, c.family, c.build, c.source "
+    #     "FROM cocktails c "
+    #     "JOIN amounts a ON c.id = a.cocktail_id "
+    #     "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
+    #     "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
+    #     "WHERE (a.ingredient_source = 'user' AND i.stock = 'on' AND i.user_id = ? AND c.user_id = ?) "
+    #     "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND cs.user_id = ? AND c.user_id = ?) "
+    #     "GROUP BY c.id "
+    #     "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)", session["user_id"], session["user_id"], session["user_id"], session["user_id"]
+    # )
 
-    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
-    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
-    families = set(cocktail['family'] for cocktail in cocktails)
+    ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
+    ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+   
+    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
+    amounts = db2.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    # ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
+    # amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+    families = set(Cocktail.family for Cocktail in cocktails)
 
     return render_template(
         "whatstodrinkuser.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
