@@ -612,6 +612,7 @@ def addingredient():
             #     request.form.get("short-name"),
             #     request.form.get("notes")
             # )
+            flash('Success! Ingredient Added')
         return render_template(
             "addingredient.html"
         )
@@ -944,6 +945,7 @@ def amounts():
                 #add ingredients and amounts to db
                 insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
                 db2.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount": amount, "ingredient_source": id_source.source, "user_id": session["user_id"]})
+                db2.session.commit()
                 # db.execute(
                 #     "INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(?, ?, ?, ?, ?)",
                 #     cocktail_id,
