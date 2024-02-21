@@ -100,18 +100,14 @@
         document.addEventListener('htmx:afterRequest', function(evt) {
             document.getElementById('viewModalLabel').textContent = ingredientName;
             document.getElementById('ingredientType').textContent = ingredientType;
-            if (ingredientShort !== null && ingredientShort !== undefied) {
-                document.getElementById('ingredientShort').textContent = ingredientShort;
-                document.getElementById('short').value = ingredientShort;
-            }
-            if (ingredientNotes !== null && ingredientNotes !== undefied) {
-                document.getElementById('ingredientNotes').textContent = ingredientNotes;
-                document.getElementById('notes').value = ingredientNotes;
-            }
+            document.getElementById('ingredientShort').textContent = ingredientShort;
+            document.getElementById('ingredientNotes').textContent = ingredientNotes;
             document.getElementById('name').value = ingredientName;
-            document.getElementById('type').value = ingredientType;  
+            document.getElementById('type').value = ingredientType;
+            document.getElementById('short').value = ingredientShort;
+            document.getElementById('notes').value = ingredientNotes;
         });
-            
     };
+
     </script>
 {% endblock %}

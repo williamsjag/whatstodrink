@@ -432,6 +432,7 @@ def register():
 
 
 @app.route("/addingredient", methods=["GET", "POST"])
+# Migration Complete
 @login_required
 def addingredient():
 
@@ -446,24 +447,37 @@ def addingredient():
             return apology("must select ingredient type", 400)
 
         # Query database for ingredient
-        rows = db.execute(
-            "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
-        )
+        name = request.form.get("ingredientname")
+        query = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
+        rows = db2.session.execute(query, {"name": name, "user_id": session["user_id"]}).fetchall()
+        # rows = db.execute(
+        #     "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
+        # )
 
         # Ensure username exists and password is correct
         if rows:
             return apology("ingredient already exists", 400)
         else:
             # insert new ingredient into db
-            db.execute(
-                "INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(?, ?, ?, ?, ?, ?)",
-                session["user_id"],
-                request.form.get("ingredientname"),
-                request.form.get("type"),
-                request.form.get("stock"),
-                request.form.get("short-name"),
-                request.form.get("notes")
-            )
+            name = request.form.get("ingredientname")
+            type = request.form.get("type")
+            stock = request.form.get("stock")
+            short_name = request.form.get("short_name")
+            notes = request.form.get("notes")
+
+            insert = text("INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(:user_id, :name, :type, :stock, :short_name, :notes)")
+
+            db2.session.execute(insert, {"user_id": session["user_id"], "name": name, "type": type, "stock": stock, "short_name": short_name, "notes": notes})
+            db2.session.commit()
+            # db.execute(
+            #     "INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(?, ?, ?, ?, ?, ?)",
+            #     session["user_id"],
+            #     request.form.get("ingredientname"),
+            #     request.form.get("type"),
+            #     request.form.get("stock"),
+            #     request.form.get("short-name"),
+            #     request.form.get("notes")
+            # )
         return render_template(
             "addingredient.html"
         )
@@ -473,47 +487,47 @@ def addingredient():
             "addingredient.html"
         )
 
-@app.route("/ingredientmodal", methods=["GET", "POST"])
-@login_required
-def ingredientmodal():
+# @app.route("/ingredientmodal", methods=["GET", "POST"])
+# @login_required
+# def ingredientmodal():
 
-    # reached via post
-     if request.method == "POST":
-        # Ensure ingredient was submitted
-        if not request.form.get("ingredientname"):
-            return apology("must add ingredient", 400)
+#     # reached via post
+#      if request.method == "POST":
+#         # Ensure ingredient was submitted
+#         if not request.form.get("ingredientname"):
+#             return apology("must add ingredient", 400)
 
-        # Ensure type was submitted
-        elif not request.form.get("type"):
-            return apology("must select ingredient type", 400)
+#         # Ensure type was submitted
+#         elif not request.form.get("type"):
+#             return apology("must select ingredient type", 400)
 
-        # Query database for ingredient
-        rows = db.execute(
-            "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
-        )
+#         # Query database for ingredient
+#         rows = db.execute(
+#             "SELECT name FROM ingredients WHERE name = ? AND user_id = ? UNION SELECT name FROM common_ingredients WHERE name = ?", request.form.get("ingredientname"), session["user_id"], request.form.get("ingredientname")
+#         )
 
-        # Ensure username exists and password is correct
-        if rows:
-            return apology("ingredient already exists", 400)
-        else:
-            # insert new ingredient into db
-            db.execute(
-                "INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(?, ?, ?, ?, ?, ?)",
-                session["user_id"],
-                request.form.get("ingredientname"),
-                request.form.get("type"),
-                request.form.get("stock"),
-                request.form.get("short-name"),
-                request.form.get("notes")
-            )
+#         # Ensure username exists and password is correct
+#         if rows:
+#             return apology("ingredient already exists", 400)
+#         else:
+#             # insert new ingredient into db
+#             db.execute(
+#                 "INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(?, ?, ?, ?, ?, ?)",
+#                 session["user_id"],
+#                 request.form.get("ingredientname"),
+#                 request.form.get("type"),
+#                 request.form.get("stock"),
+#                 request.form.get("short-name"),
+#                 request.form.get("notes")
+#             )
         
-        return '200: Sucess'
+#         return '200: Sucess'
         
-      # User reached route via GET (as by clicking a link or via redirect)
-     else:
-        return render_template(
-            "addingredient.html"
-        )
+#       # User reached route via GET (as by clicking a link or via redirect)
+#      else:
+#         return render_template(
+#             "addingredient.html"
+#         )
 
 @app.route("/addingredientmodal2", methods=["GET", "POST"])
 #Migration Complete
@@ -890,9 +904,10 @@ def modify_ingredient():
             name = request.form.get('name')
             ingredientquery = text("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = :name AND user_id = :user_id")
             ingredient = db2.session.execute(ingredientquery, {"name": name, "user_id": session["user_id"]}).fetchall()
+            print(f"{ingredient}")
             # ingredient = db.execute("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = ? AND user_id = ?", name, session["user_id"])
             typesquery = text("SELECT DISTINCT type FROM common_ingredients")
-            types = db2.session.execute(typesquery)
+            types = db2.session.execute(typesquery).fetchall()
             if ingredient:
                 return render_template("modifyingredient.html", ingredient=ingredient, types=types)
             else:

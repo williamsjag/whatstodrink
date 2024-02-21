@@ -17,8 +17,8 @@
                 <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
             </div>
             <div class="form-group mb-3">
-                <label for="short-name" class="form-label">Simplified Name (optional) <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i></label>
-                <input autocomplete="off" autofocus class="form-control" id="short-name" name="short-name" placeholder="Simplified name" type="text">
+                <label for="short_name" class="form-label">Simplified Name (optional) <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i></label>
+                <input autocomplete="off" autofocus class="form-control" id="short_name" name="short_name" placeholder="Simplified name" type="text">
             </div>
             <div class="form-group mb-3">
                 <label for="type" class="form-label">Ingredient Type</label>
@@ -72,8 +72,5 @@
 {% endblock %}
 
 {% block javascript %}
-<script>
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-</script>
+
 {% endblock %}
