@@ -179,16 +179,16 @@ def missingone():
     )
 
 @app.route("/missingoneall")
+# Migration Finished
 @login_required
 def missingoneall():
-     
-    cocktails = db.execute(
-        "SELECT cc.id, cc.name, cc.family, cc.build, cc.source "
+
+    cocktailsquery = text("SELECT cc.id, cc.name, cc.family, cc.build, cc.source "
         "FROM common_cocktails cc "
         "JOIN common_amounts ca ON cc.id = ca.cocktail_id "
         "LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id "
         "LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id "
-        "WHERE (cs.stock != 'on' AND cs.user_id = ?) "
+        "WHERE (cs.stock != 'on' AND cs.user_id = :user_id) "
         "GROUP BY cc.id "
         "HAVING COUNT(*) = 1 "
         "UNION "
@@ -197,19 +197,39 @@ def missingoneall():
         "JOIN amounts a ON c.id = a.cocktail_id "
         "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
         "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
-        "WHERE (a.ingredient_source = 'user' AND i.stock != 'on' AND i.user_id = ?) "
-        "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = ?) "
+        "WHERE (a.ingredient_source = 'user' AND i.stock != 'on' AND i.user_id = :user_id) "
+        "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = :user_id) "
         "GROUP BY c.id "
-        "HAVING COUNT(*) = 1", session["user_id"], session["user_id"], session["user_id"]
-    )
-    missing_ingredients = db.execute(
-        "WITH sad_cocktails AS (\
+        "HAVING COUNT(*) = 1") 
+    cocktails = db2.session.execute(cocktailsquery, {"user_id": session["user_id"]}).fetchall()
+    # cocktails = db.execute(
+    #     "SELECT cc.id, cc.name, cc.family, cc.build, cc.source "
+    #     "FROM common_cocktails cc "
+    #     "JOIN common_amounts ca ON cc.id = ca.cocktail_id "
+    #     "LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id "
+    #     "LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id "
+    #     "WHERE (cs.stock != 'on' AND cs.user_id = ?) "
+    #     "GROUP BY cc.id "
+    #     "HAVING COUNT(*) = 1 "
+    #     "UNION "
+    #     "SELECT c.id, c.name, c.family, c.build, c.source "
+    #     "FROM cocktails c "
+    #     "JOIN amounts a ON c.id = a.cocktail_id "
+    #     "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
+    #     "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
+    #     "WHERE (a.ingredient_source = 'user' AND i.stock != 'on' AND i.user_id = ?) "
+    #     "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = ?) "
+    #     "GROUP BY c.id "
+    #     "HAVING COUNT(*) = 1", session["user_id"], session["user_id"], session["user_id"]
+    # )
+
+    missingquery = text("WITH sad_cocktails AS (\
             SELECT cc.id "
             "FROM common_cocktails cc "
             "JOIN common_amounts ca ON cc.id = ca.cocktail_id "
             "LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id "
             "LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id "
-            "WHERE (cs.stock != 'on' AND cs.user_id = ?) "
+            "WHERE (cs.stock != 'on' AND cs.user_id = :user_id) "
             "GROUP BY cc.id "
             "HAVING COUNT(*) = 1 "
             "UNION "
@@ -218,13 +238,13 @@ def missingoneall():
             "JOIN amounts a ON c.id = a.cocktail_id "
             "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
             "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
-            "WHERE (a.ingredient_source = 'user' AND i.stock != 'on' AND i.user_id = ? AND c.user_id = ?) "
-            "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = ? AND c.user_id = ?) "
+            "WHERE (a.ingredient_source = 'user' AND i.stock != 'on' AND i.user_id = :user_id AND c.user_id = :user_id) "
+            "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = :user_id AND c.user_id = :user_id) "
             "GROUP BY c.id "
             "HAVING COUNT(*) = 1 \
         ), \
         sad_amounts AS (\
-            SELECT ingredient_id FROM amounts WHERE (cocktail_id IN sad_cocktails AND user_id = ?)\
+            SELECT ingredient_id FROM amounts WHERE (cocktail_id IN sad_cocktails AND user_id = :user_id)\
             UNION\
             SELECT ingredient_id FROM common_amounts WHERE cocktail_id IN sad_cocktails\
         )\
@@ -232,12 +252,50 @@ def missingoneall():
         UNION \
         SELECT ci.id, ci.name FROM common_ingredients ci \
         JOIN common_stock cs ON ci.id = cs.ingredient_id \
-        WHERE (cs.stock != 'on' AND cs.user_id = ? AND ci.id IN sad_amounts) \
-        GROUP BY ci.id"\
-        , session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"]
-    )
-    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
-    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+        WHERE (cs.stock != 'on' AND cs.user_id = :user_id AND ci.id IN sad_amounts) \
+        GROUP BY ci.id")
+    missing_ingredients = db2.session.execute(missingquery, {"user_id": session["user_id"]}).fetchall()
+    # missing_ingredients = db.execute(
+    #     "WITH sad_cocktails AS (\
+    #         SELECT cc.id "
+    #         "FROM common_cocktails cc "
+    #         "JOIN common_amounts ca ON cc.id = ca.cocktail_id "
+    #         "LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id "
+    #         "LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id "
+    #         "WHERE (cs.stock != 'on' AND cs.user_id = ?) "
+    #         "GROUP BY cc.id "
+    #         "HAVING COUNT(*) = 1 "
+    #         "UNION "
+    #         "SELECT c.id "
+    #         "FROM cocktails c "
+    #         "JOIN amounts a ON c.id = a.cocktail_id "
+    #         "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
+    #         "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
+    #         "WHERE (a.ingredient_source = 'user' AND i.stock != 'on' AND i.user_id = ? AND c.user_id = ?) "
+    #         "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = ? AND c.user_id = ?) "
+    #         "GROUP BY c.id "
+    #         "HAVING COUNT(*) = 1 \
+    #     ), \
+    #     sad_amounts AS (\
+    #         SELECT ingredient_id FROM amounts WHERE (cocktail_id IN sad_cocktails AND user_id = ?)\
+    #         UNION\
+    #         SELECT ingredient_id FROM common_amounts WHERE cocktail_id IN sad_cocktails\
+    #     )\
+    #     SELECT id, name FROM ingredients WHERE (id IN sad_amounts AND stock != 'on') \
+    #     UNION \
+    #     SELECT ci.id, ci.name FROM common_ingredients ci \
+    #     JOIN common_stock cs ON ci.id = cs.ingredient_id \
+    #     WHERE (cs.stock != 'on' AND cs.user_id = ? AND ci.id IN sad_amounts) \
+    #     GROUP BY ci.id"\
+    #     , session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"], session["user_id"]
+    # )
+    ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
+    ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+   
+    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
+    amounts = db2.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    # ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
+    # amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
 
     return render_template(
         "missingoneall.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, missing_ingredients=missing_ingredients, defaults=session["defaults"]
