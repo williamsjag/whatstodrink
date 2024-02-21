@@ -76,6 +76,8 @@ Port database to MySQL and look into SQLAlchemy
 bug: manage ingreds page can't scroll after redirect after editing an ingredient
 bug: redirect not working with errors on add cocktail when duplicate is present due to modal behavior
 flash successful ingredient add and cocktail add message
+bug: added cocktail not finished with amounts can be re-added over and over
+bug: more ingredients doesn't work with zero ingredients in change recipe
 
 ## Todo 
 

@@ -930,12 +930,12 @@ def amounts():
                 
                 # get cocktail id
                 c_id_query = text("SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id")
-                cocktail_id = db2.session.execute(c_id_query, {"name": name, "user_id": session["user_id"]}).fetchone()
+                cocktail_id = db2.session.scalar(c_id_query, {"name": name, "user_id": session["user_id"]})
                 # cocktailidquery = text("SELECT id from cocktails WHERE name = :name AND user_id = ?")
                 # cocktail_id = db.execute("SELECT id from cocktails WHERE name = ? AND user_id = ?", name, session["user_id"])[0]['id']
                 #add ingredients and amounts to db
                 insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
-                db2.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source['id'], "amount": amount, "ingredient_source": id_source["source"], "user_id": session["user_id"]})
+                db2.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount": amount, "ingredient_source": id_source.source, "user_id": session["user_id"]})
                 # db.execute(
                 #     "INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(?, ?, ?, ?, ?)",
                 #     cocktail_id,
@@ -947,9 +947,9 @@ def amounts():
                 
 
     
-    return render_template(
-        "addcocktail.html"
-    )
+    return redirect(url_for(
+        "addcocktail"
+    ))
 
 @app.route("/ingredientsearch")
 # Migration Complete
@@ -1239,57 +1239,102 @@ def modify_cocktail():
     
     if request.method == "POST":
         if "renamebutton" in request.form:
+            # Done
             if new_name:
-                db.execute("UPDATE cocktails SET name = ? WHERE name = ? AND user_id = ?", new_name, cocktail, session["user_id"])
-                return redirect(url_for('viewcocktails'))
+                rowsquery = text("SELECT name FROM cocktails WHERE name = :new_name AND user_id = :user_id")
+                rows = db2.session.execute(rowsquery, {"new_name": new_name, "user_id": session["user_id"]}).fetchall()
+                
+                if rows:
+                    return apology("You already have a cocktail by that name", 400)
+                else:
+                    update = text("UPDATE cocktails SET name = :new_name WHERE name = :cocktail AND user_id = :user_id")
+                    db2.session.execute(update, {"new_name": new_name, "cocktail": cocktail, "user_id": session["user_id"]})
+                    db2.session.commit()
+                    return redirect(url_for('viewcocktails'))
             else:
                 return apology("A cocktail has not name")
 
         elif "deletebutton" in request.form:
+            # No DB actions
             return render_template(
                 "areyousurecocktail.html", cocktail=cocktail
             )
 
         elif "deleteconfirmed" in request.form:
+            # Done
             cocktail_delete = request.form.get("cocktail_delete")
-            db.execute("WITH CocktailToDelete AS \
-                       (SELECT id FROM cocktails WHERE name = ? AND user_id = ? LIMIT 1) \
+            amountsdeletequery = text("WITH CocktailToDelete AS \
+                       (SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id LIMIT 1) \
                        DELETE FROM amounts \
-                       WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)", cocktail_delete, session["user_id"]
-                       )
-            db.execute("DELETE FROM cocktails WHERE name = ? AND user_id = ?", cocktail_delete, session["user_id"])
+                       WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)")
+            db2.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": session["user_id"]})
+            cocktaildeletequery = text("DELETE FROM cocktails WHERE name = :name AND user_id = :user_id")
+            db2.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": session["user_id"]})
+            db2.session.commit()
+            
+            # db.execute("WITH CocktailToDelete AS \
+            #            (SELECT id FROM cocktails WHERE name = ? AND user_id = ? LIMIT 1) \
+            #            DELETE FROM amounts \
+            #            WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)", cocktail_delete, session["user_id"]
+            #            )
+            # db.execute("DELETE FROM cocktails WHERE name = ? AND user_id = ?", cocktail_delete, session["user_id"])
             return redirect(url_for("viewcocktails"))
         
         elif "cancel" in request.form:
+            # No DB Actions
             return redirect(url_for("viewcocktails"))
         
         elif "close" in request.form:
+            # No DB Actions
             return redirect(url_for("viewcocktails"))
         
         elif "changerecipe" in request.form:
-            recipe = db.execute("SELECT id, name, build, source, family FROM cocktails WHERE name = ? AND user_id = ?", cocktail, session["user_id"])
-            amounts = db.execute("SELECT ingredient_id, amount, ingredient_source FROM amounts WHERE cocktail_id = ?", recipe[0]['id'])
-            ingredients = db.execute("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = ?", session["user_id"])
-            families = db.execute("SELECT family FROM common_cocktails GROUP BY family")
-            types = db.execute("SELECT type FROM common_ingredients GROUP BY type")
+            # done
+            recipequery = text("SELECT id, name, build, source, family FROM cocktails WHERE name = :name AND user_id = :user_id")
+            recipe = db2.session.execute(recipequery, {"name": cocktail, "user_id": session["user_id"]}).fetchone()
+            # recipe = db.execute("SELECT id, name, build, source, family FROM cocktails WHERE name = ? AND user_id = ?", cocktail, session["user_id"])
+
+            amountsquery = text("SELECT ingredient_id, amount, ingredient_source FROM amounts WHERE cocktail_id = :cocktail_id")
+            amounts = db2.session.execute(amountsquery, {"cocktail_id": recipe.id}).fetchall()
+            # amounts = db.execute("SELECT ingredient_id, amount, ingredient_source FROM amounts WHERE cocktail_id = ?", recipe[0]['id'])
+
+            ingredientsquery = text("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = :user_id")
+            ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+            # ingredients = db.execute("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = ?", session["user_id"])
+
+            # familiesquery = text()
+            families = db2.session.scalars(select(CommonCocktail.family.distinct())).fetchall()
+            # families = db.execute("SELECT family FROM common_cocktails GROUP BY family")
+            
+            types = db2.session.scalars(select(CommonIngredient.type.distinct())).fetchall()
+            print(f"{types}")
+            # types = db.execute("SELECT type FROM common_ingredients GROUP BY type")
 
             return render_template(
                 "changerecipe.html", cocktail=cocktail, recipe=recipe, amounts=amounts, ingredients=ingredients, families=families, types=types
             )
         
         elif "submit-changes" in request.form:
+            # done
             id = request.form.get('id')
             build = request.form.get('build')
             source = request.form.get('source')
             family = request.form.get('family')
 
             # update cocktail in db
-            db.execute("UPDATE cocktails \
-                       SET build = ?, \
-                       source = ?, \
-                       family = ? \
-                       WHERE (id = ? AND user_id = ?)"\
-                       , build, source, family, id, session["user_id"])
+            updatequery = text("UPDATE cocktails \
+                       SET build = :build, \
+                       source = :source, \
+                       family = :family \
+                       WHERE (id = :id AND user_id = :user_id)")
+            db2.session.execute(updatequery, {"build": build, "source": source, "family": family, "id": id, "user_id": session["user_id"]})
+            db2.session.commit()
+            # db.execute("UPDATE cocktails \
+            #            SET build = ?, \
+            #            source = ?, \
+            #            family = ? \
+            #            WHERE (id = ? AND user_id = ?)"\
+            #            , build, source, family, id, session["user_id"])
 
             # get number of rows
             amounts = request.form.getlist('amount[]')
@@ -1301,27 +1346,44 @@ def modify_cocktail():
                     return apology("amounts cannot be empty")
 
             # clear amounts for cocktail
-            db.execute("DELETE FROM amounts WHERE cocktail_id = ? AND user_id = ?", id, session["user_id"])
+            clearamounts = text("DELETE FROM amounts WHERE cocktail_id = :cocktail_id AND user_id = :user_id")
+            db2.session.execute(clearamounts, {"cocktail_id": id, "user_id": session["user_id"]})
+            db2.session.commit()
+            # db.execute("DELETE FROM amounts WHERE cocktail_id = ? AND user_id = ?", id, session["user_id"])
+
             # for each table row...
             for i in range(len(amounts)):
                  # get values for amounts and ingredients
                 amount = amounts[i]
                 ingredient = ingredients[i]
                 # get ingredient source
-                ingredient_source = db.execute(\
-                    "SELECT 'common' AS source, id FROM common_ingredients \
-                    WHERE name = ? \
+                id_sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
+                    WHERE name = :name \
                     UNION SELECT \
                     'user' AS source, id \
                     FROM ingredients \
-                    WHERE name = ? AND user_id = ?"\
-                    , ingredient, ingredient, session["user_id"])[0]['source']
-                # get ingredient id    
-                ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient, ingredient, session["user_id"]))[0]['id']
+                    WHERE name = :name AND user_id = :user_id")
+                id_source = db2.session.execute(id_sourcequery, {"name": ingredient, "user_id": session["user_id"]}).fetchone()
+                # ingredient_source = db.execute(\
+                #     "SELECT 'common' AS source, id FROM common_ingredients \
+                #     WHERE name = ? \
+                #     UNION SELECT \
+                #     'user' AS source, id \
+                #     FROM ingredients \
+                #     WHERE name = ? AND user_id = ?"\
+                #     , ingredient, ingredient, session["user_id"])[0]['source']
+                # get ingredient id
+                ingredient_source = id_source.source
+                ingredient_id = id_source.id   
+                # ingredient_id = (db.execute("SELECT 'common' AS source, id FROM common_ingredients WHERE name = ? UNION SELECT 'user' AS source, id FROM ingredients WHERE name = ? AND user_id = ?", ingredient, ingredient, session["user_id"]))[0]['id']
 
                 # write into database
-                db.execute("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source) \
-                           VALUES(?, ?, ?, ?, ?)", id, ingredient_id, amount, session["user_id"], ingredient_source)
+                insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source) \
+                           VALUES(:cocktail_id, :ingredient_id, :amount, :user_id, :ingredient_source)")
+                db2.session.execute(insertquery, {"cocktail_id": id, "ingredient_id": ingredient_id, "amount": amount, "user_id": session["user_id"], "ingredient_source": ingredient_source})
+                db2.session.commit()
+                # db.execute("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source) \
+                #            VALUES(?, ?, ?, ?, ?)", id, ingredient_id, amount, session["user_id"], ingredient_source)
 
             return redirect(url_for("viewcocktails"))
 

@@ -18,9 +18,9 @@
                         <td><div id="selectmenu"><select name="ingredient[]" class="form-select">
                                 <option value="disabled" disabled>--Ingredient--</option>
                                 {% for type in types %}
-                                <optgroup label="{{ type.type }}">
+                                <optgroup label="{{ type }}">
                                     {% for ingredient in ingredients %}
-                                        {% if ingredient.type == type.type %}
+                                        {% if ingredient.type == type %}
                                             {% if ingredient.id == amount.ingredient_id %}
                                                 <option value="{{ ingredient.name }}" selected>{{ ingredient.name|title }}</option>
                                             {% else %}
@@ -48,18 +48,17 @@
    
     <div class="form-group mb-3">
         <label for="build" class="form-label">Build Instructions</label>
-        <textarea autocomplete="off" class="form-control" id="build" name="build" rows="4">{{ recipe[0]['build'] }}</textarea>
+        <textarea autocomplete="off" class="form-control" id="build" name="build" rows="4">{{ recipe.build }}</textarea>
     </div>
     <div class="form-group mb-3">
         <label for="source" class="form-label">Source</label>
-        <input autocomplete="off" class="form-control" id="source" name="source" value="{{ recipe[0]['source'] }}" type="text">
+        <input autocomplete="off" class="form-control" id="source" name="source" value="{{ recipe.source }}" type="text">
     </div>
     <div class="mb-3 form-group">
         <label for="family" class="form-label">Cocktail Family</label>
         <select name="family" class="form-select ingredient_select" id="family">
-            {% for familydict in families %}
-                {% set family = familydict['family'] %}
-                {% if family == recipe[0]['family'] %}
+            {% for family in families %}
+                {% if family == recipe.family %}
                     <option value="{{ family }}" selected>{{ family }}</option>
                 {% else %}
                     <option value="{{ family }}">{{ family }}</option>
@@ -68,7 +67,7 @@
             
         </select>
     </div>
-    <input type="hidden" id="id" name="id" value="{{ recipe[0]['id'] }}">
+    <input type="hidden" id="id" name="id" value="{{ recipe.id }}">
     <div class="mb-3 text-center">
         <button name="submit-changes" class="btn btn-primary" type="submit">Submit Changes</button>
     </div>
