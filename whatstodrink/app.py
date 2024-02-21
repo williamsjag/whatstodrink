@@ -952,32 +952,52 @@ def viewcocktails():
     )
 
 @app.route("/viewallcocktails")
+# Migration finished
 def viewallcocktails():
-    allcocktails = db.execute(
-       "SELECT 'user' AS csource, name, id, family, build, source \
+
+    allquery = text("SELECT 'user' AS csource, name, id, family, build, source \
         FROM cocktails \
-        WHERE user_id = ? \
+        WHERE user_id = :user_id \
         UNION \
         SELECT 'common' AS csource, name, id, family, build, source \
-        FROM common_cocktails", session["user_id"]
-    )
-    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
-    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
-    allfamilies = set(cocktail['family'] for cocktail in allcocktails)
+        FROM common_cocktails")
+    allcocktails = db2.session.execute(allquery, {"user_id": session["user_id"]}).fetchall()
+    # allcocktails = db.execute(
+    #    "SELECT 'user' AS csource, name, id, family, build, source \
+    #     FROM cocktails \
+    #     WHERE user_id = ? \
+    #     UNION \
+    #     SELECT 'common' AS csource, name, id, family, build, source \
+    #     FROM common_cocktails", session["user_id"]
+    # )
+    ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
+    ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    # ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
+    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
+    amounts = db2.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    # amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+    allfamilies = set(Cocktail.family for Cocktail in allcocktails)
 
     return render_template(
         "viewallcocktails.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies, defaults=session["defaults"]
     )
 
 @app.route("/viewcommon")
+# Migration Finished
 def viewcommon():
-    commoncocktails = db.execute(
+    commoncocktailsquery = text(
         "SELECT name, id, family, build, source "
         "FROM common_cocktails "
     )
-    ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
-    amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
-    allfamilies = set(cocktail['family'] for cocktail in commoncocktails)
+    commoncocktails = db2.session.execute(commoncocktailsquery).fetchall()
+
+    ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
+    ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    # ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
+    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
+    amounts = db2.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    # amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
+    allfamilies = set(Cocktail.family for Cocktail in commoncocktails)
     
     return render_template(
         "viewcommon.html", commoncocktails=commoncocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies
@@ -994,11 +1014,11 @@ def viewuser():
    
     usercocktails = db2.session.execute(cocktailquery, {"user_id": session["user_id"]}).fetchall()
     print(f"{usercocktails}")
-    usercocktails = db.execute(
-        "SELECT name, id, family, build, source \
-        FROM cocktails \
-        WHERE user_id = ?", session["user_id"]
-    )
+    # usercocktails = db.execute(
+    #     "SELECT name, id, family, build, source \
+    #     FROM cocktails \
+    #     WHERE user_id = ?", session["user_id"]
+    # )
     ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
     ingredients = db2.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
     # ingredients = db.execute("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = ?", session["user_id"])
@@ -1006,7 +1026,7 @@ def viewuser():
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
     amounts = db2.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
     # amounts = db.execute("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = ?", session["user_id"])
-    userfamilies = set(cocktail['family'] for cocktail in usercocktails)
+    userfamilies = set(Cocktail.family for Cocktail in usercocktails)
 
     return render_template(
         "viewuser.html", ingredients=ingredients, amounts=amounts, usercocktails=usercocktails, userfamilies=userfamilies
