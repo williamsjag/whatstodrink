@@ -33,9 +33,6 @@ class User(db.Model):
     hash = db.Column(db.String(100), nullable=False)
     default_cocktails = db.Column(db.Integer, default="on")
 
-    cocktails = db.relationship('Cocktail', backref='users')
-    common_stock = db.relationship('CommonStock', backref='users')
-
 class Amount(db.Model):
     __tablename__ = 'amounts'
 
@@ -54,6 +51,7 @@ class Cocktail(db.Model):
     source = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     family = db.Column(db.String(50), default="Orphans")
+    notes = db.Column(db.String(1000))
     
 class Ingredient(db.Model):
     __tablename__ = 'ingredients'
@@ -98,7 +96,18 @@ class CommonCocktail(db.Model):
     source = db.Column(db.String(50))
     family = db.Column(db.String(50))
 
-    ingredients = db.relationship('CommonIngredient', secondary='common_amounts')
+class Tags(db.Model):
+    __tablename__ = 'tags'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    tag = db.Column(db.String(50), nullable=False)
+
+class TagMapping(db.Model):
+    __tablename__ = 'tag_mapping'
+
+    tag_id = db.Column(db.Integer, primary_key=True, nullable=False, db.ForeignKey('tags.id'))
+    cocktail_id = db.Column(db.Integer, primary_key = True, nullable=False, db.ForeignKey('cocktails.id'))
 
 
 
@@ -849,6 +858,7 @@ def viewallcocktails():
         UNION \
         SELECT 'common' AS csource, name, id, family, build, source \
         FROM common_cocktails")
+
     allcocktails = db.session.execute(allquery, {"user_id": session["user_id"]}).fetchall()
     
     ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
