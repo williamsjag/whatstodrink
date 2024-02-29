@@ -7,12 +7,10 @@ from sqlalchemy import select, union, text
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 import time
-
+import sshtunnel
 
 # Configure application
 app = Flask(__name__)
-
-
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -20,10 +18,30 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure DB connection in SQLAlchemy and Python classes
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///whatstodrink.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///whatstodrink.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# db = SQLAlchemy(app)
 
+# Configure DB connection in SQLAlchemy for MySQL
+
+if __name__ == '__main__':
+    
+    tunnel = sshtunnel.SSHTunnelForwarder(
+        ('ssh.pythonanywhere.com'), ssh_username='williamsjag', ssh_password='mta7rfg@bfn1JYR5veg',
+        remote_bind_address=('williamsjag.mysql.pythonanywhere-services.com', 3306)
+    )
+
+    tunnel.start()
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://williamsjag:jpd5nbc*fqb-JPJ7cre@127.0.0.1:{}/williamsjag$whatstodrink'.format(tunnel.local_bind_port)
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://williamsjag.mysql.pythonanywhere-services.com/williamsjag$whatstodrink'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+db.create_all()
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -106,8 +124,8 @@ class Tags(db.Model):
 class TagMapping(db.Model):
     __tablename__ = 'tag_mapping'
 
-    tag_id = db.Column(db.Integer, primary_key=True, nullable=False, db.ForeignKey('tags.id'))
-    cocktail_id = db.Column(db.Integer, primary_key = True, nullable=False, db.ForeignKey('cocktails.id'))
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True, nullable=False)
+    cocktail_id = db.Column(db.Integer, db.ForeignKey('cocktails.id'), primary_key = True, nullable=False)
 
 
 
