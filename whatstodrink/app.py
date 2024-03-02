@@ -17,39 +17,24 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Configure DB connection in SQLAlchemy and Python classes
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///whatstodrink.db'
+# Configure LOCAL DB connection in SQLALCHEMY
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:database@localhost/whatstodrink'
+
+# Configure PYTHONANYWHERE DB connection in SQLAlchemy for MySQL
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://williamsjag.mysql.pythonanywhere-services.com/williamsjag$whatstodrink'
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# db = SQLAlchemy(app)
-
-# Configure DB connection in SQLAlchemy for MySQL
-
-if __name__ == '__main__':
-    
-    tunnel = sshtunnel.SSHTunnelForwarder(
-        ('ssh.pythonanywhere.com'), ssh_username='williamsjag', ssh_password='mta7rfg@bfn1JYR5veg',
-        remote_bind_address=('williamsjag.mysql.pythonanywhere-services.com', 3306)
-    )
-
-    tunnel.start()
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://williamsjag:jpd5nbc*fqb-JPJ7cre@127.0.0.1:{}/williamsjag$whatstodrink'.format(tunnel.local_bind_port)
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
-
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://williamsjag.mysql.pythonanywhere-services.com/williamsjag$whatstodrink'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-db.create_all()
 
 class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
-    hash = db.Column(db.String(100), nullable=False)
-    default_cocktails = db.Column(db.Integer, default="on")
+    hash = db.Column(db.String(200), nullable=False)
+    default_cocktails = db.Column(db.String(2), default="on")
 
 class Amount(db.Model):
     __tablename__ = 'amounts'
@@ -77,7 +62,7 @@ class Ingredient(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
     type = db.Column(db.String(50))
-    stock = db.Column(db.Integer)
+    stock = db.Column(db.String(2))
     user_id = db.Column(db.Integer)
     short_name = db.Column(db.String(50))
     notes = db.Column(db.String(1000))
@@ -103,7 +88,7 @@ class CommonStock(db.Model):
 
     ingredient_id = db.Column(db.Integer, db.ForeignKey('common_ingredients.id'), primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
-    stock = db.Column(db.Integer)
+    stock = db.Column(db.String(2))
 
 class CommonCocktail(db.Model):
     __tablename__ = 'common_cocktails'
