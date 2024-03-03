@@ -3,14 +3,8 @@
         This action cannot be undone. Are you sure you want to delete {{ cocktail }}?
     </p>
     <input type="hidden" name="cocktail_delete" value="{{ cocktail }}">
-    <button name="deleteconfirmed" onclick="RemoveBackdrop()" class="btn btn-danger mt-3 mb-3">DELETE</button>
-    <button name="cancel" onclick="RemoveBackdrop()" class="btn btn-primary mt-3 mb-3">Cancel</button>
+    <button name="deleteconfirmed" data-bs-dismiss="modal" class="btn btn-danger mt-3 mb-3">DELETE</button>
+    <button name="cancel" data-bs-dismiss="modal" class="btn btn-primary mt-3 mb-3">Cancel</button>
 </form>
 <script>
-     function RemoveBackdrop() {
-        // Remove modal backdrop
-        $('.modal-backdrop').remove();
-        $('#modifyModal').modal('hide');
-        $('body').removeClass('modal-open');
-    }
 </script>

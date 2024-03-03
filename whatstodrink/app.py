@@ -499,7 +499,7 @@ def ingredientmodal():
             db.session.execute(insertquery, {"user_id": session["user_id"], "name": request.form.get("ingredientname"), "type": request.form.get("type"), "stock": request.form.get("stock"), "short_name": request.form.get("short-name"), "notes": request.form.get("notes)")})
             db.session.commit()
         
-            flash('Ingredient Added')
+            # flash('Ingredient Added')
             return "200"
         
     # User reached route via GET (as by clicking a link or via redirect)
@@ -994,6 +994,7 @@ def modify_cocktail():
                     update = text("UPDATE cocktails SET name = :new_name WHERE name = :cocktail AND user_id = :user_id")
                     db.session.execute(update, {"new_name": new_name, "cocktail": cocktail, "user_id": session["user_id"]})
                     db.session.commit()
+                    flash("Cocktail Renamed")
                     return redirect(url_for('viewcocktails'))
             else:
                 return apology("A cocktail has not name")
@@ -1014,13 +1015,8 @@ def modify_cocktail():
             db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": session["user_id"]})
             db.session.commit()
             
-            return redirect(url_for("viewcocktails", _reload=int(time.time())))
-        
-        elif "cancel" in request.form:
-            return redirect(url_for("viewcocktails", _reload=int(time.time())))
-        
-        elif "close" in request.form:
-            return redirect(url_for("viewcocktails", _reload=int(time.time())))
+            flash('Cocktail Deleted')
+            return redirect(url_for("viewcocktails"))
         
         elif "changerecipe" in request.form:
             recipequery = text("SELECT id, name, build, source, family FROM cocktails WHERE name = :name AND user_id = :user_id")
@@ -1036,6 +1032,7 @@ def modify_cocktail():
             
             types = db.session.scalars(select(CommonIngredient.type.distinct())).fetchall()
 
+            flash("Recipe Modified")
             return render_template(
                 "changerecipe.html", cocktail=cocktail, recipe=recipe, amounts=amounts, ingredients=ingredients, families=families, types=types
             )
@@ -1092,4 +1089,4 @@ def modify_cocktail():
                 db.session.execute(insertquery, {"cocktail_id": id, "ingredient_id": ingredient_id, "amount": amount, "user_id": session["user_id"], "ingredient_source": ingredient_source})
                 db.session.commit()
 
-            return redirect(url_for("viewcocktails", _reload=int(time.time())))
+            return redirect(url_for("viewcocktails"))
