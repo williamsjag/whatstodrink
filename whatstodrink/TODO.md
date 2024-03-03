@@ -65,6 +65,7 @@ Fix scroll by adding javascript to modals which gets rid of modal classes on cli
 fixed flash repeating bug
 Added ingredient added flash message on add ingredients page
 Switched to local mysql server and database for testing
+Added short name to modify ingredient modal
 
 ## In Progress
 
@@ -74,7 +75,6 @@ bug: added cocktail not finished with amounts can be re-added over and over for 
 bug: more ingredients doesn't work with zero ingredients in change recipe
 Want more flash messages but have to figure out how to keep modal formatting from applying on pages without reload first
 bug: what's missing not working?
-bug: short name missing from view ingredient pane
 re-evaluate reloads and flashes throughout app
 add flash to rename button and submit button in view ingredient
 

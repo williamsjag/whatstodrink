@@ -771,10 +771,11 @@ def modify_ingredient():
                     db.session.commit()
                     
                     # flash("Ingredient Renamed")
-                    return redirect(url_for('manageingredients', _reload=int(time.time())))
+                    flash("Ingredient Renamed")
+                    return redirect(url_for('manageingredients'))
             else:
 
-                return apology("An ingredient has not name")
+                return apology("An ingredient has no name")
             
         elif "submitbutton" in request.form:
 
@@ -786,7 +787,8 @@ def modify_ingredient():
             db.session.execute(updatequery,  {"type": newtype, "notes": newnotes, "name": ingredient, "short_name": shortname, "user_id": session["user_id"]})
             db.session.commit()                  
 
-            return redirect(url_for('manageingredients', _reload=int(time.time())))
+            flash("Ingredient Modified")
+            return redirect(url_for('manageingredients'))
 
 
         elif "deletebutton" in request.form:
@@ -814,7 +816,6 @@ def modify_ingredient():
             name = request.form.get('name')
             ingredientquery = text("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = :name AND user_id = :user_id")
             ingredient = db.session.execute(ingredientquery, {"name": name, "user_id": session["user_id"]}).fetchall()
-            print(f"{ingredient}")
 
             typesquery = text("SELECT DISTINCT type FROM common_ingredients")
             types = db.session.execute(typesquery).fetchall()
@@ -835,15 +836,16 @@ def modify_ingredient():
             db.session.commit()
 
             # flash('Ingredient Deleted')
-            return redirect(url_for("manageingredients", _reload=int(time.time())))
+            flash("Ingredient Deleted")
+            return redirect(url_for("manageingredients"))
         
         elif "cancel" in request.form:
 
-            return redirect(url_for("manageingredients", _reload=int(time.time())))
+            return redirect(url_for("manageingredients"))
         
         elif "close" in request.form:
 
-            return redirect(url_for("manageingredients", _reload=int(time.time())))
+            return redirect(url_for("manageingredients"))
         
   
 @app.route("/viewcocktails", methods=["GET", "POST"])
