@@ -66,6 +66,8 @@ fixed flash repeating bug
 Added ingredient added flash message on add ingredients page
 Switched to local mysql server and database for testing
 Added short name to modify ingredient modal
+Fixed no scroll bug: Add data-bs-dismiss="modal" to buttons that submit pushes from modals
+Added flashes to rename and submit button in view ingredient modal
 
 ## In Progress
 
@@ -73,10 +75,8 @@ transition to mysql
 
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
-Want more flash messages but have to figure out how to keep modal formatting from applying on pages without reload first
 bug: what's missing not working?
 re-evaluate reloads and flashes throughout app
-add flash to rename button and submit button in view ingredient
 
 reduce payload of database queries in 'view' routes. only return what is needed.
 

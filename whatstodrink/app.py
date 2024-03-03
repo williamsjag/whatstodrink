@@ -461,7 +461,7 @@ def addingredient():
             db.session.execute(insert, {"user_id": session["user_id"], "name": name, "type": type, "stock": stock, "short_name": short_name, "notes": notes})
             db.session.commit()
             
-            flash('Success! Ingredient Added')
+            flash('Ingredient Added')
 
         return render_template(
             "addingredient.html"
@@ -719,10 +719,10 @@ def amounts():
                 db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount": amount, "ingredient_source": id_source.source, "user_id": session["user_id"]})
                 db.session.commit()
                 
-                flash('Success! Cocktail Added')
+                
                 
 
-    
+    flash('Cocktail Added')
     return redirect(url_for(
         "addcocktail"
     ))
