@@ -3,8 +3,8 @@
         This action cannot be undone. Are you sure you want to delete {{ ingredient }}?
     </p>
     <input type="hidden" name="ingredient_delete" value="{{ ingredient }}">
-    <button name="deleteconfirmed" class="btn btn-danger mb-3">DELETE</button>
-    <button name="cancel"  class="btn btn-primary mb-3">Cancel</button>
+    <button name="deleteconfirmed" data-bs-dismiss="modal" class="btn btn-danger mb-3">DELETE</button>
+    <button name="cancel" data-bs-dismiss="modal" class="btn btn-primary mb-3">Cancel</button>
 </form>
 <script>
 </script>

@@ -542,9 +542,8 @@ def ingredientmodal2():
             db.session.add(new_ingredient)
             db.session.commit()    
             
-        # flash("Success! Ingredient Added")
-
-        return redirect(url_for("manageingredients", _reload=int(time.time())))
+        flash("Ingredient Added")
+        return redirect(url_for("manageingredients"))
         
      # User reached route via GET (as by clicking a link or via redirect)
      else:
@@ -839,9 +838,9 @@ def modify_ingredient():
             flash("Ingredient Deleted")
             return redirect(url_for("manageingredients"))
         
-        elif "cancel" in request.form:
+        # elif "cancel" in request.form:
 
-            return redirect(url_for("manageingredients"))
+        #     return redirect(url_for("manageingredients"))
         
         elif "close" in request.form:
 

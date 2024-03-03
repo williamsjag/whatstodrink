@@ -109,10 +109,12 @@
         });
     };
     // reload if necessary
-    if (window.location.search.includes('_reload')) {
-    window.location.href = window.location.href.split('?')[0];
-    }
-   
-
+    // if (window.location.search.includes('_reload')) {
+    // window.location.href = window.location.href.split('?')[0];
+    // }
+    // Remove overflow style on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.style.overflow = 'auto'; // Remove overflow: hidden style
+    });
     </script>
 {% endblock %}
