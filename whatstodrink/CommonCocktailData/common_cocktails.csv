@@ -1,0 +1,124 @@
+id,name,build,source,family
+4,Martini,"Build in mixing glass, add ice and stir. Garnish according to your choice!",Classic,Vermouth Cocktails
+5,Whiskey Sour,"Dry shake egg white, add the rest of the ingredients, ice, and shake again.
+Strain into a chilled coupe.",Classic,Sours
+6,Manhattan,"Combine all ingredients in a mixing glass with ice and stir.
+Strain into a chilled coupe.
+Garnish with brandied cherry.",Classic,Vermouth Cocktails
+7,Negroni,"Add all ingredients in a mixing glass and stir with ice.
+Strain into a rocks glass over a large ice cube.
+Garnish with an orange peel.",Classic,Amaro Cocktails
+8,Daiquiri,"Add all ingredients to a shaker with ice, shake.
+Strin into a chilled coupe.
+Garnish with a lime twist",Classic,Sours
+9,Old Fashioned,"Add sugar, water, and bitters, stir until sugar dissolved.
+Fill mixing glass with ice, add whiskey, stir.
+Strain into rocks glass over large ice cube.
+Express orange twist over glass and drop in.",Classic,Old Fashioneds
+10,Tom Collins,"Add all ingredients to a collins glass, fill with ice, top with club soda and stir.
+Garnish with a lemon wheel.",Classic,Highballs
+11,Sazerac,"Rinse a chilled rocks glass with absinthe and discard.
+In a mixing glass, muddle sugar, water, and bitters.
+Add rye, fill with ice, and stir.
+Strain into rocks glass.
+Express lemon peel and drop in.",Classic,Old Fashioneds
+12,Paloma,"Add tequila, lime juice, and salt to a collins glass and fill with ice. top with grapefruit soda and stir to combine.
+Garnish with lime wheel",Classic,Sours
+13,Margarita,"Add all ingredients to a shaker filled with ice and shake.
+Strain into rocks glass over fresh ice.
+Garnish with a lime wheel and (optional) salt rim.",Classic,Sours
+14,Moscow Mule,"Fill a mule mug with ice, add vodka and lime juice.
+Top with ginger beer.
+Garnish with a lime wheel.",Classic,Sours
+15,Sidecar,"Add all ingredients to a shaker and shake with ice.
+Strain into chilled coupe glass.
+Garnish with orange twist and (optional) sugar rim.",Classic,Sours
+16,Martinez,"Add all ingredients to mixing glass with ice and stir.
+Strain into a chilled coupe glass.
+Garnish with an orange twist.",Classic,Vermouth Cocktails
+17,Pimm's Cup,"Add Pimms #1 and lemon juice to highball glass over ice, then top with ginger ale.
+Stir briefly to combine.
+Garnish with cucumber slice, mint sprig, skewered strawberry.",Classic,Sours
+18,Pisco Sour,"Add all ingredients to a shaker and dry shake.
+Add ice and shake.
+strain into Nick & Nora or rocks glass.
+Garnish with 3-4 drops Angostura bitters. Swirl with a straw.",Classic,Sours
+19,French 75,"Add gin, lemon juice, and simple syrup to shaker with ice and shake.
+Strain into Champagne flute.
+Top with Champagne.
+Garnish with a lemon twist.",Classic,Champagne Cocktails
+20,Mint Julep,"In julep cup or rocks glass, muddle mint leaves with simple syrup.
+Add bourbon and pack tightly with crushed ice.
+Stir.
+Top with more ice and garnish with mint sprig.",Classic,Juleps and Smashes
+21,Last Word,"Add all ingredients into a shaker with ice and shake.
+Strain into a chilled coupe glass.
+Garnish with a brandied cherry.",Classic,Sours
+22,Irish Coffee,"Fill a mug with hot water to heat, then discard.
+Add whiskey and sugar to the glass, fill with coffee, and stir.
+Top with whipped cream.",Classic,Hot Drinks
+23,Corpse Reviver #2,"Rinse the inside of a chilled coupe with absinthe and discard.
+Add all ingredients to a shaker and shake with ice.
+Strain into prepared glass.",Classic,Sours
+24,Mojito,"Lightly muddle the mint with simple syrup in a shaker.
+Add rum, lime juice, and ice, shake, strain into a highball class over fresh ice.
+Top with club soda.
+Garnish with a mint sprig and lime wheel.",Classic,Highballs
+25,Gin Fizz,"Add gin, lemon juice, syrup, and egg white to a shaker and dry-shake.
+Add ice and shake.
+Strain into Collins glass and top with club soda.",Classic,Highballs
+26,Bloody Mary,"Squeeze a lemon and a lime wedge into a shaker and drop in. Add vodka, tomato juice, 2 dashes Tabasco, 2 dashes Worcestershire sauce, 1 pinch black pepper, 1 pinch paprika, 1 pinch celery salt and shake with ice.
+Strain into Collins glass.
+Garnish with parsley sprig, speared olives, lime wedge, celery stalk.",Classic,Orphans
+27,Gimlet,"Add all ingredients to a shaker and shake with ice.
+Strain into chilled cocktail glass.
+Garnish with a lime wheel.",Classic,Sours
+52,Americano,"Combine sweet vermouth and Campari in a highball glass and fill with ice.
+Top with club soda and stir gently.
+Garnish with an orange twist",Classic,Vermouth Cocktails
+53,Mai Tai,"Add all ingredients except dark rum to a shaker filled with crushed ice and shake lightly.
+Pour into a double rocks glass.
+Float dark rum on top.
+Garnish with lime wheel and mint sprig.",Classic,Tiki Cocktails
+54,Caipirinha,"Muddle cachaça, sugar, and a whole lime cut into quarters.
+Top with crushed ice.",Classic,Sours
+55,Espresso Martini,"Add all ingredients to a shaker with ice and shake.
+Strain into a chilled cocktail glass.
+Garnish with 3 coffee beans.",Classic,Orphans
+56,Aperol Spritz,"Add all ingredients to a wine glass filled with ice and stir.
+Garnish with an orange slice.",Classic,Champagne Cocktails
+57,Boulevardier,"Combine all ingredients in a mixing glass and stir with ice.
+Strain into a rocks glass over a large ice cube.
+Garnish with an orange twist.",Classic,Amaro Cocktails
+58,Jungle Bird,"Add all ingredients in a shaker filled with ice and shake.
+Strain into a rocks glass over fresh ice.
+Garnish with a pineapple wedge",Classic,Tiki Cocktails
+59,Bee's Knees,"Add all ingredients to a shaker filled with ice and shake.
+Strain into a chilled coupe.
+Garnish with a lemon twist.",Classic,Sours
+60,Dark 'n Stormy,"Add rum and lime juice to a Collins glass filled with ice.
+Top with ginger beer.
+Garnish with a lime wheel.",Classic,Highballs
+61,Vieux Carré,"Add all ingredients to a mixing glass filled with ice and stir.
+Strain into a rocks glass over fresh ice.
+Garnish with a cherry, lemon twist, or both.",Classic,Vermouth Cocktails
+62,Cosmopolitan,"Combine all ingredients into a shaker with ice and shake.
+Strain into a chilled cocktail glass.
+Garnish with a lime wedge.",Classic,Sours
+63,Bramble,"Add all ingredients except crème de mûre to a shaker with ice and shake.
+Strain into a rocks glass over crushed ice.
+Float crème de mûre on top.
+Garnish with a lemon half-wheel and a fresh blackberry.",Classic,Juleps and Smashes
+64,Aviation,"Combine all ingredients in a shaker with ice and shake.
+Strain into a chilled cocktail glass.
+Garnish with a brandied cherry.",Classic,Sours
+65,Mimosa,"Pour orange juice into a champagne flute.
+Top with Champagne.",Classic,Champagne Cocktails
+66,Champagne Cocktail,"Place sugar cube at the bottom of a champagne flute and douse with bitters.
+Top with Champagne.
+Garnish with a lemon twist.",Classic,Champagne Cocktails
+67,Kir Royale,"Pour crème de cassis into a Champagne flute.
+Top with Champagne.
+Garnish with a lemon twist.",Classic,Champagne Cocktails
+68,Rusty Nail,"Mix in a mixing glass with ice.
+Strain into a rocks glass over a large cube.",Classic,Duos and Trios

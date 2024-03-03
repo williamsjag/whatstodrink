@@ -781,8 +781,9 @@ def modify_ingredient():
             newtype = request.form.get('type')
             newnotes = request.form.get('notes')
             ingredient = request.form.get('modifiedIngredientName')
+            shortname = request.form.get('short_name')
             updatequery = text("UPDATE ingredients SET type = :type, notes = :notes WHERE name = :name AND user_id = :user_id")
-            db.session.execute(updatequery,  {"type": newtype, "notes": newnotes, "name": ingredient, "user_id": session["user_id"]})
+            db.session.execute(updatequery,  {"type": newtype, "notes": newnotes, "name": ingredient, "short_name": shortname, "user_id": session["user_id"]})
             db.session.commit()                  
 
             return redirect(url_for('manageingredients', _reload=int(time.time())))
