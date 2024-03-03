@@ -499,7 +499,7 @@ def ingredientmodal():
             db.session.execute(insertquery, {"user_id": session["user_id"], "name": request.form.get("ingredientname"), "type": request.form.get("type"), "stock": request.form.get("stock"), "short_name": request.form.get("short-name"), "notes": request.form.get("notes)")})
             db.session.commit()
         
-            # flash('Success! Ingredient Added')
+            flash('Ingredient Added')
             return "200"
         
     # User reached route via GET (as by clicking a link or via redirect)

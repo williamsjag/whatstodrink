@@ -79,6 +79,7 @@ bug: what's missing not working?
 re-evaluate reloads and flashes throughout app
 
 reduce payload of database queries in 'view' routes. only return what is needed.
+In Add ingredient on addcocktail find a way to flash a message
 
 ## Todo 
 
