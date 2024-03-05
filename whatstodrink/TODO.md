@@ -68,6 +68,7 @@ Switched to local mysql server and database for testing
 Added short name to modify ingredient modal
 Fixed no scroll bug: Add data-bs-dismiss="modal" to buttons that submit pushes from modals
 Added flashes to rename and submit button in view ingredient modal
+Finished fixing modal buttons to prevent scroll bug
 
 ## In Progress
 

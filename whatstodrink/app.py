@@ -866,7 +866,16 @@ def viewallcocktails():
 
     allcocktails = db.session.execute(allquery, {"user_id": session["user_id"]}).fetchall()
     
-    ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
+    ingredientsquery = text("\
+                            WITH allingredients AS (\
+                                SELECT id, name, short_name FROM common_ingredients \
+                                UNION \
+                                SELECT id, name, short_name FROM ingredients \
+                                WHERE user_id = :user_id), \
+                            usedingredients AS (\
+                                SELECT ingredient_id FROM common_amounts\
+                                UNION select ingredient_id FROM amounts WHERE user_id = :user_id) \
+                            SELECT id, name, short_name FROM allingredients WHERE id IN (SELECT ingredient_id FROM usedingredients)")
     ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
 
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
@@ -887,11 +896,15 @@ def viewcommon():
     )
     commoncocktails = db.session.execute(commoncocktailsquery).fetchall()
 
-    ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    ingredientsquery = text("WITH allingredients AS \
+                                (SELECT id, name, short_name FROM common_ingredients), \
+                            usedingredients AS \
+                                (SELECT ingredient_id FROM common_amounts)\
+                            SELECT id, name, short_name FROM allingredients WHERE id IN (SELECT ingredient_id FROM usedingredients)")
+    ingredients = db.session.execute(ingredientsquery).fetchall()
 
-    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts")
+    amounts = db.session.execute(amountsquery).fetchall()
 
     allfamilies = set(Cocktail.family for Cocktail in commoncocktails)
     
@@ -913,6 +926,14 @@ def viewuser():
     print(f"{usercocktails}")
    
     ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
+    ingredientsquery = text("WITH allingredients AS (\
+                                SELECT id, name, short_name FROM common_ingredients \
+                                UNION \
+                                SELECT id, name, short_name FROM ingredients \
+                                WHERE user_id = :user_id), \
+                            usedingredients AS (\
+                                SELECT ingredient_id FROM amounts WHERE user_id = :user_id) \
+                            SELECT id, name, short_name FROM allingredients WHERE id IN (SELECT ingredient_id FROM usedingredients)")
     ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
         
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
