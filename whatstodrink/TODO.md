@@ -74,6 +74,7 @@ Fixed amounts bug in user cocktails
 Mysql transition complete. Now fixing bugs
 Fixed the sql query problem in whatsmissing?
 update database on button click in manage ingredients, remove submit button
+Fixed spinner issues in the various view cocktail routes
 
 ## In Progress
 
@@ -83,7 +84,6 @@ bug: more ingredients doesn't work with zero ingredients in change recipe
 In Add ingredient on addcocktail find a way to flash a message
 
 ## Todo 
-
 
 user modifiability to all ingredients (incl. hide)
 
