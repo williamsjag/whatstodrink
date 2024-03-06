@@ -12,28 +12,32 @@
     <!-- if default cocktails turned on-->
     {% if defaults %}
     <!-- Button group -->
-    <div class=text-center>
-        <div class="btn-group mb-4" id="buttons" role="group" aria-label="Button Group">
-            <button hx-get="/whatstodrinkuser" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">My Cocktails</button>
-            <button hx-get="/whatstodrinkall"  hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary active">All Cocktails</a>
+        <div class=text-center>
+            <div class="btn-group mb-4" id="buttons" role="group" aria-label="Button Group">
+                <button hx-get="/whatstodrinkuser" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">My Cocktails</button>
+                <button hx-get="/whatstodrinkall"  hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary active">All Cocktails</a>
+            </div>
         </div>
-    </div>
-    <!-- Request default page with spinner -->
-    <script hx-trigger="load" hx-get="/whatstodrinkall" hx-target="#view" hx-indicator="#spinner"></script>
+        <!-- Request default page with spinner -->
+        <div id="view">
+            <!-- spinner -->
+            <div class="center-text">
+                <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
+            </div>
+        </div>
+        <!-- Load whatstodrinkall by default -->
+        <script hx-trigger="load" hx-get="/whatstodrinkall" hx-target="#view" hx-indicator="#spinner"></script>
+
+    {% else %}
+    <!-- Request user page with spinner and no buttons -->
     <div id="view">
-        <!-- spinner -->
+    <!-- spinner -->
         <div class="center-text">
             <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
         </div>
     </div>
-    {% else %}
-    <!-- Request user page with spinner and no buttons -->
     <script hx-trigger="load" hx-get="/whatstodrinkuser" hx-target="#view" hx-indicator="#spinner2"></script>
-    <div id="view"></div>
-    <!-- spinner -->
-        <div class="center-text">
-            <svg id="spinner2" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
-        </div>
+
     {% endif %}
 {% endblock %}
 
@@ -51,5 +55,7 @@
         });
     };
 </script>
+
+
 {% endblock %}
 

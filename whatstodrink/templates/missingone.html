@@ -11,10 +11,10 @@
     </div>
     <!-- imported from flask: cocktails, ingredients, amounts, missing_ingredients-->
     {% if defaults %}
-    <div class=text-center>
+    <div class="text-center">
         <div class="btn-group mb-4" id="buttons" role="group" aria-label="Button Group">
             <button hx-get="/missingoneuser" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">My Cocktails</button>
-            <button hx-get="/missingoneall" hx-target="#view" hx-indicator="#spinner" href="/missingone"  type="button" role="group" class="btn btn-outline-primary active">All Cocktails</a>
+            <button hx-get="/missingoneall" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary active">All Cocktails</a>
         </div>
     </div>
     <div id="view">
@@ -22,16 +22,17 @@
             <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
         </div>
     </div>
+    <!-- Load missing one all by default -->
     <script hx-trigger="load" hx-get="/missingoneall" hx-target="#view" hx-indicator="#spinner"></script>
 
 
-    {% else %}
+    <!-- {% else %}
     <div id="view">
         <div class="center-text">
             <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
         </div>
     </div>
-    <script hx-trigger="load" hx-get="/missingoneuser" hx-target="#view" hx-indicator="#spinner"></script>
+    <script hx-trigger="load" hx-get="/missingoneuser" hx-target="#view" hx-indicator="#spinner"></script> -->
 
 
     {% endif %}
@@ -51,8 +52,6 @@
         });
     }
 </script>
-<script hx-trigger="load" hx-get="/missingoneall" hx-target="#view" hx-indicator="#spinner"></script>
-<script hx-trigger="load" hx-get="/missingoneuser" hx-target="#view" hx-indicator="#spinner"></script>
 
 {% endblock %}
 

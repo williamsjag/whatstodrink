@@ -5,63 +5,66 @@
 {% endblock %}
 
 {% block main %}
-<h1 class="text-center mb-5">View/Edit Cocktails</h1>
-<div class="center text-center explainer p-3 mb-5">
-    <p>View all cocktails in the database and edit your recipes.</p>
-</div>
+    <h1 class="text-center mb-5">View/Edit Cocktails</h1>
+    <div class="center text-center explainer p-3 mb-5">
+        <p>View all cocktails in the database and edit your recipes.</p>
+    </div>
     {% if defaults %}
-    <div class="text-center">
-        <div class="btn-group mb-4" id="buttons" role="group" aria-label="Button Group">
-            <button hx-get="/viewuser" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">My Cocktails</button>
-            <button hx-get="/viewallcocktails" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary active">All Cocktails</a>
-            <button hx-get="/viewcommon" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">Common Cocktails</button>
-        </div>
-    </div>
-    <script hx-trigger="load" hx-get="/viewallcocktails" hx-indicator="#spinner" hx-target="#view"></script>
-    <div id="view">
-        <div class="center-text">
-            <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
-        </div>
-    </div>
-    {% else %}
-        <script hx-trigger="load" hx-get="/viewuser" hx-indicator="#spinner2" hx-target="#view"></script>
-        <div id="view">
-            <div class="center-text">
-                <svg id="spinner2" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
+        <div class="text-center">
+            <div class="btn-group mb-4" id="buttons" role="group" aria-label="Button Group">
+                <button hx-get="/viewuser" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">My Cocktails</button>
+                <button hx-get="/viewallcocktails" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary active">All Cocktails</a>
+                <button hx-get="/viewcommon" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">Common Cocktails</button>
             </div>
         </div>
-    {% endif %}
+        <div id="view">
+            <div class="center-text">
+                <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
+            </div>
+        </div>
+        <!-- Load view all by default -->
+        <script hx-trigger="load" hx-get="/viewallcocktails" hx-indicator="#spinner" hx-target="#view"></script>
 
-<!-- Modal -->
-<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" id="modalform"></div>
+        {% else %}
+        <!-- request user page with no buttons -->
+        <div id="view">
+            <div class="center-text">
+                <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
+            </div>
+        </div>
+        <script hx-trigger="load" hx-get="/viewuser" hx-indicator="#spinner2" hx-target="#view"></script>
+
+        {% endif %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" id="modalform"></div>
+        </div>
     </div>
-</div>
+
+{% endblock %}
+
+{% block javascript %}
 
 <script>
-// listen for need to reload
-if (window.location.search.includes('_reload')) {
-    window.location.href = window.location.href.split('?')[0];
-}
-// change active class on click
-var button_group = document.getElementById("buttons");
-var btns = button_group.getElementsByClassName("btn");
-// loop through buttons to assign active class
-for (var i = 0; i < btns.length; i++) {
-    btns[i].addEventListener("click", function() {
-        var current = document.getElementsByClassName("active");
-        current[0].className = current[0].className.replace(" active", "");
-        this.className += " active";
-    });
-}
-
-function populateModal(cocktailName) {
-        document.addEventListener('htmx:afterRequest', function(evt) {
-            document.getElementById('modifiedCocktailName').value = cocktailName;
+    // change active class on click
+    var button_group = document.getElementById("buttons");
+    var btns = button_group.getElementsByClassName("btn");
+    // loop through buttons to assign active class
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].addEventListener("click", function() {
+            var current = document.getElementsByClassName("active");
+            current[0].className = current[0].className.replace(" active", "");
+            this.className += " active";
         });
-    };
-</script>
+    }
     
-{% endblock %}
- 
+    function populateModal(cocktailName) {
+            document.addEventListener('htmx:afterRequest', function(evt) {
+                document.getElementById('modifiedCocktailName').value = cocktailName;
+            });
+        };
+    </script>
+
+    {% endblock %}
