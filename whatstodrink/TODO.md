@@ -73,18 +73,17 @@ Reduced payload of ingredients list in View Cocktail routes
 Fixed amounts bug in user cocktails
 Mysql transition complete. Now fixing bugs
 Fixed the sql query problem in whatsmissing?
+update database on button click in manage ingredients, remove submit button
 
 ## In Progress
 
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
-re-evaluate reloads and flashes throughout app
 
 In Add ingredient on addcocktail find a way to flash a message
 
 ## Todo 
 
-update database on button click in manage ingredients, remove submit
 
 user modifiability to all ingredients (incl. hide)
 
