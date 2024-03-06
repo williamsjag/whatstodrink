@@ -72,15 +72,14 @@ Finished fixing modal buttons to prevent scroll bug
 Reduced payload of ingredients list in View Cocktail routes
 Fixed amounts bug in user cocktails
 Mysql transition complete. Now fixing bugs
+Fixed the sql query problem in whatsmissing?
 
 ## In Progress
 
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
-bug: what's missing not working?
 re-evaluate reloads and flashes throughout app
 
-reduce payload of database queries in 'view' routes. only return what is needed.
 In Add ingredient on addcocktail find a way to flash a message
 
 ## Todo 
