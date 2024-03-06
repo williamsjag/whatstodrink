@@ -633,10 +633,6 @@ def manageingredients():
                 id_column = "ingredient_id" if ingredient_source == "common" else "id"
                 stock = 'on' if ingredient_stock == 'on' else ''
 
-                print(f"{table_name}")
-                print(f"{id_column}")
-                print(f"{stock}")
-                print(f"{ingredient_id}")
                 try:
                     with db.session.begin():
                         sql_query = text(f"UPDATE {table_name} SET stock = :stock WHERE {id_column} = :ingredient_id AND user_id = :user_id")

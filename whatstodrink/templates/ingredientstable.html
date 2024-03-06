@@ -21,17 +21,23 @@
                                     <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}', '{{ingredient.notes}}')">View</button>
                                 {% endif %}
                             </td>
+                            <!-- Checkbox checked -->
                             {% if ingredient.stock == "on" %}
                             <td class="right-text">
-                                <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" checked>
-                                <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
-                                <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
+                                <form>
+                                    <input type="checkbox" hx-post="/manageingredients" hx-trigger="click" hx-swap="none" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" checked>
+                                    <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
+                                    <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
+                                </form>
                             </td>
+                            <!-- Checkbox unchecked -->
                             {% else %}
                             <td class="right-text">
-                                <input type="checkbox" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" unchecked>
-                                <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
-                                <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
+                                <form>
+                                    <input type="checkbox" hx-post="/manageingredients" hx-trigger="click" hx-swap="none" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" unchecked>
+                                    <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
+                                    <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">    
+                                </form>
                             </td>
                             {% endif %}
                         </tr>
@@ -42,7 +48,4 @@
             </table>
         </div>
     {% endfor %}
-    </div>
-    <div class="text-center">
-        <button class="btn btn-primary" type="submit">Update</button>
     </div>
