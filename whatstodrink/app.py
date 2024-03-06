@@ -306,6 +306,13 @@ def whatstodrinkuser():
     cocktails = db.session.execute(cocktailsquery, {"user_id": session["user_id"]}).fetchall()
 
     ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
+    ingredientsquery = text("WITH allingredients AS \
+                                (SELECT id, name, short_name FROM common_ingredients \
+                                UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id), \
+                            amounts AS \
+                                (SELECT ingredient_id FROM amounts WHERE user_id = :user_id) \
+                            SELECT id, name, short_name FROM allingredients INNER JOIN amounts ON allingredients.id = amounts.ingredient_id\
+                        ")
     ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
    
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
