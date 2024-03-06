@@ -69,11 +69,13 @@ Added short name to modify ingredient modal
 Fixed no scroll bug: Add data-bs-dismiss="modal" to buttons that submit pushes from modals
 Added flashes to rename and submit button in view ingredient modal
 Finished fixing modal buttons to prevent scroll bug
+Reduced payload of ingredients list in View Cocktail routes
 
 ## In Progress
 
 transition to mysql
 
+bug: weird amounts in view user cocktails (possibly due to query change?)
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
 bug: what's missing not working?
@@ -91,6 +93,7 @@ user modifiability to all ingredients (incl. hide)
 add request indicators for slow htmx requests
     - still need to do type to search in manage
     - and type to search in add cocktail
+    - make old window disappear and show spinner when going between buttons in cocktail routes
 
 Color/Theme/Prettify
 
@@ -104,3 +107,5 @@ recipe share page that opens a url like /cocktails-userid-cocktailid.html that c
     -once logged in replace with save to your cocktails
 
 make navbar active class work
+
+Think about hard-coding recipe in cocktail table for sake of page loads/consistency
