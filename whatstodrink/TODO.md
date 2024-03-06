@@ -70,12 +70,11 @@ Fixed no scroll bug: Add data-bs-dismiss="modal" to buttons that submit pushes f
 Added flashes to rename and submit button in view ingredient modal
 Finished fixing modal buttons to prevent scroll bug
 Reduced payload of ingredients list in View Cocktail routes
+Fixed amounts bug in user cocktails
+Mysql transition complete. Now fixing bugs
 
 ## In Progress
 
-transition to mysql
-
-bug: weird amounts in view user cocktails (possibly due to query change?)
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
 bug: what's missing not working?
@@ -109,3 +108,5 @@ recipe share page that opens a url like /cocktails-userid-cocktailid.html that c
 make navbar active class work
 
 Think about hard-coding recipe in cocktail table for sake of page loads/consistency
+
+Search Field for cocktail views
