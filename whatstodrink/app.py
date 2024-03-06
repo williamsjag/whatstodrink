@@ -213,15 +213,15 @@ def missingoneall():
             "HAVING COUNT(*) = 1 \
         ), \
         sad_amounts AS (\
-            SELECT ingredient_id FROM amounts WHERE (cocktail_id IN sad_cocktails AND user_id = :user_id)\
+            SELECT ingredient_id FROM amounts WHERE (cocktail_id IN (SELECT id FROM sad_cocktails) AND user_id = :user_id)\
             UNION\
-            SELECT ingredient_id FROM common_amounts WHERE cocktail_id IN sad_cocktails\
+            SELECT ingredient_id FROM common_amounts WHERE cocktail_id IN (SELECT id FROM sad_cocktails)\
         )\
-        SELECT id, name FROM ingredients WHERE (id IN sad_amounts AND stock != 'on') \
+        SELECT id, name FROM ingredients WHERE (id IN (SELECT ingredient_id FROM sad_amounts) AND stock != 'on') \
         UNION \
         SELECT ci.id, ci.name FROM common_ingredients ci \
         JOIN common_stock cs ON ci.id = cs.ingredient_id \
-        WHERE (cs.stock != 'on' AND cs.user_id = :user_id AND ci.id IN sad_amounts) \
+        WHERE (cs.stock != 'on' AND cs.user_id = :user_id AND ci.id IN (SELECT ingredient_id FROM sad_amounts)) \
         GROUP BY ci.id")
     missing_ingredients = db.session.execute(missingquery, {"user_id": session["user_id"]}).fetchall()
    
@@ -268,15 +268,15 @@ def missingoneuser():
             "HAVING COUNT(*) = 1\
         ),\
         sad_amounts AS (\
-            SELECT ingredient_id FROM amounts WHERE (cocktail_id IN sad_cocktails AND user_id = :user_id)\
+            SELECT ingredient_id FROM amounts WHERE (cocktail_id IN (SELECT id FROM sad_cocktails) AND user_id = :user_id)\
             UNION\
-            SELECT ingredient_id FROM common_amounts WHERE cocktail_id IN sad_cocktails\
+            SELECT ingredient_id FROM common_amounts WHERE cocktail_id IN (SELECT id FROM sad_cocktails)\
         )\
-        SELECT id, name FROM ingredients WHERE (id IN sad_amounts AND stock != 'on') \
+        SELECT id, name FROM ingredients WHERE (id IN (SELECT ingredient_id FROM sad_amounts) AND stock != 'on') \
         UNION \
         SELECT ci.id, ci.name FROM common_ingredients ci \
         JOIN common_stock cs ON ci.id = cs.ingredient_id \
-        WHERE (cs.stock != 'on' AND cs.user_id = :user_id AND ci.id IN sad_amounts) \
+        WHERE (cs.stock != 'on' AND cs.user_id = :user_id AND ci.id IN (SELECT ingredient_id FROM sad_amounts)) \
         GROUP BY ci.id")
     missing_ingredients = db.session.execute(missingquery, {"user_id": session["user_id"]}).fetchall()
     
@@ -882,7 +882,7 @@ def viewallcocktails():
                             usedingredients AS (\
                                 SELECT ingredient_id FROM common_amounts\
                                 UNION select ingredient_id FROM amounts WHERE user_id = :user_id) \
-                            SELECT id, name, short_name FROM allingredients WHERE id IN (SELECT ingredient_id FROM usedingredients)")
+                            SELECT id, name, short_name FROM allingredients INNER JOIN usedingredients ON allingredients.id = usedingredients.ingredient_id")
     ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
 
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
