@@ -1,119 +1,10 @@
-import os
-
-from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_session import Session
+from flask import flash, redirect, render_template, request, session, url_for
+from whatstodrink import app, db
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select, union, text
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import apology, apologynaked, login_required
-
-
-# Configure application
-app = Flask(__name__)
-
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
-
-# Configure LOCAL DB connection in SQLALCHEMY if launched from 'python3 app.py'
-if __name__ == '__main__':
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:database@localhost/whatstodrink'
-
-# Configure PYTHONANYWHERE DB connection in SQLAlchemy for MySQL
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://williamsjag.mysql.pythonanywhere-services.com/williamsjag$whatstodrink'
-    app.config['SQLALCHEMY_POOL_RECYCLE'] = 299
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-class User(db.Model):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    username = db.Column(db.String(50), nullable=False, unique=True)
-    hash = db.Column(db.String(200), nullable=False)
-    default_cocktails = db.Column(db.String(2), default="on")
-    email = db.Column(db.String(50), nullable=False)
-class Amount(db.Model):
-    __tablename__ = 'amounts'
-
-    cocktail_id = db.Column(db.Integer, db.ForeignKey('cocktails.id'), primary_key=True)
-    amount = db.Column(db.String(50))
-    ingredient_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    ingredient_source = db.Column(db.String(50), primary_key=True)
-
-class Cocktail(db.Model):
-    __tablename__ = 'cocktails'
-
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
-    build = db.Column(db.String(1000))
-    source = db.Column(db.String(50))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    family = db.Column(db.String(50), default="Orphans")
-    notes = db.Column(db.String(1000))
-    ingredients = db.Column(db.String(500))
-    
-class Ingredient(db.Model):
-    __tablename__ = 'ingredients'
-
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
-    type = db.Column(db.String(50))
-    stock = db.Column(db.String(2))
-    user_id = db.Column(db.Integer)
-    short_name = db.Column(db.String(50))
-    notes = db.Column(db.String(1000))
-
-class CommonAmount(db.Model):
-    __tablename__ = 'common_amounts'
-
-    cocktail_id = db.Column(db.Integer, db.ForeignKey('common_cocktails.id'), primary_key=True)
-    amount = db.Column(db.String(50))
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('common_ingredients.id'), primary_key=True)
-
-class CommonIngredient(db.Model):
-    __tablename__ = 'common_ingredients'
-
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
-    type = db.Column(db.String(50))
-    short_name = db.Column(db.String(50))
-    notes = db.Column(db.String(1000))
-
-class CommonStock(db.Model):
-    __tablename__ = 'common_stock'
-
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('common_ingredients.id'), primary_key=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
-    stock = db.Column(db.String(2))
-
-class CommonCocktail(db.Model):
-    __tablename__ = 'common_cocktails'
-
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
-    build = db.Column(db.String(1000))
-    source = db.Column(db.String(50))
-    family = db.Column(db.String(50))
-    ingredients = db.Column(db.String(500))
-
-class Tags(db.Model):
-    __tablename__ = 'tags'
-
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    tag = db.Column(db.String(50), nullable=False)
-
-class TagMapping(db.Model):
-    __tablename__ = 'tag_mapping'
-
-    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True, nullable=False)
-    cocktail_id = db.Column(db.Integer, db.ForeignKey('cocktails.id'), primary_key = True, nullable=False)
-
+from whatstodrink.helpers import apology, apologynaked, login_required
+from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
 
 
 @app.after_request
@@ -1123,6 +1014,3 @@ def modify_cocktail():
                 db.session.commit()
 
             return redirect(url_for("viewcocktails"))
-
-if __name__ == '__main__':
-    app.run(debug=True)
