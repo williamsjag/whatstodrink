@@ -5,7 +5,7 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select, union, text
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import apology, login_required
+from helpers import apology, apologynaked, login_required
 
 
 # Configure application
@@ -440,11 +440,11 @@ def addingredient():
      if request.method == "POST":
         # Ensure ingredient was submitted
         if not request.form.get("ingredientname"):
-            return apology("must add ingredient", 400)
+            return apology("must add ingredient", 403)
 
         # Ensure type was submitted
         elif not request.form.get("type"):
-            return apology("must select ingredient type", 400)
+            return apology("must select ingredient type", 403)
 
         # Query database for ingredient
         name = request.form.get("ingredientname")
@@ -453,7 +453,7 @@ def addingredient():
 
         # Ensure username exists and password is correct
         if rows:
-            return apology("ingredient already exists", 400)
+            return apology("ingredient already exists", 403)
         else:
             # insert new ingredient into db
             name = request.form.get("ingredientname")
@@ -670,14 +670,14 @@ def addcocktail():
         ingredients = list(filter(None, rawingredients))
 
         if not name:
-            return apology("every good cocktail has a name")
+            return apologynaked("every good cocktail has a name", 403)
         if not ingredients:
-            return apology("an empty glass is not a cocktail")
+            return apologynaked("an empty glass is not a cocktail", 403)
         rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
         rows = db.session.execute(rowsquery, {"name": name, "user_id": session["user_id"]}).fetchall()
         
         if rows:
-            return apology("You already have a cocktail by that name", 400)
+            return apology("You already have a cocktail by that name", 403)
 
 
         return render_template(
@@ -1120,3 +1120,6 @@ def modify_cocktail():
                 db.session.commit()
 
             return redirect(url_for("viewcocktails"))
+
+if __name__ == '__main__':
+    app.run(debug=True)

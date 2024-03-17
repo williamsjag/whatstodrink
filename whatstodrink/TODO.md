@@ -78,6 +78,7 @@ Fixed spinner issues in the various view cocktail routes
 
 ## In Progress
 
+bug: Ingredients not correct in All cocktails view all
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
 
@@ -86,11 +87,6 @@ In Add ingredient on addcocktail find a way to flash a message
 ## Todo 
 
 user modifiability to all ingredients (incl. hide)
-
-add request indicators for slow htmx requests
-    - still need to do type to search in manage
-    - and type to search in add cocktail
-    - make old window disappear and show spinner when going between buttons in cocktail routes
 
 Color/Theme/Prettify
 
