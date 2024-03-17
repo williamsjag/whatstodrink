@@ -16,14 +16,15 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Configure LOCAL DB connection in SQLALCHEMY
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:database@localhost/whatstodrink'
+# Configure LOCAL DB connection in SQLALCHEMY if launched from 'python3 app.py'
+if __name__ == '__main__':
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:database@localhost/whatstodrink'
 
 # Configure PYTHONANYWHERE DB connection in SQLAlchemy for MySQL
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://williamsjag.mysql.pythonanywhere-services.com/williamsjag$whatstodrink'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://williamsjag.mysql.pythonanywhere-services.com/williamsjag$whatstodrink'
+    app.config['SQLALCHEMY_POOL_RECYCLE'] = 299
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
@@ -54,6 +55,7 @@ class Cocktail(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     family = db.Column(db.String(50), default="Orphans")
     notes = db.Column(db.String(1000))
+    ingredients = db.Column(db.String(500))
     
 class Ingredient(db.Model):
     __tablename__ = 'ingredients'
@@ -97,6 +99,7 @@ class CommonCocktail(db.Model):
     build = db.Column(db.String(1000))
     source = db.Column(db.String(50))
     family = db.Column(db.String(50))
+    ingredients = db.Column(db.String(500))
 
 class Tags(db.Model):
     __tablename__ = 'tags'
