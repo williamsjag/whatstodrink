@@ -35,7 +35,7 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False, unique=True)
     hash = db.Column(db.String(200), nullable=False)
     default_cocktails = db.Column(db.String(2), default="on")
-
+    email = db.Column(db.String(50), nullable=False)
 class Amount(db.Model):
     __tablename__ = 'amounts'
 
