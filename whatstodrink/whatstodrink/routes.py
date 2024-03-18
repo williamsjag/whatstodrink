@@ -25,9 +25,10 @@ def register():
 
     # Forget any user_id
     session.clear()
+    form = RegistrationForm()
 
     if request.method == "POST":
-        form = RegistrationForm()
+        
         # ensure username was submitted
         # if not request.form.get("username"):
         #     return apology("must provide username", 400)
@@ -66,7 +67,6 @@ def register():
     
     # if GET
     else:
-        form = RegistrationForm()
         return render_template("register.html", form=form)
 
 
@@ -81,13 +81,7 @@ def login():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         if form.validate_on_submit():
-            # Ensure username was submitted
-            if not request.form.get("username"):
-                return apology("must provide username", 403)
-
-            # Ensure password was submitted
-            elif not request.form.get("password"):
-                return apology("must provide password", 403)
+           
 
             # Query database for username
             uname = request.form.get("username")

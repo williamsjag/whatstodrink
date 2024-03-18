@@ -5,9 +5,9 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
+    email = db.Column(db.String(50), nullable=False, unique=True)
     hash = db.Column(db.String(200), nullable=False)
     default_cocktails = db.Column(db.String(2), default="on")
-    email = db.Column(db.String(50), nullable=False)
 
 class Amount(db.Model):
     __tablename__ = 'amounts'
