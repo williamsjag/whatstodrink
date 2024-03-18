@@ -60,13 +60,16 @@
             </div>
         </nav>
 
-        {% if get_flashed_messages() %}
-            <header>
-                <div class="alert alert-primary mb-0 text-center" role="alert">
-                    {{ get_flashed_messages() | join(" ") }}
-                </div>
-            </header>
-        {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mb-0 text-center" role="alert">
+                        {{ message | join(" ") }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+        {% endwith %}
 
         <main class="container-fluid py-5">
             {% block main %}{% endblock %}

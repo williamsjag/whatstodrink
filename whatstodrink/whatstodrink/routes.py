@@ -4,8 +4,9 @@ from sqlalchemy import select, union, text
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked, login_required
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
+from whatstodrink.forms import RegistrationForm, LoginForm
 
-
+ 
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -16,6 +17,54 @@ def after_request(response):
 
 
 # Login/Logout/Register Routes
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user"""
+
+    # Forget any user_id
+    session.clear()
+
+    if request.method == "POST":
+        form = RegistrationForm()
+        # ensure username was submitted
+        # if not request.form.get("username"):
+        #     return apology("must provide username", 400)
+
+        # ensure password was submitted
+        # elif not request.form.get("password"):
+        #     return apology("must provide password", 400)
+
+        # check that passwords match
+        if request.form.get("password") != request.form.get("confirmation"):
+            return apology("password and confirmation must match", 400)
+
+        # check to see if user exists
+        uname = request.form.get("username")
+        rows = db.session.scalars(select(User.username).where(User.username == uname)).first()
+
+        if not rows:
+            # insert into users table
+            hash = generate_password_hash(
+                request.form.get("password"), method="pbkdf2", salt_length=16
+            )
+            newuser = User(username=uname, hash=hash, default_cocktails='on')
+            db.session.add(newuser)
+            db.session.commit()
+
+        else:
+            return apology("username already exists", 400)
+        
+        if form.validate_on_submit():
+            flash(f"Account created for {form.username.data}!", 'success')
+
+        return redirect(url_for('login'))
+    
+    # if GET
+    else:
+        form = RegistrationForm()
+        return render_template("register.html", form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -72,7 +121,8 @@ def login():
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-        return render_template("login.html")
+        form = LoginForm()
+        return render_template("login.html", form=form)
 
 
 @app.route("/logout")
@@ -84,48 +134,6 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
-
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    """Register user"""
-
-    # Forget any user_id
-    session.clear()
-
-    if request.method == "POST":
-        # ensure username was submitted
-        if not request.form.get("username"):
-            return apology("must provide username", 400)
-
-        # ensure password was submitted
-        elif not request.form.get("password"):
-            return apology("must provide password", 400)
-
-        # check that passwords match
-        elif request.form.get("password") != request.form.get("confirmation"):
-            return apology("password and confirmation must match", 400)
-
-        # check to see if user exists
-        uname = request.form.get("username")
-        rows = db.session.scalars(select(User.username).where(User.username == uname)).first()
-
-        if not rows:
-            # insert into users table
-            hash = generate_password_hash(
-                request.form.get("password"), method="pbkdf2", salt_length=16
-            )
-            newuser = User(username=uname, hash=hash, default_cocktails='on')
-            db.session.add(newuser)
-            db.session.commit()
-
-        else:
-            return apology("username already exists", 400)
-        return redirect("/")
-    
-    # if GET
-    else:
-        return render_template("register.html")
     
 
 # About and Homepage
@@ -550,8 +558,6 @@ def addingredientmodal():
         
             # flash('Ingredient Added')
             return "200"
-
-
 
 
 @app.route("/amounts", methods=["GET", "POST"])
