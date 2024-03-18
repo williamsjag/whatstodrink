@@ -37,29 +37,30 @@ def register():
         #     return apology("must provide password", 400)
 
         # check that passwords match
-        if request.form.get("password") != request.form.get("confirmation"):
-            return apology("password and confirmation must match", 400)
+        # if request.form.get("password") != request.form.get("confirmation"):
+        #     return apology("password and confirmation must match", 400)
 
         # check to see if user exists
-        uname = request.form.get("username")
-        rows = db.session.scalars(select(User.username).where(User.username == uname)).first()
-
-        if not rows:
-            # insert into users table
-            hash = generate_password_hash(
-                request.form.get("password"), method="pbkdf2", salt_length=16
-            )
-            newuser = User(username=uname, hash=hash, default_cocktails='on')
-            db.session.add(newuser)
-            db.session.commit()
-
-        else:
-            return apology("username already exists", 400)
-        
         if form.validate_on_submit():
-            flash(f"Account created for {form.username.data}!", 'success')
+            uname = request.form.get("username")
+            rows = db.session.scalars(select(User.username).where(User.username == uname)).first()
 
-        return redirect(url_for('login'))
+            if not rows:
+                # insert into users table
+                hash = generate_password_hash(
+                    request.form.get("password"), method="pbkdf2", salt_length=16
+                )
+                newuser = User(username=uname, hash=hash, default_cocktails='on')
+                db.session.add(newuser)
+                db.session.commit()
+
+            else:
+                return apology("username already exists", 400)
+            
+            if form.validate_on_submit():
+                flash(f"Account created for {form.username.data}!", 'success')
+
+            return redirect(url_for('login'))
     
     # if GET
     else:
