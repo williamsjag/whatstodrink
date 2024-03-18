@@ -217,9 +217,9 @@ def manageingredients():
             ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"], "q": '%'+q+'%'}).fetchall()
 
             if request.headers.get('HX-Trigger') == 'search':
-                return render_template("/ingredientstable.html", ingredients=ingredients, types=types)
+                return render_template("/ingredientstable.html", ingredients=ingredients, types=types, form=form)
             else:
-                return render_template("/manageingredients.html", ingredients=ingredients, types=types)
+                return render_template("/manageingredients.html", ingredients=ingredients, types=types, form=form)
             
         
         else:
