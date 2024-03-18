@@ -32,3 +32,6 @@ class ManageIngredientsForm(FlaskForm):
     stock = StringField('Stock')
     id = IntegerField('Id')
     source = StringField('Source')
+
+class SettingsForm(FlaskForm):
+    DefaultCocktails = StringField('Enable')

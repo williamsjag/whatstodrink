@@ -4,7 +4,7 @@ from sqlalchemy import select, union, text, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
-from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm
+from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm
 from flask_login import login_user, current_user, logout_user, login_required
  
 @app.after_request
@@ -148,9 +148,12 @@ def about():
 @app.route("/home", methods=["GET", "POST"])
 @login_required
 def index():
+
+    form = SettingsForm()
+
     if request.method == "GET":
         return render_template(
-            "index.html", defaults=session["defaults"]
+            "index.html", defaults=session["defaults"], form=form
         )
     elif request.method == "POST":
         cocktails = request.form.get('cocktailswitch')
@@ -173,7 +176,7 @@ def index():
             # Update current session defaults
             session["defaults"] = ''
 
-        return render_template("index.html")
+        return render_template("index.html", form=form)
 
 # Manage Ingredients and related routes
     
