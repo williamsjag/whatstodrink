@@ -57,10 +57,12 @@ def register():
             else:
                 return apology("username already exists", 400)
             
-            if form.validate_on_submit():
-                flash(f"Account created for {form.username.data}!", 'success')
+            flash(f"Account created for {form.username.data}!", 'success')
 
             return redirect(url_for('login'))
+        
+        else:
+            return render_template("register.html", form=form)
     
     # if GET
     else:
@@ -74,55 +76,60 @@ def login():
 
     # Forget any user_id
     session.clear()
+    form = LoginForm()
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        # Ensure username was submitted
-        if not request.form.get("username"):
-            return apology("must provide username", 403)
+        if form.validate_on_submit():
+            # Ensure username was submitted
+            if not request.form.get("username"):
+                return apology("must provide username", 403)
 
-        # Ensure password was submitted
-        elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            # Ensure password was submitted
+            elif not request.form.get("password"):
+                return apology("must provide password", 403)
 
-        # Query database for username
-        uname = request.form.get("username")
-        password = request.form.get("password")
-        stmt = select(User).where(User.username == uname)
-        rows = db.session.scalars(stmt).first()
+            # Query database for username
+            uname = request.form.get("username")
+            password = request.form.get("password")
+            stmt = select(User).where(User.username == uname)
+            rows = db.session.scalars(stmt).first()
 
-        # Ensure username exists and password is correct
-        if not rows or not check_password_hash(
-            rows.hash, password
-        ):
-            return apology("invalid username and/or password", 403)
+            # Ensure username exists and password is correct
+            if not rows or not check_password_hash(
+                rows.hash, password
+            ):
+                return apology("invalid username and/or password", 403)
 
-        # Remember which user has logged in
-        session["user_id"] = rows.id
-        # Check default cocktail setting
-        session["defaults"] = rows.default_cocktails
+            # Remember which user has logged in
+            session["user_id"] = rows.id
+            # Check default cocktail setting
+            session["defaults"] = rows.default_cocktails
 
-        # make sure user has stock values for all common ingredients on login
-        query = select(CommonIngredient.id)
-        common_ingredients = db.session.scalars(query).all()
+            # make sure user has stock values for all common ingredients on login
+            query = select(CommonIngredient.id)
+            common_ingredients = db.session.scalars(query).all()
 
-        # get all ids in common_ingredients
-        for ingredient in common_ingredients:
-            # check if user has ingredient in common_stock
-            result = db.session.scalars(select(CommonStock.ingredient_id).where(CommonStock.user_id == session["user_id"]).where(CommonStock.ingredient_id == ingredient)).first()
+            # get all ids in common_ingredients
+            for ingredient in common_ingredients:
+                # check if user has ingredient in common_stock
+                result = db.session.scalars(select(CommonStock.ingredient_id).where(CommonStock.user_id == session["user_id"]).where(CommonStock.ingredient_id == ingredient)).first()
 
-            # if not, insert a default
-            if not result:
-                newingredient = CommonStock(ingredient_id=ingredient, user_id = session["user_id"], stock='')
-                db.session.add(newingredient)
-                db.session.commit()
+                # if not, insert a default
+                if not result:
+                    newingredient = CommonStock(ingredient_id=ingredient, user_id = session["user_id"], stock='')
+                    db.session.add(newingredient)
+                    db.session.commit()
 
-        # Redirect user to home page
-        return redirect("/")
+            # Redirect user to home page
+            return redirect("/")
+        
+        else:
+            return render_template("login.html", form=form)
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-        form = LoginForm()
+
         return render_template("login.html", form=form)
 
 

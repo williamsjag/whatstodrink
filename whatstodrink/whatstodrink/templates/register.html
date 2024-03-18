@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/register" class="center-form" method="post">
+    <form action="/register" class="center-form needs-validation" method="post" novalidate>
         <div class="mb-3 form-group">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
@@ -13,45 +13,45 @@
                 <div class="form-group">
                     {{ form.email.label(class="form-control-label") }}
                     {% if form.email.errors %}
-                        {{ form.email(class="form-control mb-3 is-invalid") }}
+                        {{ form.email(class="form-control is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.email.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.email(class="form-control mb-3") }}
+                        {{ form.email(class="form-control") }}
                     {% endif %}
 
                 </div>
                 <div class="form-group">
-                    {{ form.password.label(class="form-control-label") }}
+                    {{ form.password.label(class="form-control-label mt-3") }}
                     {% if form.password.errors %}
-                        {{ form.password(class="form-control mb-3 is-invalid") }}
+                        {{ form.password(class="form-control is-invalid") }}
                             <div class="invalid-feedback">
                                 {% for error in form.password.errors %}
                                     <span>{{ error }}</span>
                                 {% endfor %}
                             </div>
                         {% else %}
-                            {{ form.password(class="form-control mb-3") }}
+                            {{ form.password(class="form-control") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.confirmation.label(class="form-control-label") }}
+                    {{ form.confirmation.label(class="form-control-label mt-3") }}
                     {% if form.confirmation.errors %}
-                        {{ form.confirmation(class="form-control mb-3 is-invalid") }}
+                        {{ form.confirmation(class="form-control is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.confirmation.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.confirmation(class="form-control mb-4") }}
+                        {{ form.confirmation(class="form-control") }}
                     {% endif %}
                 </div>
             </fieldset>
-            <div class="form-group text-center mb-4">
+            <div class="form-group text-center mt-4 mb-4">
                 {{ form.submit(class="btn btn-primary") }}
             </div>
             <!-- <label for="username" class="form-label">Username</label>
@@ -69,4 +69,7 @@
             <!-- <a href="/login" class="btn btn-info" role="button" style="margin-top:10px;">Login</a> -->
         </div>
     </form>
+{% endblock %}
+{% block javascript %}
+
 {% endblock %}
