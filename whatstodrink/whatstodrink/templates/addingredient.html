@@ -11,17 +11,55 @@
     </div>
     <!-- not sure/layout -->
     <div class="container">
-        <form action="/addingredient" class="item-center center-form" method="post">
+        <form action="/addingredient" class="item-center center-form needs-validation" method="post" novalidate>
+          {{ form.csrf_token }}
             <div class="form-group mb-3">
-                <label for="ingredientname" class="form-label">Ingredient Name</label>
-                <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
-            </div>
-            <div class="form-group mb-3">
-                <label for="short_name" class="form-label">Simplified Name (optional) <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i></label>
-                <input autocomplete="off" autofocus class="form-control" id="short_name" name="short_name" placeholder="Simplified name" type="text">
-            </div>
-            <div class="form-group mb-3">
-                <label for="type" class="form-label">Ingredient Type</label>
+              {{ form.name.label(class="form-control-label") }}
+              {% if form.name.errors %}
+                        {{ form.name(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control") }}
+                    {% endif %} 
+            </div> 
+            <div class="form-group">
+              {{ form.short_name.label(class="form-control-label mt-3") }} <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i>
+              {% if form.short_name.errors %}
+                  {{ form.short_name(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.short_name.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.short_name(class="form-control") }}
+              {% endif %}                
+          </div>
+          <div class="form-group">
+            {{ form.type.label(class="form-label mt-3") }}
+            {% if form.type.errors %}
+              <select name="type" id="type" class="form-select is-invalid" required>
+                <option value="" disabled selected>--Ingredient Type--</option>
+                <option value="Spirit">Spirit</option>
+                <option value="Liqueur">Liqueur</option>
+                <option value="Liqueur">Amaro</option>
+                <option value="Wine/Vermouth/Sherry">Wine/Vermouth/Sherry</option>
+                <option value="Bitters">Bitters</option>
+                <option value="Syrup">Syrup</option>
+                <option value="Juice">Juice</option>
+                <option value="Pantry/Fridge">Pantry/Fridge</option>
+                <option value="Other">Other</option>
+              </select>
+                <div class="invalid-feedback">
+                    {% for error in form.type.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+              {% else %}
                 <select name="type" id="type" class="form-select" required>
                     <option value="" disabled selected>--Ingredient Type--</option>
                     <option value="Spirit">Spirit</option>
@@ -34,18 +72,48 @@
                     <option value="Pantry/Fridge">Pantry/Fridge</option>
                     <option value="Other">Other</option>
                 </select>
+              {% endif %}
+            </div>
+          <div class="form-group">
+            {{ form.notes.label(class="form-control-label mt-3") }}
+            {% if form.notes.errors %}
+                {{ form.notes(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.notes.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.notes(placeholder="Recipe if homemade, etc...", class="form-control") }}
+            {% endif %}                
+          </div>
+          <div class=" form-check mt-3">
+            <label for="stock">In Stock:</label>
+                <input id="stock" name="stock" type="checkbox">           
+          </div>
+          <div class="form-group text-center mt-4">
+            {{ form.submit(class="btn btn-primary mt-3") }}
+          </div>
+
+                <!-- <label for="ingredientname" class="form-label">Ingredient Name</label>
+                <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
             </div>
             <div class="form-group mb-3">
+                <label for="short_name" class="form-label">Simplified Name (optional) <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i></label>
+                <input autocomplete="off" autofocus class="form-control" id="short_name" name="short_name" placeholder="Simplified name" type="text">
+            </div> -->
+            
+            <!-- <div class="form-group mb-3">
                 <label for="notes" class="form-label">Notes</label>
                 <textarea autocomplete="off" class="form-control" id="notes" name="notes" placeholder="Recipe if homemade, etc..." rows="4"></textarea>    
-            </div>
-            <div class="mb-3 text-center form-check">
+            </div> -->
+            <!-- <div class="mb-3 text-center form-check">
                 <label for="stock">In Stock:</label>
                 <input id="stock" name="stock" type="checkbox">
             </div>
             <div class="mb-3 text-center">
                 <button class="btn btn-primary" type="submit">Add Ingredient</button>
-            </div>
+            </div> -->
         </form>
     </div>
 

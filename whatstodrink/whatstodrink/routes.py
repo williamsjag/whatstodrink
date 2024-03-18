@@ -4,7 +4,7 @@ from sqlalchemy import select, union, text, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
-from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm
+from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm
 from flask_login import login_user, current_user, logout_user, login_required
  
 @app.after_request
@@ -82,9 +82,7 @@ def login():
                 login_user(user, remember=form.remember.data)
                 next_page = request.args.get('next')
                 print(request.args)
-        
-                # Remember which user has logged in
-                session["user_id"] = user.id
+
                 # Check default cocktail setting
                 session["defaults"] = user.default_cocktails
 
@@ -95,11 +93,11 @@ def login():
                 # get all ids in common_ingredients
                 for ingredient in common_ingredients:
                     # check if user has ingredient in common_stock
-                    result = db.session.scalars(select(CommonStock.ingredient_id).where(CommonStock.user_id == session["user_id"]).where(CommonStock.ingredient_id == ingredient)).first()
+                    result = db.session.scalars(select(CommonStock.ingredient_id).where(CommonStock.user_id == current_user.id).where(CommonStock.ingredient_id == ingredient)).first()
 
                     # if not, insert a default
                     if not result:
-                        newingredient = CommonStock(ingredient_id=ingredient, user_id = session["user_id"], stock='')
+                        newingredient = CommonStock(ingredient_id=ingredient, user_id = current_user.id, stock='')
                         db.session.add(newingredient)
                         db.session.commit()
 
@@ -119,12 +117,11 @@ def login():
 
 
 @app.route("/logout")
+@login_required
 def logout():
     """Log user out"""
 
     logout_user()
-    # Forget any user_id
-    session.clear()
 
     # Redirect user to login form
     return redirect(url_for('login'))
@@ -152,8 +149,12 @@ def index():
     form = SettingsForm()
 
     if request.method == "GET":
+        defaults = session.get("defaults")
+        if defaults is None:
+            session['defaults'] = current_user.default_cocktails
+            defaults = session['defaults']
         return render_template(
-            "index.html", defaults=session["defaults"], form=form
+            "index.html", defaults=defaults, form=form
         )
     elif request.method == "POST":
         cocktails = request.form.get('cocktailswitch')
@@ -161,7 +162,7 @@ def index():
         if cocktails:
             # Update database defaults for next login
             cocktailupdate = text("UPDATE users SET default_cocktails = 'on' WHERE id = :user_id")
-            db.session.execute(cocktailupdate, {"user_id": session["user_id"]})
+            db.session.execute(cocktailupdate, {"user_id": current_user.id})
             db.session.commit()
 
             # Update current session defaults
@@ -170,7 +171,7 @@ def index():
         else:
             # Update database defaults for next login
             cocktailupdate = text("UPDATE users SET default_cocktails = '' WHERE id = :user_id")
-            db.session.execute(cocktailupdate, {"user_id": session["user_id"]})
+            db.session.execute(cocktailupdate, {"user_id": current_user.id})
             db.session.commit()
 
             # Update current session defaults
@@ -197,13 +198,13 @@ def manageingredients():
             common_query = (
                 select(CommonIngredient.type.distinct())
                 .select_from(CommonIngredient)
-                .outerjoin(CommonStock, (CommonIngredient.id == CommonStock.ingredient_id) & (CommonStock.user_id == session["user_id"]))
+                .outerjoin(CommonStock, (CommonIngredient.id == CommonStock.ingredient_id) & (CommonStock.user_id == current_user.id))
                 .where(CommonIngredient.name.like('%' + q + '%'))
             )
             user_query = (
                 select(Ingredient.type.distinct())
                 .select_from(Ingredient)
-                .where((Ingredient.user_id == session["user_id"]) & (Ingredient.name.like('%' + q + '%')))
+                .where((Ingredient.user_id == current_user.id) & (Ingredient.name.like('%' + q + '%')))
                 )
             query = union(common_query, user_query)
 
@@ -217,7 +218,7 @@ def manageingredients():
                                     FROM ingredients i \
                                     WHERE i.user_id = :user_id AND i.name LIKE :q\
                                     ORDER BY name ASC")
-            ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"], "q": '%'+q+'%'}).fetchall()
+            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "q": '%'+q+'%'}).fetchall()
 
             if request.headers.get('HX-Trigger') == 'search':
                 return render_template("/ingredientstable.html", ingredients=ingredients, types=types, form=form)
@@ -235,7 +236,7 @@ def manageingredients():
                                      FROM ingredients i \
                                      WHERE i.user_id = :user_id \
                                      ORDER BY name ASC")
-            ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
             return render_template(
                 "manageingredients.html", ingredients=ingredients, types=types, form=form
             )
@@ -262,7 +263,7 @@ def manageingredients():
                     sql_query = text(f"UPDATE {table_name} SET stock = :stock WHERE {id_column} = :ingredient_id AND user_id = :user_id")
                 
                     # Update the stock value
-                    db.session.execute(sql_query, {"stock": stock, "ingredient_id": ingredient_id, "user_id": session["user_id"]})
+                    db.session.execute(sql_query, {"stock": stock, "ingredient_id": ingredient_id, "user_id": current_user.id})
 
                     db.session.commit()
                 except Exception as e:
@@ -294,7 +295,7 @@ def modify_ingredient():
             if new_name:
 
                 checkquery = text("SELECT id FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT id FROM common_ingredients WHERE name = :name")
-                check = db.session.execute(checkquery, {"name": new_name, "user_id": session["user_id"]}).fetchall()
+                check = db.session.execute(checkquery, {"name": new_name, "user_id": current_user.id}).fetchall()
 
                 if check:
 
@@ -303,7 +304,7 @@ def modify_ingredient():
                 else:
 
                     renamequery = text("UPDATE ingredients SET name = :name WHERE name = :old_name AND user_id = :user_id")
-                    db.session.execute(renamequery, {"name": new_name, "old_name": ingredient, "user_id": session["user_id"]})
+                    db.session.execute(renamequery, {"name": new_name, "old_name": ingredient, "user_id": current_user.id})
                     db.session.commit()
                     
                     # flash("Ingredient Renamed")
@@ -320,7 +321,7 @@ def modify_ingredient():
             ingredient = request.form.get('modifiedIngredientName')
             shortname = request.form.get('short_name')
             updatequery = text("UPDATE ingredients SET type = :type, notes = :notes WHERE name = :name AND user_id = :user_id")
-            db.session.execute(updatequery,  {"type": newtype, "notes": newnotes, "name": ingredient, "short_name": shortname, "user_id": session["user_id"]})
+            db.session.execute(updatequery,  {"type": newtype, "notes": newnotes, "name": ingredient, "short_name": shortname, "user_id": current_user.id})
             db.session.commit()                  
 
             flash("Ingredient Modified")
@@ -351,7 +352,7 @@ def modify_ingredient():
 
             name = request.form.get('name')
             ingredientquery = text("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = :name AND user_id = :user_id")
-            ingredient = db.session.execute(ingredientquery, {"name": name, "user_id": session["user_id"]}).fetchall()
+            ingredient = db.session.execute(ingredientquery, {"name": name, "user_id": current_user.id}).fetchall()
 
             typesquery = text("SELECT DISTINCT type FROM common_ingredients")
             types = db.session.execute(typesquery).fetchall()
@@ -368,7 +369,7 @@ def modify_ingredient():
 
             ingredient_delete = request.form.get("ingredient_delete")
             deletequery = text("DELETE FROM ingredients WHERE name = :name AND user_id = :user_id")
-            db.session.execute(deletequery, {"name": ingredient_delete, "user_id": session["user_id"]})
+            db.session.execute(deletequery, {"name": ingredient_delete, "user_id": current_user.id})
             db.session.commit()
 
             # flash('Ingredient Deleted')
@@ -401,7 +402,7 @@ def ingredientmodal2():
 
         # Query database for ingredient
         rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :ingredientname")
-        rows = db.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "user_id": session["user_id"]}).fetchall()
+        rows = db.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "user_id": current_user.id}).fetchall()
 
         # Ensure username exists and password is correct
         if rows:
@@ -409,7 +410,7 @@ def ingredientmodal2():
         else:
             # insert new ingredient into db
             new_ingredient = Ingredient(
-                user_id=session["user_id"],
+                user_id=current_user.id,
                 name=request.form.get("ingredientname"),
                 type=request.form.get("type"),
                 stock=request.form.get("stock"),
@@ -436,46 +437,44 @@ def ingredientmodal2():
 @login_required
 def addingredient():
 
+    form = AddIngredientForm()
+
     # reached via post
-     if request.method == "POST":
-        # Ensure ingredient was submitted
-        if not request.form.get("ingredientname"):
-            return apology("must add ingredient", 403)
-
-        # Ensure type was submitted
-        elif not request.form.get("type"):
-            return apology("must select ingredient type", 403)
-
-        # Query database for ingredient
-        name = request.form.get("ingredientname")
-        query = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
-        rows = db.session.execute(query, {"name": name, "user_id": session["user_id"]}).fetchall()
-
-        # Ensure username exists and password is correct
-        if rows:
-            return apology("ingredient already exists", 403)
-        else:
-            # insert new ingredient into db
+    if request.method == "POST":
+        if form.validate_on_submit():
+    
+            # Query database for ingredient
             name = request.form.get("ingredientname")
-            type = request.form.get("type")
-            stock = request.form.get("stock")
-            short_name = request.form.get("short_name")
-            notes = request.form.get("notes")
+            query = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
+            rows = db.session.execute(query, {"name": name, "user_id": current_user.id}).fetchall()
 
-            insert = text("INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(:user_id, :name, :type, :stock, :short_name, :notes)")
+            # Ensure username exists and password is correct
+            if rows:
+                return apology("ingredient already exists", 403)
+            else:
+                # insert new ingredient into db
+                name = request.form.get("ingredientname")
+                type = request.form.get("type")
+                stock = request.form.get("stock")
+                short_name = request.form.get("short_name")
+                notes = request.form.get("notes")
 
-            db.session.execute(insert, {"user_id": session["user_id"], "name": name, "type": type, "stock": stock, "short_name": short_name, "notes": notes})
-            db.session.commit()
-            
-            flash('Ingredient Added')
+                insert = text("INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(:user_id, :name, :type, :stock, :short_name, :notes)")
 
-        return render_template(
-            "addingredient.html"
-        )
+                db.session.execute(insert, {"user_id": current_user.id, "name": name, "type": type, "stock": stock, "short_name": short_name, "notes": notes})
+                db.session.commit()
+                
+                flash('Ingredient Added')
+
+            return render_template(
+                "addingredient.html"
+            )
+        else:
+            return render_template('addingredient.html', form=form)
     # User reached route via GET (as by clicking a link or via redirect)
-     else:
+    else:
         return render_template(
-            "addingredient.html"
+            "addingredient.html", form=form
         )
     
 
@@ -502,7 +501,7 @@ def addcocktail():
         if not ingredients:
             return apologynaked("an empty glass is not a cocktail", 403)
         rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
-        rows = db.session.execute(rowsquery, {"name": name, "user_id": session["user_id"]}).fetchall()
+        rows = db.session.execute(rowsquery, {"name": name, "user_id": current_user.id}).fetchall()
         
         if rows:
             return apology("You already have a cocktail by that name", 403)
@@ -525,7 +524,7 @@ def ingredientsearch():
                              SELECT name FROM ingredients\
                              WHERE name LIKE :q AND user_id = :user_id\
                              LIMIT 10")
-        results = db.session.execute(resultsquery, {"q": '%'+q+'%', "user_id": session["user_id"]}).fetchall()
+        results = db.session.execute(resultsquery, {"q": '%'+q+'%', "user_id": current_user.id}).fetchall()
         
     else:
         results = []
@@ -549,7 +548,7 @@ def addingredientmodal():
 
         # Query database for ingredient
         rowsquery = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
-        rows = db.session.execute(rowsquery, {"name": request.form.get("ingredientname"), "user_id": session["user_id"]}).fetchall()
+        rows = db.session.execute(rowsquery, {"name": request.form.get("ingredientname"), "user_id": current_user.id}).fetchall()
 
         # Ensure username exists and password is correct
         if rows:
@@ -557,7 +556,7 @@ def addingredientmodal():
         else:
             # insert new ingredient into db
             insertquery = text("INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(:user_id, :name, :type, :stock, :short_name, :notes)")
-            db.session.execute(insertquery, {"user_id": session["user_id"], "name": request.form.get("ingredientname"), "type": request.form.get("type"), "stock": request.form.get("stock"), "short_name": request.form.get("short-name"), "notes": request.form.get("notes)")})
+            db.session.execute(insertquery, {"user_id": current_user.id, "name": request.form.get("ingredientname"), "type": request.form.get("type"), "stock": request.form.get("stock"), "short_name": request.form.get("short-name"), "notes": request.form.get("notes)")})
             db.session.commit()
         
             # flash('Ingredient Added')
@@ -576,7 +575,7 @@ def amounts():
 
          # add cocktail to db
         addquery = text("INSERT INTO cocktails (name, build, source, family, user_id) VALUES(:name, :build, :source, :family, :user_id)")
-        db.session.execute(addquery, {"name": name, "build": build, "source": source, "family": family, "user_id": session["user_id"]})
+        db.session.execute(addquery, {"name": name, "build": build, "source": source, "family": family, "user_id": current_user.id})
         db.session.commit()
 
         for key, value, in request.form.items():
@@ -588,17 +587,17 @@ def amounts():
                     'user' AS source, id \
                     FROM ingredients \
                     WHERE name = :name AND user_id = :user_id")
-                id_source = db.session.execute(sourcequery, {"name": ingredient_name, "user_id": session["user_id"]}).fetchone()
+                id_source = db.session.execute(sourcequery, {"name": ingredient_name, "user_id": current_user.id}).fetchone()
                 
                 amount = value
                
                 # get cocktail id
                 c_id_query = text("SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id")
-                cocktail_id = db.session.scalar(c_id_query, {"name": name, "user_id": session["user_id"]})
+                cocktail_id = db.session.scalar(c_id_query, {"name": name, "user_id": current_user.id})
                 
                 #add ingredients and amounts to db
                 insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
-                db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount": amount, "ingredient_source": id_source.source, "user_id": session["user_id"]})
+                db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount": amount, "ingredient_source": id_source.source, "user_id": current_user.id})
                 db.session.commit()
                 
     flash('Cocktail Added')
@@ -626,7 +625,7 @@ def viewallcocktails():
         SELECT 'common' AS csource, name, id, family, build, source \
         FROM common_cocktails")
 
-    allcocktails = db.session.execute(allquery, {"user_id": session["user_id"]}).fetchall()
+    allcocktails = db.session.execute(allquery, {"user_id": current_user.id}).fetchall()
     
     ingredientsquery = text("\
                             WITH allingredients AS (\
@@ -638,10 +637,10 @@ def viewallcocktails():
                                 SELECT ingredient_id FROM common_amounts\
                                 UNION select ingredient_id FROM amounts WHERE user_id = :user_id) \
                             SELECT id, name, short_name FROM allingredients INNER JOIN usedingredients ON allingredients.id = usedingredients.ingredient_id")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
 
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     allfamilies = set(Cocktail.family for Cocktail in allcocktails)
 
@@ -690,13 +689,13 @@ def modify_cocktail():
         if "renamebutton" in request.form:
             if new_name:
                 rowsquery = text("SELECT name FROM cocktails WHERE name = :new_name AND user_id = :user_id")
-                rows = db.session.execute(rowsquery, {"new_name": new_name, "user_id": session["user_id"]}).fetchall()
+                rows = db.session.execute(rowsquery, {"new_name": new_name, "user_id": current_user.id}).fetchall()
                 
                 if rows:
                     return apology("You already have a cocktail by that name", 400)
                 else:
                     update = text("UPDATE cocktails SET name = :new_name WHERE name = :cocktail AND user_id = :user_id")
-                    db.session.execute(update, {"new_name": new_name, "cocktail": cocktail, "user_id": session["user_id"]})
+                    db.session.execute(update, {"new_name": new_name, "cocktail": cocktail, "user_id": current_user.id})
                     db.session.commit()
                     flash("Cocktail Renamed")
                     return redirect(url_for('viewcocktails'))
@@ -714,9 +713,9 @@ def modify_cocktail():
                        (SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id LIMIT 1) \
                        DELETE FROM amounts \
                        WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)")
-            db.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": session["user_id"]})
+            db.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": current_user.id})
             cocktaildeletequery = text("DELETE FROM cocktails WHERE name = :name AND user_id = :user_id")
-            db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": session["user_id"]})
+            db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": current_user.id})
             db.session.commit()
             
             flash('Cocktail Deleted')
@@ -724,13 +723,13 @@ def modify_cocktail():
         
         elif "changerecipe" in request.form:
             recipequery = text("SELECT id, name, build, source, family FROM cocktails WHERE name = :name AND user_id = :user_id")
-            recipe = db.session.execute(recipequery, {"name": cocktail, "user_id": session["user_id"]}).fetchone()
+            recipe = db.session.execute(recipequery, {"name": cocktail, "user_id": current_user.id}).fetchone()
 
             amountsquery = text("SELECT ingredient_id, amount, ingredient_source FROM amounts WHERE cocktail_id = :cocktail_id")
             amounts = db.session.execute(amountsquery, {"cocktail_id": recipe.id}).fetchall()
 
             ingredientsquery = text("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = :user_id")
-            ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
 
             families = db.session.scalars(select(CommonCocktail.family.distinct())).fetchall()
             
@@ -753,7 +752,7 @@ def modify_cocktail():
                        source = :source, \
                        family = :family \
                        WHERE (id = :id AND user_id = :user_id)")
-            db.session.execute(updatequery, {"build": build, "source": source, "family": family, "id": id, "user_id": session["user_id"]})
+            db.session.execute(updatequery, {"build": build, "source": source, "family": family, "id": id, "user_id": current_user.id})
             db.session.commit()
 
             # get number of rows
@@ -767,7 +766,7 @@ def modify_cocktail():
 
             # clear amounts for cocktail
             clearamounts = text("DELETE FROM amounts WHERE cocktail_id = :cocktail_id AND user_id = :user_id")
-            db.session.execute(clearamounts, {"cocktail_id": id, "user_id": session["user_id"]})
+            db.session.execute(clearamounts, {"cocktail_id": id, "user_id": current_user.id})
             db.session.commit()
 
             # for each table row...
@@ -782,7 +781,7 @@ def modify_cocktail():
                     'user' AS source, id \
                     FROM ingredients \
                     WHERE name = :name AND user_id = :user_id")
-                id_source = db.session.execute(id_sourcequery, {"name": ingredient, "user_id": session["user_id"]}).fetchone()
+                id_source = db.session.execute(id_sourcequery, {"name": ingredient, "user_id": current_user.id}).fetchone()
                 
                 ingredient_source = id_source.source
                 ingredient_id = id_source.id   
@@ -790,7 +789,7 @@ def modify_cocktail():
                 # write into database
                 insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source) \
                            VALUES(:cocktail_id, :ingredient_id, :amount, :user_id, :ingredient_source)")
-                db.session.execute(insertquery, {"cocktail_id": id, "ingredient_id": ingredient_id, "amount": amount, "user_id": session["user_id"], "ingredient_source": ingredient_source})
+                db.session.execute(insertquery, {"cocktail_id": id, "ingredient_id": ingredient_id, "amount": amount, "user_id": current_user.id, "ingredient_source": ingredient_source})
                 db.session.commit()
 
             return redirect(url_for("viewcocktails"))
@@ -804,7 +803,7 @@ def viewuser():
                         FROM cocktails \
                         WHERE user_id = :user_id")
    
-    usercocktails = db.session.execute(cocktailquery, {"user_id": session["user_id"]}).fetchall()
+    usercocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
     print(f"{usercocktails}")
    
     ingredientsquery = text("WITH allingredients AS (\
@@ -815,10 +814,10 @@ def viewuser():
                             usedingredients AS (\
                                 SELECT ingredient_id FROM amounts WHERE user_id = :user_id) \
                             SELECT id, name, short_name FROM allingredients WHERE id IN (SELECT ingredient_id FROM usedingredients)")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
         
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
     userfamilies = set(Cocktail.family for Cocktail in usercocktails)
 
     return render_template(
@@ -858,7 +857,7 @@ def missingoneall():
         "OR (a.ingredient_source = 'common' AND cs.stock != 'on' AND cs.user_id = :user_id) "
         "GROUP BY c.id "
         "HAVING COUNT(*) = 1") 
-    cocktails = db.session.execute(cocktailsquery, {"user_id": session["user_id"]}).fetchall()
+    cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
 
     missingquery = text("WITH sad_cocktails AS (\
             SELECT cc.id "
@@ -891,13 +890,13 @@ def missingoneall():
         JOIN common_stock cs ON ci.id = cs.ingredient_id \
         WHERE (cs.stock != 'on' AND cs.user_id = :user_id AND ci.id IN (SELECT ingredient_id FROM sad_amounts)) \
         GROUP BY ci.id")
-    missing_ingredients = db.session.execute(missingquery, {"user_id": session["user_id"]}).fetchall()
+    missing_ingredients = db.session.execute(missingquery, {"user_id": current_user.id}).fetchall()
    
     ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
    
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     return render_template(
         "missingoneall.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, missing_ingredients=missing_ingredients, defaults=session["defaults"]
@@ -919,7 +918,7 @@ def missingoneuser():
             ") \
         GROUP BY c.id "
         "HAVING COUNT(*) = 1")
-    cocktails = db.session.execute(cocktailquery, {"user_id": session["user_id"]}).fetchall()
+    cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
 
     missingquery = text("WITH sad_cocktails AS (\
             SELECT c.id "
@@ -946,13 +945,13 @@ def missingoneuser():
         JOIN common_stock cs ON ci.id = cs.ingredient_id \
         WHERE (cs.stock != 'on' AND cs.user_id = :user_id AND ci.id IN (SELECT ingredient_id FROM sad_amounts)) \
         GROUP BY ci.id")
-    missing_ingredients = db.session.execute(missingquery, {"user_id": session["user_id"]}).fetchall()
+    missing_ingredients = db.session.execute(missingquery, {"user_id": current_user.id}).fetchall()
     
     ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
    
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     return render_template(
         "missingoneuser.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, missing_ingredients=missing_ingredients
@@ -983,7 +982,7 @@ def whatstodrinkuser():
         "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND cs.user_id = :user_id AND c.user_id = :user_id) "
         "GROUP BY c.id "
         "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)")
-    cocktails = db.session.execute(cocktailsquery, {"user_id": session["user_id"]}).fetchall()
+    cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
 
     ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
     ingredientsquery = text("WITH allingredients AS \
@@ -993,10 +992,10 @@ def whatstodrinkuser():
                                 (SELECT ingredient_id FROM amounts WHERE user_id = :user_id) \
                             SELECT id, name, short_name FROM allingredients INNER JOIN amounts ON allingredients.id = amounts.ingredient_id\
                         ")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
    
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     families = set(Cocktail.family for Cocktail in cocktails)
 
@@ -1026,7 +1025,7 @@ def whatstodrinkall():
     "OR (a.ingredient_source = 'common' AND cs.stock = 'on' AND cs.user_id = :user_id AND c.user_id = :user_id) "
     "GROUP BY c.id "
     "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)")
-    cocktails = db.session.execute(cocktailquery, {"user_id": session["user_id"]}).fetchall()
+    cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
    
     # ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
     ingredientsquery = text("WITH allingredients AS \
@@ -1037,10 +1036,10 @@ def whatstodrinkall():
                                 UNION SELECT ingredient_id FROM common_amounts)\
                             SELECT id, name, short_name FROM allingredients INNER JOIN amounts ON allingredients.id = amounts.ingredient_id\
                         ")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
+    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
         
     amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": session["user_id"]}).fetchall()
+    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     families = set(Cocktail.family for Cocktail in cocktails)
 

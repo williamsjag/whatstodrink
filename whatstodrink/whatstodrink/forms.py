@@ -1,9 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from whatstodrink.models import User
+from whatstodrink.models import User, Ingredient, CommonIngredient
 from whatstodrink import db
-from sqlalchemy import select
+from sqlalchemy import select, text
+from flask_login import current_user
+from werkzeug.security import check_password_hash
 
 
 class RegistrationForm(FlaskForm):
@@ -27,6 +29,25 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+    def validate_username(self, username):
+        user = db.session.scalars(select(User.username).where(User.username == username.data)).first()
+        mail = db.session.scalars(select(User.email).where(User.email == username.data)).first()
+        if not user or mail:
+            raise ValidationError("Username or Email invalid")
+        
+    def validate_password(self, password):
+        username = self.username.data
+        user = db.session.scalars(select(User).where(User.username == username)).first()
+        mail = db.session.scalars(select(User).where(User.email == username)).first()
+        if user:
+            if not check_password_hash(user.hash, password.data):
+                raise ValidationError("Incorrect Password")
+        if mail:
+            if not check_password_hash(mail.hash, password.data):
+                raise ValidationError("Incorrect Password")
+
+
     
 class ManageIngredientsForm(FlaskForm):
     stock = StringField('Stock')
@@ -35,3 +56,34 @@ class ManageIngredientsForm(FlaskForm):
 
 class SettingsForm(FlaskForm):
     DefaultCocktails = StringField('Enable')
+
+class AddIngredientForm(FlaskForm):
+    type_choices = [
+        ('', '--Ingredient Type--'),
+        ('Spirit', 'Spirit'),
+        ('Liqueur', 'Liqueur'),
+        ('Amaro', 'Amaro'),
+        ('Wine/Vermouth/Sherry', 'Wine/Vermouth/Sherry'),
+        ('Bitters', 'Bitters'),
+        ('Syrup', 'Syrup'),
+        ('Juice', 'Juice'),
+        ('Pantry/Fridge', 'Pantry/Fridge'),
+        ('Other', 'Other')
+    ]
+    name = StringField('Ingredient Name', validators=[DataRequired()])
+    short_name = StringField('Simplified Name (optional)')
+    type = SelectField('Ingredient Type', choices=type_choices, validators=[DataRequired()])
+    notes = TextAreaField('Notes')
+    stock = BooleanField('In Stock:')
+    submit = SubmitField('Add Ingredient')
+
+    def validate_name(self, name):
+        # query = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
+        ingredient = db.session.execute(select(Ingredient.name).where(Ingredient.name == name).where(Ingredient.user_id == current_user.id)).fetchall()
+        commoningredient = db.session.execute(select(CommonIngredient.name).where(CommonIngredient.name == name.data)).fetchall()
+       
+        # ingredient = db.session.execute(query, {"name": name, "user_id": current_user.id}).fetchall()
+        print(current_user.id)
+        if ingredient or commoningredient:
+            raise ValidationError("That ingredient already exists")
+        
