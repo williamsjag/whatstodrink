@@ -7,20 +7,20 @@
 {% block main %}
     <form action="/login" class="center-form needs-validation" method="post" novalidate>
         <div class="form-group mb-3">
-            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Log In</legend>
                 <div class="form-group">
-                    {{ form.email.label(class="form-control-label") }}
-                    {% if form.email.errors %}
-                        {{ form.email(class="form-control is-invalid") }}
+                    {{ form.username.label(class="form-control-label") }}
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.email.errors %}
+                            {% for error in form.username.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.email(class="form-control") }}
+                        {{ form.username(class="form-control") }}
                     {% endif %}                
                 </div>
                 <div class="form-group">

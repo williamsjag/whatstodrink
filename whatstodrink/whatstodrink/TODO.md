@@ -75,6 +75,10 @@ Mysql transition complete. Now fixing bugs
 Fixed the sql query problem in whatsmissing?
 update database on button click in manage ingredients, remove submit button
 Fixed spinner issues in the various view cocktail routes
+Made Application into a package
+Split off models and routes from init
+Created forms.py and started converting to that for ease of use
+Moved login and register to wtfforms
 
 ## In Progress
 

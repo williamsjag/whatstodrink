@@ -7,7 +7,7 @@
 {% block main %}
     <form action="/register" class="center-form needs-validation" method="post" novalidate>
         <div class="mb-3 form-group">
-            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Register</legend>
                 <div class="form-group">
