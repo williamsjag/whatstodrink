@@ -2,10 +2,10 @@ from flask import flash, redirect, render_template, request, session, url_for
 from whatstodrink import app, db
 from sqlalchemy import select, union, text, or_
 from werkzeug.security import check_password_hash, generate_password_hash
-from whatstodrink.helpers import apology, apologynaked, login_required
+from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
-from whatstodrink.forms import RegistrationForm, LoginForm
-from flask_login import login_user, current_user, logout_user
+from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm
+from flask_login import login_user, current_user, logout_user, login_required
  
 @app.after_request
 def after_request(response):
@@ -80,6 +80,8 @@ def login():
 
             else:
                 login_user(user, remember=form.remember.data)
+                next_page = request.args.get('next')
+                print(request.args)
         
                 # Remember which user has logged in
                 session["user_id"] = user.id
@@ -102,7 +104,10 @@ def login():
                         db.session.commit()
 
                 # Redirect user to home page
-                return redirect("/")
+                if next_page:
+                    return redirect(next_page)
+                else:
+                    return redirect(url_for('index'))
         
         else:
             return render_template("login.html", form=form)
@@ -129,7 +134,7 @@ def logout():
 @login_required
 def account():
 
-    return render_template("/account")
+    return render_template("account.html")
 
 # About and Homepage
     
@@ -176,6 +181,8 @@ def index():
 @app.route("/manageingredients", methods=["GET", "POST"])
 @login_required
 def manageingredients():
+
+    form = ManageIngredientsForm()
     
     if request.method =="GET":
 
@@ -227,7 +234,7 @@ def manageingredients():
                                      ORDER BY name ASC")
             ingredients = db.session.execute(ingredientsquery, {"user_id": session["user_id"]}).fetchall()
             return render_template(
-                "manageingredients.html", ingredients=ingredients, types=types
+                "manageingredients.html", ingredients=ingredients, types=types, form=form
             )
     elif request.method =="POST":
         for key, value, in request.form.items():
@@ -249,11 +256,10 @@ def manageingredients():
                 stock = 'on' if ingredient_stock == 'on' else ''
 
                 try:
-                    with db.session.begin():
-                        sql_query = text(f"UPDATE {table_name} SET stock = :stock WHERE {id_column} = :ingredient_id AND user_id = :user_id")
-                    
-                        # Update the stock value
-                        db.session.execute(sql_query, {"stock": stock, "ingredient_id": ingredient_id, "user_id": session["user_id"]})
+                    sql_query = text(f"UPDATE {table_name} SET stock = :stock WHERE {id_column} = :ingredient_id AND user_id = :user_id")
+                
+                    # Update the stock value
+                    db.session.execute(sql_query, {"stock": stock, "ingredient_id": ingredient_id, "user_id": session["user_id"]})
 
                     db.session.commit()
                 except Exception as e:
@@ -262,7 +268,7 @@ def manageingredients():
 
                 
         return redirect(url_for(
-            "manageingredients"
+            "manageingredients", form=form
         ))
     
 

@@ -82,9 +82,9 @@ Moved login and register to wtfforms
 
 ## In Progress
 
-bug: Ingredients not correct in All cocktails view all
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
+bug: next feature not working in login
 
 In Add ingredient on addcocktail find a way to flash a message
 
