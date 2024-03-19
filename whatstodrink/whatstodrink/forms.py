@@ -58,21 +58,9 @@ class SettingsForm(FlaskForm):
     DefaultCocktails = StringField('Enable')
 
 class AddIngredientForm(FlaskForm):
-    type_choices = [
-        ('', '--Ingredient Type--'),
-        ('Spirit', 'Spirit'),
-        ('Liqueur', 'Liqueur'),
-        ('Amaro', 'Amaro'),
-        ('Wine/Vermouth/Sherry', 'Wine/Vermouth/Sherry'),
-        ('Bitters', 'Bitters'),
-        ('Syrup', 'Syrup'),
-        ('Juice', 'Juice'),
-        ('Pantry/Fridge', 'Pantry/Fridge'),
-        ('Other', 'Other')
-    ]
     name = StringField('Ingredient Name', validators=[DataRequired()])
     short_name = StringField('Simplified Name (optional)')
-    type = SelectField('Ingredient Type', choices=type_choices, validators=[DataRequired()])
+    type = SelectField('Ingredient Type', validators=[DataRequired()])
     notes = TextAreaField('Notes')
     stock = BooleanField('In Stock:')
     submit = SubmitField('Add Ingredient')
@@ -83,7 +71,6 @@ class AddIngredientForm(FlaskForm):
         commoningredient = db.session.execute(select(CommonIngredient.name).where(CommonIngredient.name == name.data)).fetchall()
        
         # ingredient = db.session.execute(query, {"name": name, "user_id": current_user.id}).fetchall()
-        print(current_user.id)
         if ingredient or commoningredient:
-            raise ValidationError("That ingredient already exists")
+            raise ValidationError("This ingredient already exists")
         

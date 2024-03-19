@@ -75,7 +75,7 @@ def login():
             if not user or not check_password_hash(
                 user.hash, password
             ):
-                flash('Login failed. Double-check username and/or password')
+                flash('Login failed. Double-check username and/or password', 'danger')
                 return redirect(url_for('login'))
 
             else:
@@ -102,6 +102,7 @@ def login():
                         db.session.commit()
 
                 # Redirect user to home page
+                flash("Logged In", 'primary')
                 if next_page:
                     return redirect(next_page)
                 else:
@@ -122,7 +123,7 @@ def logout():
     """Log user out"""
 
     logout_user()
-
+    flash('Logged Out', 'primary')
     # Redirect user to login form
     return redirect(url_for('login'))
     
@@ -389,44 +390,49 @@ def modify_ingredient():
 @app.route("/addingredientmodal2", methods=["GET", "POST"])
 @login_required
 def ingredientmodal2():
+     
+     form = AddIngredientForm()
 
     # reached via post
      if request.method == "POST":
-        # Ensure ingredient was submitted
-        if not request.form.get("ingredientname"):
-            return apology("must add ingredient", 400)
+        if form.validate_on_submit:
+            # Ensure ingredient was submitted
+            if not request.form.get("ingredientname"):
+                return apology("must add ingredient", 400)
 
-        # Ensure type was submitted
-        elif not request.form.get("type"):
-            return apology("must select ingredient type", 400)
+            # Ensure type was submitted
+            elif not request.form.get("type"):
+                return apology("must select ingredient type", 400)
 
-        # Query database for ingredient
-        rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :ingredientname")
-        rows = db.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "user_id": current_user.id}).fetchall()
+            # Query database for ingredient
+            rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :ingredientname")
+            rows = db.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "user_id": current_user.id}).fetchall()
 
-        # Ensure username exists and password is correct
-        if rows:
-            return apology("ingredient already exists", 400)
+            # Ensure username exists and password is correct
+            if rows:
+                return apology("ingredient already exists", 400)
+            else:
+                # insert new ingredient into db
+                new_ingredient = Ingredient(
+                    user_id=current_user.id,
+                    name=request.form.get("ingredientname"),
+                    type=request.form.get("type"),
+                    stock=request.form.get("stock"),
+                    short_name=request.form.get("short-name"),
+                    notes=request.form.get("notes"),
+                )
+                db.session.add(new_ingredient)
+                db.session.commit()    
+                
+            flash("Ingredient Added")
+            return redirect(url_for("manageingredients"))
         else:
-            # insert new ingredient into db
-            new_ingredient = Ingredient(
-                user_id=current_user.id,
-                name=request.form.get("ingredientname"),
-                type=request.form.get("type"),
-                stock=request.form.get("stock"),
-                short_name=request.form.get("short-name"),
-                notes=request.form.get("notes"),
-            )
-            db.session.add(new_ingredient)
-            db.session.commit()    
-            
-        flash("Ingredient Added")
-        return redirect(url_for("manageingredients"))
+            render_template("addingredient.html", form=form)
         
      # User reached route via GET (as by clicking a link or via redirect)
      else:
         return render_template(
-            "addingredientmodal2.html"
+            "addingredientmodal2.html", form=form
         )
 
 
@@ -442,32 +448,15 @@ def addingredient():
     # reached via post
     if request.method == "POST":
         if form.validate_on_submit():
-    
-            # Query database for ingredient
-            name = request.form.get("ingredientname")
-            query = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
-            rows = db.session.execute(query, {"name": name, "user_id": current_user.id}).fetchall()
-
-            # Ensure username exists and password is correct
-            if rows:
-                return apology("ingredient already exists", 403)
-            else:
-                # insert new ingredient into db
-                name = request.form.get("ingredientname")
-                type = request.form.get("type")
-                stock = request.form.get("stock")
-                short_name = request.form.get("short_name")
-                notes = request.form.get("notes")
-
-                insert = text("INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(:user_id, :name, :type, :stock, :short_name, :notes)")
-
-                db.session.execute(insert, {"user_id": current_user.id, "name": name, "type": type, "stock": stock, "short_name": short_name, "notes": notes})
-                db.session.commit()
-                
-                flash('Ingredient Added')
+            # insert new ingredient into db
+            newingredient = Ingredient(name=form.name.data, short_name=form.short_name.data, type=form.type.data, notes=form.notes.data, stock=form.stock.data, user_id=current_user.id)
+            db.session.add(newingredient)
+            db.session.commit()
+            
+            flash('Ingredient Added', 'primary')
 
             return render_template(
-                "addingredient.html"
+                "addingredient.html", form=form
             )
         else:
             return render_template('addingredient.html', form=form)
