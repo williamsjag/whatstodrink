@@ -60,7 +60,7 @@ class SettingsForm(FlaskForm):
 class AddIngredientForm(FlaskForm):
     name = StringField('Ingredient Name', validators=[DataRequired()])
     short_name = StringField('Simplified Name (optional)')
-    type = SelectField('Ingredient Type', validators=[DataRequired()])
+    type = StringField('Ingredient Type', validators=[DataRequired()])
     notes = TextAreaField('Notes')
     stock = BooleanField('In Stock:')
     submit = SubmitField('Add Ingredient')
