@@ -6,44 +6,24 @@
 
 {% block main %}
     <h1 class="text-center mb-5">Add Cocktail</h1>
-    <div class="center-xwide text-center explainer p-3 mb-5">
+    <div class="center text-center explainer p-3 mb-5">
         <p>Add a new recipe to your database.</p>
     </div>
     <div class="container">
         <!-- Add cocktail form -->
-        <form action="/addcocktail" id="amountsForm" class="item-center center-form" method="post" novalidate>
-            {{ form.csrf_token }}
-            <!-- name field -->
+        <form id="amountsForm" class="item-center center-form" method="post">
+                <!-- name field -->
             <div class="form-group mb-3">
-                {{ form.name.label(class="form-control-label") }}
-                {% if form.name.errors %}
-                        {{ form.name(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.name.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                {% else %}
-                    {{ form.name(class="form-control") }}
-                {% endif %} 
+                <label for="name" class="form-label">Cocktail Name</label>
+                <input autocomplete="off" autofocus class="form-control" id="name" name="name" placeholder="Name" type="text">
             </div>
                 <!--ingredients list -->
             <div class="mb-3 form-group">
-                <!-- <label for="q0" class="form-label">Ingredients</label> -->
-                {{ form.ingredient.label(class="form-control-label mb-3") }}
+                <label for="q0" class="form-label">Ingredients</label>
                 <ol id="dynamicSelects">
                     <!-- first ingredient -->
-                    <li id="q0" class="row">
-                        <div class="col-md-4">
-                            <label>Amount (with units)</label>
-                            <input type="text" class="form-control amountlist" name="amount" placeholder="e.g. 1 1/2 ounces">
-
-                        </div>
-                        <div class="col">
-                            <label>Ingredient</label>
-                            <input type="text" class="form-control ingredientlist mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
-
-                        </div>
+                    <li>
+                        <input id="q0" type="text" class="form-control ingredientsmenu mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
                     </li>
                 </ol>
                 <!-- ingredient search table -->
@@ -57,17 +37,17 @@
             </div>
             <!-- Build instructions field -->
             <div class="form-group mb-3">
-                {{ form.build.label(class="form-control-label") }}
-                {{ form.build(class="form-control", placeholder="Build instructions, garnish, glass, etc...", rows="3") }}
+                <label for="build" class="form-label">Build Instructions</label>
+                <textarea autocomplete="off" class="form-control" id="build" name="build" placeholder="Build instructions/garnish/other notes. Don't worry about amounts for now, we'll cover that in the next step." rows="4"></textarea>
             </div>
             <!-- Source field -->
             <div class="form-group mb-3">
-                {{ form.source.label(class="form-control-label") }}
-                {{ form.source(class="form-control") }}
+                <label for="source" class="form-label">Source</label>
+                <input autocomplete="off" class="form-control" id="source" name="source" placeholder="Source" type="text">
             </div>
-            <!-- Family field -->
+            <!-- family field -->
             <div class="mb-3 form-group">
-                {{ form.family.label(class="form-control-label") }}  <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#familyModal"></i>
+                <label for="family" class="form-label">Cocktail Family <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#familyModal"></i></label>
                 <select name="family" class="form-select" id="family">
                     <option value="" disabled selected>--Family--</option>
                     <option value="Old Fashioneds">Old Fashioneds</option>
@@ -85,14 +65,9 @@
                     <option value="Orphans">Orphans</option>
                 </select>
             </div>
-            <!-- Notes field -->
-            <div class="form-group mb-3">
-                {{ form.notes.label(class="form-control-label") }}
-                {{ form.notes(class="form-control", placeholder="Any additional information", rows="3") }}
-            </div>
             <!-- Submit button / open amounts modal -->
-            <div class="form-group mb-3 text-center">
-                {{ form.submit(class="btn btn-primary mt-3") }}
+            <div class="mb-3 text-center">
+                <button hx-post="/addcocktail" hx-target="#amounts-body" class="btn btn-primary" id='amounts-open' data-bs-toggle="modal" data-bs-target="#amountsModal" type="button">Add Cocktail</button>
             </div>
         </form>
     </div>
@@ -102,6 +77,21 @@
     <div class="modal fade" id="ingredientModal" tabindex="-1" aria-labelledby="ingredientModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" id="modal-form"></div>
+        </div>
+    </div>
+
+    <!-- Amounts Modal -->
+    <div class="modal fade" id="amountsModal" tabindex="-1" aria-labelledby="amountsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header text-center">
+              <h5 class="modal-title w-100" id="amountsModalLabel">Amounts</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="amounts-body"></div>
+            </div>
+          </div>
         </div>
     </div>
 
@@ -139,21 +129,23 @@
 {% endblock %}
 {% block javascript %}
 <script>
-    // // create new input search fields on table click
-    // function createNewDiv() {
-    //     // get original input field
-    //     var originalElement = document.getElementsByClassName("ingredientsmenu")[0];
+    // create new input search fields on table click
+    function createNewDiv() {
+        // get original input field
+        var originalElement = document.getElementsByClassName("ingredientsmenu")[0];
 
-    //     // create a new one
-    //     var newDiv = document.createElement('li');
+        // create a new one
+        var newDiv = document.createElement('li');
 
-    //     // copy original population into new
-    //     newDiv.outerHTML = originalElement.outerHTML;
+        // copy original population into new
+        newDiv.innerHTML = originalElement.innerHTML;
 
-    //     // add new div to dynamicSelects
-    //     var hostdiv = document.getElementById('dynamicSelects');
-    //     hostdiv.appendChild(newDiv);
-    // };
+        // newDiv.classList.add('mb-3', 'select')
+
+        // add new div to dynamicSelects
+        var hostdiv = document.getElementById('dynamicSelects');
+        hostdiv.appendChild(newDiv);
+    };
 
     // listen for table clicks and fill form/make readonly
 
@@ -169,16 +161,10 @@
             var originalElement = document.querySelector("#dynamicSelects li:last-child");
 
             // create a new one
-            var newDiv = originalElement.cloneNode(true);
+            var newDiv = document.createElement('li');
 
-            // set new id
-            newDiv.id = 'q' + counter;
-
-            // clear new inputs
-            inputs = newDiv.querySelectorAll('input');
-            inputs.forEach(function(input) {
-                input.value = '';
-            });
+            // copy original population into new
+            newDiv.innerHTML = originalElement.innerHTML.replace(/id="q\d+"/, 'id="q' + counter + '"');
 
             //increment counter
             counter++;
@@ -188,15 +174,13 @@
             hostdiv.appendChild(newDiv);
             
             // get content of clicked cell
-            var ingredientval = event.target.textContent;
+            var cellval = event.target.textContent;
 
             // set old field to cellval
-            var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
-            var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
-            document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").value = ingredientval;
+            var newInput = document.querySelector("#dynamicSelects li:last-child input")
+            document.querySelector("#dynamicSelects li:nth-last-child(2) input").value = cellval;
             // make readonly
-            document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").setAttribute('readonly', 'true');
-            document.querySelector("#dynamicSelects li:nth-last-child(2) .amountlist").setAttribute('readonly', 'true');
+            document.querySelector("#dynamicSelects li:nth-last-child(2) input").setAttribute('readonly', 'true');
             // focus new field
             newInput.focus();
 
@@ -204,7 +188,7 @@
             var table = document.getElementById('results');
             table.innerHTML = '';
 
-            htmx.process(newIngredient);
+            htmx.process(newInput);
 
         }
     });

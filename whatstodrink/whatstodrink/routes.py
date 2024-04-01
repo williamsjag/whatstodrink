@@ -4,9 +4,11 @@ from sqlalchemy import select, union, text, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
-from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm
+from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm, AddCocktailForm
 from flask_login import login_user, current_user, logout_user, login_required
+
  
+
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -102,7 +104,7 @@ def login():
                         db.session.commit()
 
                 # Redirect user to home page
-                flash("Logged In", 'primary')
+                flash("Successfully logged in, welcome {}!".format(user.username), 'primary')
                 if next_page:
                     return redirect(next_page)
                 else:
@@ -471,34 +473,76 @@ def addingredient():
 @login_required
 def addcocktail():
 
+    form = AddCocktailForm()
+
     if request.method=="GET":
        
         return render_template(
-            "addcocktail.html"
+            "addcocktail.html", form=form
         )
     
     else:
-        name = request.form.get('name')
-        build = request.form.get('build')
-        source = request.form.get('source')
-        family = request.form.get('family')
-        rawingredients = request.form.getlist('q')
-        ingredients = list(filter(None, rawingredients))
+        if form.validate_on_submit():
 
-        if not name:
-            return apologynaked("every good cocktail has a name", 403)
-        if not ingredients:
-            return apologynaked("an empty glass is not a cocktail", 403)
-        rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
-        rows = db.session.execute(rowsquery, {"name": name, "user_id": current_user.id}).fetchall()
+            
+            # Get list of amounts
+            rawamounts = request.form.getlist('amount')
+            amounts = list(filter(None, rawamounts))
+            # Get list of ingredients
+            rawingredients = request.form.getlist('q')
+            ingredients = list(filter(None, rawingredients))
+
+            if not ingredients:
+                return apologynaked("an empty glass is not a cocktail", 403)
+            
+            # Check for existing cocktail
+            rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
+            rows = db.session.execute(rowsquery, {"name": form.name.data, "user_id": current_user.id}).fetchall()
+            
+            if rows:
+                return apology("You already have a cocktail by that name", 403)
+            else:
+                # Generate text for ingredients
+                recipe = ""
+                for amount, ingredient in zip(amounts, ingredients):
+                    # concatenate amount/ingredient, and newline
+                    recipe += f"{amount} {ingredient}\n"
+                # Add cocktail to db
+                newcocktail = Cocktail(name=form.name.data, 
+                                       build=form.build.data, 
+                                       source=form.source.data, 
+                                       user_id=current_user.id, 
+                                       family=form.family.data, 
+                                       notes=form.notes.data,
+                                       recipe=recipe
+                                       )
+                db.session.add(newcocktail)
+                db.session.commit()
+                # Find id for new cocktail
+                cocktail_id = db.session.scalar(select(Cocktail.id).where(Cocktail.name == form.name.data).where(Cocktail.user_id == current_user.id))
+                # Add amounts to db
+                # get source for ingredients
+                for amount, ingredient in zip(amounts, ingredients):
+                    sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
+                        WHERE name = :name \
+                        UNION SELECT \
+                        'user' AS source, id \
+                        FROM ingredients \
+                        WHERE name = :name AND user_id = :user_id")
+                    id_source = db.session.execute(sourcequery, {"name": ingredient, "user_id": current_user.id}).fetchone()
+                    insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
+                    db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount":amount, "ingredient_source":id_source.source, "user_id": current_user.id})
+                    db.session.commit()
+
+            flash("Cocktail Added", 'primary')
+            return redirect(url_for(
+                "addcocktail"
+            ))
         
-        if rows:
-            return apology("You already have a cocktail by that name", 403)
-
-
-        return render_template(
-            "amountsmodal.html", ingredients=ingredients, build=build, source=source, family=family, name=name
-        )
+        else:
+            return render_template(
+                "addcocktail.html", form=form
+            )
     
 
 # Ingredient Search Box from Add Cocktail
@@ -552,47 +596,47 @@ def addingredientmodal():
             return "200"
 
 
-@app.route("/amounts", methods=["GET", "POST"])
-@login_required
-def amounts():
-    # reached via post
-    if request.method == "POST":
-        build = request.form.get('build')
-        source = request.form.get('source')
-        family = request.form.get('family')
-        name = request.form.get('name')
+# @app.route("/amounts", methods=["GET", "POST"])
+# @login_required
+# def amounts():
+#     # reached via post
+#     if request.method == "POST":
+#         build = request.form.get('build')
+#         source = request.form.get('source')
+#         family = request.form.get('family')
+#         name = request.form.get('name')
 
-         # add cocktail to db
-        addquery = text("INSERT INTO cocktails (name, build, source, family, user_id) VALUES(:name, :build, :source, :family, :user_id)")
-        db.session.execute(addquery, {"name": name, "build": build, "source": source, "family": family, "user_id": current_user.id})
-        db.session.commit()
+#          # add cocktail to db
+#         addquery = text("INSERT INTO cocktails (name, build, source, family, user_id) VALUES(:name, :build, :source, :family, :user_id)")
+#         db.session.execute(addquery, {"name": name, "build": build, "source": source, "family": family, "user_id": current_user.id})
+#         db.session.commit()
 
-        for key, value, in request.form.items():
-            if key.startswith('amount_'):
-                ingredient_name = key.replace('amount_', '')
-                sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
-                    WHERE name = :name \
-                    UNION SELECT \
-                    'user' AS source, id \
-                    FROM ingredients \
-                    WHERE name = :name AND user_id = :user_id")
-                id_source = db.session.execute(sourcequery, {"name": ingredient_name, "user_id": current_user.id}).fetchone()
+#         for key, value, in request.form.items():
+#             if key.startswith('amount_'):
+#                 ingredient_name = key.replace('amount_', '')
+#                 sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
+#                     WHERE name = :name \
+#                     UNION SELECT \
+#                     'user' AS source, id \
+#                     FROM ingredients \
+#                     WHERE name = :name AND user_id = :user_id")
+#                 id_source = db.session.execute(sourcequery, {"name": ingredient_name, "user_id": current_user.id}).fetchone()
                 
-                amount = value
+#                 amount = value
                
-                # get cocktail id
-                c_id_query = text("SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id")
-                cocktail_id = db.session.scalar(c_id_query, {"name": name, "user_id": current_user.id})
+#                 # get cocktail id
+#                 c_id_query = text("SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id")
+#                 cocktail_id = db.session.scalar(c_id_query, {"name": name, "user_id": current_user.id})
                 
-                #add ingredients and amounts to db
-                insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
-                db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount": amount, "ingredient_source": id_source.source, "user_id": current_user.id})
-                db.session.commit()
+#                 #add ingredients and amounts to db
+#                 insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
+#                 db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount": amount, "ingredient_source": id_source.source, "user_id": current_user.id})
+#                 db.session.commit()
                 
-    flash('Cocktail Added')
-    return redirect(url_for(
-        "addcocktail"
-    ))
+#     flash('Cocktail Added')
+#     return redirect(url_for(
+#         "addcocktail"
+#     ))
 
 
 # Viewall and related routes
@@ -607,14 +651,15 @@ def viewcocktails():
 @app.route("/viewallcocktails")
 def viewallcocktails():
 
-    allquery = text("SELECT 'user' AS csource, name, id, family, build, source \
+    allquery = text("SELECT 'user' AS csource, name, id, family, build, source, recipe \
         FROM cocktails \
         WHERE user_id = :user_id \
         UNION \
-        SELECT 'common' AS csource, name, id, family, build, source \
+        SELECT 'common' AS csource, name, id, family, build, source, recipe \
         FROM common_cocktails")
 
     allcocktails = db.session.execute(allquery, {"user_id": current_user.id}).fetchall()
+    
     
     ingredientsquery = text("\
                             WITH allingredients AS (\

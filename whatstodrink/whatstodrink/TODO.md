@@ -79,8 +79,12 @@ Made Application into a package
 Split off models and routes from init
 Created forms.py and started converting to that for ease of use
 Moved login and register to wtfforms
+Moved addingredient and manageingredient-add to wtf
+
 
 ## In Progress
+WTF migration:
+    Add Cocktail new ingredient button - 'addingredientmodal' try having it autofill the most recent empty ingredient then open a new one on submit
 
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe

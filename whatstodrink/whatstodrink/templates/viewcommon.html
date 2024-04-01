@@ -32,16 +32,7 @@
                             <div class="row row-cols-auto mb-3">
                                 <div class="category col-3">Ingredients: </div>
                                 <div class="col-7">
-                                    {% for amount in amounts %}
-                                        {% if amount.cocktail_id == cocktail.id %}
-                                            {{ amount.amount }}
-                                                {% for ingredient in ingredients %}
-                                                    {% if ingredient.id == amount.ingredient_id %}
-                                                        {{ ingredient.name|capitalize }}
-                                                    {% endif %}
-                                                {% endfor %}<br>
-                                        {% endif %}
-                                    {% endfor %}
+                                    {{ cocktail.recipe }}
                                 </div>
                             </div>
                             <div class="row row-cols-auto mb-3">

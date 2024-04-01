@@ -33,16 +33,16 @@
                             <div class="row row-cols-auto mb-3">
                                 <div class="category col-3">Ingredients: </div>
                                 <div class="col-7">
-                                    {% for amount in amounts %}
-                                        {% if amount.cocktail_id == cocktail.id %}
-                                            {{ amount.amount }}
-                                                {% for ingredient in ingredients %}
-                                                    {% if ingredient.id == amount.ingredient_id %}
-                                                        {{ ingredient.name|capitalize }}
-                                                    {% endif %}
-                                                {% endfor %}<br>
+                                    {% if cocktail.recipe %}
+                                        {% set list = cocktail.recipe.split('\n') %}
+                                        {% for item in list %}
+                                        {{ item }}
+                                        {% if not loop.last %}
+                                        <br/>
                                         {% endif %}
-                                    {% endfor %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    </pre>
                                 </div>
                                 {% if cocktail.csource == "user" %}
                                     <!-- button to call modal -->
@@ -54,7 +54,17 @@
                         
                             <div class="row row-cols-auto mb-3">
                                 <div class="category col-3">Build: </div>
-                                <div class="col-8">{{ cocktail.build }}</div>
+                                <div class="col-8">
+                                    {% if cocktail.build %}
+                                        {% set list = cocktail.build.split('\n') %}
+                                        {% for item in list %}
+                                        {{ item }}
+                                        {% if not loop.last %}
+                                        <br/>
+                                        {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="row row-cols-auto mb-3">
                                 <div class="category col-3">Source: </div>

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from whatstodrink.models import User, Ingredient, CommonIngredient
+from whatstodrink.models import User, Ingredient, CommonIngredient, Cocktail, CommonCocktail
 from whatstodrink import db
 from sqlalchemy import select, text
 from flask_login import current_user
@@ -67,10 +67,25 @@ class AddIngredientForm(FlaskForm):
 
     def validate_name(self, name):
         # query = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
-        ingredient = db.session.execute(select(Ingredient.name).where(Ingredient.name == name).where(Ingredient.user_id == current_user.id)).fetchall()
+        ingredient = db.session.execute(select(Ingredient.name).where(Ingredient.name == name.data).where(Ingredient.user_id == current_user.id)).fetchall()
         commoningredient = db.session.execute(select(CommonIngredient.name).where(CommonIngredient.name == name.data)).fetchall()
        
         # ingredient = db.session.execute(query, {"name": name, "user_id": current_user.id}).fetchall()
         if ingredient or commoningredient:
             raise ValidationError("This ingredient already exists")
         
+class AddCocktailForm(FlaskForm):
+    name = StringField('Cocktail Name', validators=[DataRequired()])
+    amount = StringField('Amount')
+    ingredient = StringField('Ingredients')
+    build = TextAreaField('Build Instructions')
+    source = StringField('Source')
+    family = StringField('Family')
+    notes = TextAreaField('Notes')
+    submit = SubmitField('Add Cocktail')
+
+    def validate_name(self, name):
+        cocktail = db.session.execute(select(Cocktail.name).where(Cocktail.name == name.data).where(Cocktail.user_id == current_user.id)).fetchall()
+
+        if cocktail:
+            raise ValidationError("You already have a cocktail by that name")

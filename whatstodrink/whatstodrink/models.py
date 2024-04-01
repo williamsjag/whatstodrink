@@ -35,7 +35,7 @@ class Cocktail(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     family = db.Column(db.String(50), default="Orphans")
     notes = db.Column(db.String(1000))
-    ingredients = db.Column(db.String(500))
+    recipe = db.Column(db.String(500))
     
 class Ingredient(db.Model):
     __tablename__ = 'ingredients'
