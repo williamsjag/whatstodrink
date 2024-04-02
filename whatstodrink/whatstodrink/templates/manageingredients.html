@@ -26,8 +26,7 @@
             <button class="btn btn-primary mb-5" hx-get="/addingredientmodal2" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">Add Ingredient</button>
         </div>
     </div>
-    
-
+    <!-- Table of Ingredients -->
     <div id="ingredientstable" method="post">
         <div class="table-group text-center mb-3">    
         {% for type in types %}
@@ -113,15 +112,6 @@
             document.getElementById('notes').value = ingredientNotes;
         });
     };
-    // reload if necessary
-    // if (window.location.search.includes('_reload')) {
-    // window.location.href = window.location.href.split('?')[0];
-    // }
-    // Remove overflow style on page load
-    document.addEventListener('DOMContentLoaded', function () {
-        document.body.style.overflow = 'auto'; // Remove overflow: hidden style
-    });
-    // open modal if need be
  
     </script>
 {% endblock %}

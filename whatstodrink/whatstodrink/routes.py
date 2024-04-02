@@ -198,6 +198,7 @@ def manageingredients():
 
         # if filter bar is used
         if q is not None:
+            # Get Types included in search for headers
             common_query = (
                 select(CommonIngredient.type.distinct())
                 .select_from(CommonIngredient)
@@ -211,8 +212,9 @@ def manageingredients():
                 )
             query = union(common_query, user_query)
 
-            types = db.session.scalars(query).all()
+            types = db.session.execute(query).all()
 
+            # Get ingredients that match
             ingredientsquery = text("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
                                     FROM common_ingredients ci \
                                     LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = :user_id \
@@ -260,7 +262,7 @@ def manageingredients():
                 # Determine the correct table and column for the update
                 table_name = "common_stock" if ingredient_source == "common" else "ingredients"
                 id_column = "ingredient_id" if ingredient_source == "common" else "id"
-                stock = 1 if ingredient_stock == 1 else 0
+                stock = 1 if ingredient_stock == 'on' else 0
 
                 try:
                     sql_query = text(f"UPDATE {table_name} SET stock = :stock WHERE {id_column} = :ingredient_id AND user_id = :user_id")
