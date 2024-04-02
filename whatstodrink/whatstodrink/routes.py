@@ -872,7 +872,7 @@ def modify_cocktail():
 
 def viewuser():
 
-    cocktailquery = text("SELECT name, id, family, build, source \
+    cocktailquery = text("SELECT name, id, family, build, source, notes, recipe, ingredient_list \
                         FROM cocktails \
                         WHERE user_id = :user_id")
    
