@@ -42,14 +42,14 @@
                         <div class="col">
                             <label>Ingredient</label>
                             <input type="text" class="form-control ingredientlist mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
-
+                            <!-- ingredient search table -->
+                            <table id ="searchtable" class="table table-borderless table-hover">
+                                <tbody id="results">
+                            </table>
                         </div>
                     </li>
                 </ol>
-                <!-- ingredient search table -->
-                <table id ="searchtable" class="table table-borderless table-hover">
-                    <tbody id="results">
-                </table>
+                
             </div>
             <!-- Create new ingredient button -->
             <div class="mb-3 text-center">
@@ -139,80 +139,78 @@
 {% endblock %}
 {% block javascript %}
 <script>
-    // // create new input search fields on table click
-    // function createNewDiv() {
-    //     // get original input field
-    //     var originalElement = document.getElementsByClassName("ingredientsmenu")[0];
-
-    //     // create a new one
-    //     var newDiv = document.createElement('li');
-
-    //     // copy original population into new
-    //     newDiv.outerHTML = originalElement.outerHTML;
-
-    //     // add new div to dynamicSelects
-    //     var hostdiv = document.getElementById('dynamicSelects');
-    //     hostdiv.appendChild(newDiv);
-    // };
-
-    // listen for table clicks and fill form/make readonly
-
     // counter variable for ids
     var counter = 1;
     
-    document.getElementById('results').addEventListener('click', function(event) {
-
-        // check if click is a cell
-        if (event.target.tagName === "TD") {
- 
-            // copy original empty field
-            var originalElement = document.querySelector("#dynamicSelects li:last-child");
-
-            // create a new one
-            var newDiv = originalElement.cloneNode(true);
-
-            // set new id
-            newDiv.id = 'q' + counter;
-
-            // clear new inputs
-            inputs = newDiv.querySelectorAll('input');
-            inputs.forEach(function(input) {
-                input.value = '';
-            });
-
-            // remove labels from new inputs
-            newDiv.querySelectorAll('label').forEach(function(label) {
-                label.remove();
-            })
-
-            //increment counter
-            counter++;
-
-            // add new div to dynamicSelects
-            var hostdiv = document.getElementById('dynamicSelects');
-            hostdiv.appendChild(newDiv);
-            
-            // get content of clicked cell
-            var ingredientval = event.target.textContent;
-
-            // set old field to cellval
-            var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
-            var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
-            document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").value = ingredientval;
-            // make readonly
-            document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").setAttribute('readonly', 'true');
-            // focus new field
-            newInput.focus();
-
-            // clear table
-            var table = document.getElementById('results');
-            table.innerHTML = '';
-
-            htmx.process(newIngredient);
-
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        attachEventListeners();
     });
 
+    function attachEventListeners() {
 
+        var searchTable = document.getElementById('results');
+
+        if (searchTable) {
+
+            searchTable.addEventListener('click', function(event) {
+
+                // check if click is a cell
+                if (event.target.tagName === "TD") {
+                    // copy original empty field
+                    var originalElement = document.querySelector("#dynamicSelects li:last-child");
+
+                    // create a new one
+                    var newDiv = originalElement.cloneNode(true);
+
+                    // set new id
+                    newDiv.id = 'q' + counter;
+
+                    // clear new inputs and table
+                    var resultsTable = newDiv.querySelector("#results");
+                    resultsTable.innerHTML = '';
+                    inputs = newDiv.querySelectorAll('input');
+                    inputs.forEach(function(input) {
+                        input.value = '';
+                    });
+
+                    // remove labels from new inputs
+                    newDiv.querySelectorAll('label').forEach(function(label) {
+                        label.remove();
+                    })
+                    // remove old searchtable
+                    originalElement.querySelector("#searchtable").remove();
+
+                    //increment counter
+                    counter++;
+
+                    // add new div to dynamicSelects
+                    var hostdiv = document.getElementById('dynamicSelects');
+                    hostdiv.appendChild(newDiv);
+
+                    // get content of clicked cell
+                    var ingredientval = event.target.textContent;
+
+                    // set old field to cellval
+                    var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
+                    var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
+                    document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").value = ingredientval;
+                    // make readonly
+                    var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
+                    oldInput.setAttribute('readonly', 'true');
+                    oldInput.removeAttribute('hx-trigger');
+                    oldInput.removeAttribute('hx-get');
+                    oldInput.removeAttribute('hx-target');
+
+                    // focus new field
+                    newInput.focus();
+
+                    htmx.process(newIngredient);
+                    attachEventListeners();
+                }
+            })
+        }
+    }
+
+        
 </script>
 {% endblock %}
