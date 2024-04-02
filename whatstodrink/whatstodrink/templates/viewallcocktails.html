@@ -9,21 +9,9 @@
             <div class="accordion-item center-accordion cocktail-group">
                 <h2 class="accordion-header" id="id_{{ loop.index0 }}">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
-                        <span class ="left-text"><strong>{{ cocktail.name|title }}</strong></span>
+                        <span class ="left-text"><strong>{{ cocktail.name }}</strong></span>
                         <span class="right-text d-none d-sm-block">
-                            {% set cocktail_ingredients = [] %}
-                            {% for ingredient in ingredients %}
-                                {% for amount in amounts %}
-                                    {% if amount.cocktail_id == cocktail.id and amount.ingredient_id == ingredient.id %}
-                                        {% if ingredient.short_name %}
-                                            {% set _ = cocktail_ingredients.append(ingredient.short_name|title) %}
-                                        {% else %}
-                                            {% set _ = cocktail_ingredients.append(ingredient.name|title) %}
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endfor %}
-                            {{ cocktail_ingredients|join(', ') }}
+                            {{ cocktail.ingredient_list }}
                         </span>
                     </button>
                 </h2>
@@ -51,11 +39,10 @@
                                     </div>
                                 {% endif %}
                             </div>
-                        
+                            {% if cocktail.build %}
                             <div class="row row-cols-auto mb-3">
                                 <div class="category col-3">Build: </div>
                                 <div class="col-8">
-                                    {% if cocktail.build %}
                                         {% set list = cocktail.build.split('\n') %}
                                         {% for item in list %}
                                         {{ item }}
@@ -63,13 +50,29 @@
                                         <br/>
                                         {% endif %}
                                         {% endfor %}
-                                    {% endif %}
                                 </div>
                             </div>
+                            {% endif %}
+                            {% if cocktail.source %}
                             <div class="row row-cols-auto mb-3">
                                 <div class="category col-3">Source: </div>
                                 <div class="col">{{ cocktail.source }}</div>
                             </div>
+                            {% endif %}
+                            {% if cocktail.notes %}
+                                <div class="row row-cols-auto mb-3">
+                                    <div class="category col-3">Notes: </div>
+                                    <div class="col">
+                                        {% set list = cocktail.notes.split('\n') %}
+                                        {% for item in list %}
+                                            {{ item }}
+                                            {% if not loop.last %}
+                                            <br/>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %} 
                         </div>
                     </div>
                 </div>
