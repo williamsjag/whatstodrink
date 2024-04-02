@@ -83,7 +83,9 @@ Moved addingredient and manageingredient-add to wtf
 Moved Add cocktail to wtf
 Added notes to cocktails
 Changed View Common cocktails to use recipe and ingredient_list
-
+Changed View User to use recipe and ingredient_list
+Changed Viewall to use recipe and ingredient_list
+Fixed bug in manageingredients search bar
 
 ## In Progress
 WTF migration:
