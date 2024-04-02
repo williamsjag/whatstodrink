@@ -80,12 +80,19 @@ Split off models and routes from init
 Created forms.py and started converting to that for ease of use
 Moved login and register to wtfforms
 Moved addingredient and manageingredient-add to wtf
+Moved Add cocktail to wtf
+Added notes to cocktails
+Changed View Common cocktails to use recipe and ingredient_list
 
 
 ## In Progress
 WTF migration:
+    currently updating viewall view to get everything from the server so no complicated rendering on the front end
+    Make amounts not readonly in add cocktail
     Add Cocktail new ingredient button - 'addingredientmodal' try having it autofill the most recent empty ingredient then open a new one on submit
 
+Add ingredient list to cocktails tables and configure add and modify to change it as well as update recipe.
+    Add option to rearrange order in edit recipe
 bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
 bug: more ingredients doesn't work with zero ingredients in change recipe
 bug: next feature not working in login
@@ -98,7 +105,6 @@ user modifiability to all ingredients (incl. hide)
 
 Color/Theme/Prettify
 
-add notes field for cocktails
 
 implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
     - Add grouping options for cocktail views

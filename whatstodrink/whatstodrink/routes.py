@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, request, session, url_for
 from whatstodrink import app, db
-from sqlalchemy import select, union, text, or_
+from sqlalchemy import select, union, text, or_, distinct
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
@@ -502,11 +502,14 @@ def addcocktail():
             if rows:
                 return apology("You already have a cocktail by that name", 403)
             else:
-                # Generate text for ingredients
+                # Generate text for ingredients and ingredient_list
                 recipe = ""
+                ingredientList = ', '.join(ingredients)
+               
                 for amount, ingredient in zip(amounts, ingredients):
                     # concatenate amount/ingredient, and newline
                     recipe += f"{amount} {ingredient}\n"
+                
                 # Add cocktail to db
                 newcocktail = Cocktail(name=form.name.data, 
                                        build=form.build.data, 
@@ -514,7 +517,8 @@ def addcocktail():
                                        user_id=current_user.id, 
                                        family=form.family.data, 
                                        notes=form.notes.data,
-                                       recipe=recipe
+                                       recipe=recipe,
+                                       ingredient_list=ingredientList
                                        )
                 db.session.add(newcocktail)
                 db.session.commit()
@@ -651,35 +655,52 @@ def viewcocktails():
 @app.route("/viewallcocktails")
 def viewallcocktails():
 
-    allquery = text("SELECT 'user' AS csource, name, id, family, build, source, recipe \
-        FROM cocktails \
-        WHERE user_id = :user_id \
-        UNION \
-        SELECT 'common' AS csource, name, id, family, build, source, recipe \
-        FROM common_cocktails")
+    userquery = text("""
+                    WITH Search AS (        
+                        SELECT 'user' AS csource, c.name, c.id, c.family, c.build, c.source, c.recipe, a.ingredient_source, i.short_name, ci.short_name \
+                        FROM cocktails AS c 
+                        LEFT JOIN amounts AS a ON c.id = a.cocktail_id
+                        LEFT JOIN ingredients AS i ON a.ingredient_id = i.id
+                        LEFT JOIN common_ingredients AS ci ON a.ingredient_id = ci.id
+                        WHERE c.user_id = :user_id
+                        UNION               
+                        SELECT 'common' AS csource, cc.name, cc.id, cc.family, cc.build, cc.source, cc.recipe, ci.name, ci.type, ci.short_name \
+                        FROM common_cocktails AS cc
+                        LEFT JOIN common_amounts AS ca ON cc.id = ca.cocktail_id
+                        LEFT JOIN common_ingredients AS ci ON ca.ingredient_id = ci.id
+                     ),
+                     Ingredients AS (
+                        SELECT s.cocktail_name, i.short_name AS ingredient_name
+                        FROM Search s
+                        JOIN amounts a ON sd.cocktail_id = a.cocktail_id
+                        JOIN ingredients i ON a.ingredient_id = i.id AND s.source = 'user'
+                     )
+        """)
 
-    allcocktails = db.session.execute(allquery, {"user_id": current_user.id}).fetchall()
+    allcocktails = db.session.execute(userquery, {"user_id": current_user.id}).fetchall()
     
     
-    ingredientsquery = text("\
-                            WITH allingredients AS (\
-                                SELECT id, name, short_name FROM common_ingredients \
-                                UNION \
-                                SELECT id, name, short_name FROM ingredients \
-                                WHERE user_id = :user_id), \
-                            usedingredients AS (\
-                                SELECT ingredient_id FROM common_amounts\
-                                UNION select ingredient_id FROM amounts WHERE user_id = :user_id) \
-                            SELECT id, name, short_name FROM allingredients INNER JOIN usedingredients ON allingredients.id = usedingredients.ingredient_id")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
+    # ingredientsquery = text("\
+    #                         WITH allingredients AS (\
+    #                             SELECT id, name, short_name FROM common_ingredients \
+    #                             UNION \
+    #                             SELECT id, name, short_name FROM ingredients \
+    #                             WHERE user_id = :user_id), \
+    #                         usedingredients AS (\
+    #                             SELECT ingredient_id FROM common_amounts\
+    #                             UNION select ingredient_id FROM amounts WHERE user_id = :user_id) \
+    #                         SELECT id, name, short_name FROM allingredients INNER JOIN usedingredients ON allingredients.id = usedingredients.ingredient_id")
+    # ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
 
-    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
+    # amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
+    # amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
+    
+    familyquery = text("SELECT DISTINCT family FROM cocktails UNISON SELECT DISTINCT family FROM common_cocktails")
+    allfamilies = db.session.execute(familyquery).fetchall()
 
-    allfamilies = set(Cocktail.family for Cocktail in allcocktails)
 
     return render_template(
-        "viewallcocktails.html", allcocktails=allcocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies, defaults=session["defaults"]
+        "viewallcocktails.html",  allfamilies=allfamilies, allcocktails=allcocktails, defaults=session["defaults"]
     )
 
 # Modify cocktail modal from viewallcocktails
@@ -690,26 +711,44 @@ def modifycocktailmodal():
 @app.route("/viewcommon")
 def viewcommon():
 
-    commoncocktailsquery = text(
-        "SELECT name, id, family, build, source "
-        "FROM common_cocktails "
-    )
+    commoncocktailsquery = text("""
+                                SELECT cc.name, cc.build, cc.source, cc.recipe, cc.family, 
+                                GROUP_CONCAT(
+                                    CASE
+                                        WHEN ci.short_name = '' THEN ci.name
+                                        ELSE ci.short_name
+                                    END
+                                    SEPARATOR ', '
+                                ) AS ingredient_list
+                                FROM common_cocktails AS cc
+                                LEFT JOIN common_amounts AS ca ON cc.id = ca.cocktail_id
+                                LEFT JOIN common_ingredients AS ci ON ca.ingredient_id = ci.id
+                                WHERE EXISTS (
+                                    SELECT 1
+                                    FROM common_amounts
+                                    WHERE ci.id = common_amounts.ingredient_id
+                                )
+                                GROUP BY cc.name, cc.build, cc.source, cc.recipe, cc.family
+                                """)
     commoncocktails = db.session.execute(commoncocktailsquery).fetchall()
 
-    ingredientsquery = text("WITH allingredients AS \
-                                (SELECT id, name, short_name FROM common_ingredients), \
-                            usedingredients AS \
-                                (SELECT ingredient_id FROM common_amounts)\
-                            SELECT id, name, short_name FROM allingredients WHERE id IN (SELECT ingredient_id FROM usedingredients)")
-    ingredients = db.session.execute(ingredientsquery).fetchall()
+    # ingredientsquery = text("WITH allingredients AS \
+    #                             (SELECT id, name, short_name FROM common_ingredients), \
+    #                         usedingredients AS \
+    #                             (SELECT ingredient_id FROM common_amounts)\
+    #                         SELECT id, name, short_name FROM allingredients WHERE id IN (SELECT ingredient_id FROM usedingredients)")
+    # ingredients = db.session.execute(ingredientsquery).fetchall()
 
-    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts")
-    amounts = db.session.execute(amountsquery).fetchall()
+    # amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts")
+    # amounts = db.session.execute(amountsquery).fetchall()
 
-    allfamilies = set(Cocktail.family for Cocktail in commoncocktails)
+    familyquery = text("SELECT DISTINCT family FROM common_cocktails")
+    allfamilies = db.session.scalars(familyquery).fetchall()
+
+    print(f"{commoncocktails}")
     
     return render_template(
-        "viewcommon.html", commoncocktails=commoncocktails, ingredients=ingredients, amounts=amounts, allfamilies=allfamilies
+        "viewcommon.html", commoncocktails=commoncocktails, allfamilies=allfamilies
     )
 
 # Change Recipe modal from viewallcocktails->modifycocktailmodal 

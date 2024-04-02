@@ -36,6 +36,7 @@ class Cocktail(db.Model):
     family = db.Column(db.String(50), default="Orphans")
     notes = db.Column(db.String(1000))
     recipe = db.Column(db.String(500))
+    ingredient_list = db.Column(db.String(200))
     
 class Ingredient(db.Model):
     __tablename__ = 'ingredients'
@@ -80,6 +81,7 @@ class CommonCocktail(db.Model):
     source = db.Column(db.String(50))
     family = db.Column(db.String(50))
     ingredients = db.Column(db.String(500))
+    ingredient_list = db.Column(db.String(200))
 
 class Tag(db.Model):
     __tablename__ = 'tags'
