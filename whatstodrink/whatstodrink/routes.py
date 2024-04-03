@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, request, session, url_for
+from flask import flash, redirect, render_template, request, session, url_for, Response
 from whatstodrink import app, db
 from sqlalchemy import select, union, text, or_, distinct
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -290,9 +290,11 @@ def viewingredientmodal():
     for key, value, in request.args.items():
         if key.startswith('stock_'):
             ingredient_name = key.replace('stock_', '')
-            ingredient_id = request.args.get(f'id_{ingredient_name}')
+        # contingency if stock not checked
+        elif key.startswith('id_'):
+            ingredient_name = key.replace('id_', '')
             
-    ingredient = db.session.execute(select(Ingredient).where(Ingredient.id == ingredient_id)).fetchone()
+    ingredient = db.session.execute(select(Ingredient).where(Ingredient.name == ingredient_name).where(Ingredient.user_id == current_user.id)).fetchone()
     ingredient = ingredient[0]
 
     return render_template("viewingredientmodal.html", form=form, ingredient=ingredient)
@@ -406,7 +408,7 @@ def addingredientmodal2():
         if form.validate_on_submit:
 
             # Query database for ingredient
-            rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :ingredientname")
+            rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id")
             rows = db.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "user_id": current_user.id}).fetchall()
 
             # Ensure username exists and password is correct
@@ -571,76 +573,41 @@ def ingredientsearch():
 # Create New Ingredient modal from Add Cocktail
 @app.route("/addingredientmodal", methods=["GET", "POST"])
 def addingredientmodal():
+
+    form = AddIngredientForm()
+
     if request.method == "GET":
-        return render_template("addingredientmodal.html")
+        return render_template("addingredientmodal.html", form=form)
     else:
         # Ensure ingredient was submitted
-        if not request.form.get("ingredientname"):
-            return apology("must add ingredient", 400)
+        if form.validate_on_submit:
 
-        # Ensure type was submitted
-        elif not request.form.get("type"):
-            return apology("must select ingredient type", 400)
+            # Query database for ingredient
+            rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id")
+            rows = db.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "user_id": current_user.id}).fetchall()
 
-        # Query database for ingredient
-        rowsquery = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
-        rows = db.session.execute(rowsquery, {"name": request.form.get("ingredientname"), "user_id": current_user.id}).fetchall()
+            # Ensure username exists and password is correct
+            if rows:
+                return apology("ingredient already exists", 403)
+            else:
+                # insert new ingredient into db
+                new_ingredient = Ingredient(
+                    user_id=current_user.id,
+                    name=form.name.data,
+                    type=form.type.data,
+                    stock=form.stock.data,
+                    short_name=form.short_name.data,
+                    notes=form.notes.data,
+                )
+                db.session.add(new_ingredient)
+                db.session.commit()    
+                
+                response = Response()
+                response.headers['Ingredient'] = form.name.data
 
-        # Ensure username exists and password is correct
-        if rows:
-            return apology("ingredient already exists", 400)
+            return response
         else:
-            # insert new ingredient into db
-            insertquery = text("INSERT INTO ingredients (user_id, name, type, stock, short_name, notes) VALUES(:user_id, :name, :type, :stock, :short_name, :notes)")
-            db.session.execute(insertquery, {"user_id": current_user.id, "name": request.form.get("ingredientname"), "type": request.form.get("type"), "stock": request.form.get("stock"), "short_name": request.form.get("short-name"), "notes": request.form.get("notes)")})
-            db.session.commit()
-        
-            # flash('Ingredient Added')
-            return "200"
-
-
-# @app.route("/amounts", methods=["GET", "POST"])
-# @login_required
-# def amounts():
-#     # reached via post
-#     if request.method == "POST":
-#         build = request.form.get('build')
-#         source = request.form.get('source')
-#         family = request.form.get('family')
-#         name = request.form.get('name')
-
-#          # add cocktail to db
-#         addquery = text("INSERT INTO cocktails (name, build, source, family, user_id) VALUES(:name, :build, :source, :family, :user_id)")
-#         db.session.execute(addquery, {"name": name, "build": build, "source": source, "family": family, "user_id": current_user.id})
-#         db.session.commit()
-
-#         for key, value, in request.form.items():
-#             if key.startswith('amount_'):
-#                 ingredient_name = key.replace('amount_', '')
-#                 sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
-#                     WHERE name = :name \
-#                     UNION SELECT \
-#                     'user' AS source, id \
-#                     FROM ingredients \
-#                     WHERE name = :name AND user_id = :user_id")
-#                 id_source = db.session.execute(sourcequery, {"name": ingredient_name, "user_id": current_user.id}).fetchone()
-                
-#                 amount = value
-               
-#                 # get cocktail id
-#                 c_id_query = text("SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id")
-#                 cocktail_id = db.session.scalar(c_id_query, {"name": name, "user_id": current_user.id})
-                
-#                 #add ingredients and amounts to db
-#                 insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
-#                 db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount": amount, "ingredient_source": id_source.source, "user_id": current_user.id})
-#                 db.session.commit()
-                
-#     flash('Cocktail Added')
-#     return redirect(url_for(
-#         "addcocktail"
-#     ))
-
+            return (render_template("addingredient.html", form=form))
 
 # Viewall and related routes
   
@@ -664,22 +631,6 @@ def viewallcocktails():
         """)
 
     allcocktails = db.session.execute(userquery, {"user_id": current_user.id}).fetchall()
-    
-    
-    # ingredientsquery = text("\
-    #                         WITH allingredients AS (\
-    #                             SELECT id, name, short_name FROM common_ingredients \
-    #                             UNION \
-    #                             SELECT id, name, short_name FROM ingredients \
-    #                             WHERE user_id = :user_id), \
-    #                         usedingredients AS (\
-    #                             SELECT ingredient_id FROM common_amounts\
-    #                             UNION select ingredient_id FROM amounts WHERE user_id = :user_id) \
-    #                         SELECT id, name, short_name FROM allingredients INNER JOIN usedingredients ON allingredients.id = usedingredients.ingredient_id")
-    # ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
-
-    # amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    # amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
     
     familyquery = text("SELECT DISTINCT family FROM cocktails UNION SELECT DISTINCT family FROM common_cocktails")
     allfamilies = db.session.scalars(familyquery).fetchall()

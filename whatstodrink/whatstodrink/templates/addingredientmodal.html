@@ -1,4 +1,4 @@
-<!-- This route is for when a page reload is not desired -->
+<!-- Add Ingredient Modal for Add Cocktail- no reload -->
 <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-header text-center">
@@ -6,19 +6,39 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <form id="addItemForm" class="center-form" name="addItemForm">
+            <form id="addItemForm" action="/addingredientmodal" method="POST" class="center-form" name="addItemForm">
                 <div class="form-group mb-3">
-                    <label for="ingredientname" class="form-label">Ingredient Name</label>
-                    <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="short-name" class="form-label">Simplified Name (optional)</label>
-                    <input autocomplete="off" class="form-control" id="short-name" name="short-name" placeholder="Simplified name" type="text" aria-describedby="short-help">
-                    <div class="form-text mb-3" id="short-help">E.g. "Campari" instead of "Amaro - Light - Campari"</div>
-                </div>
-                <div class="mb-3 form-group">
-                    <label for="type" class="form-label">Ingredient Type</label>
-                    <select name="type" id="type" class="form-select" required>
+                    {{ form.csrf_token }}
+                    <div class="form-group mb-3">
+                      {{ form.name.label(class="form-control-label") }}
+                      {% if form.name.errors %}
+                                {{ form.name(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.name(class="form-control") }}
+                            {% endif %} 
+                    </div> 
+                    <div class="form-group">
+                      {{ form.short_name.label(class="form-control-label mt-3") }} 
+                      {% if form.short_name.errors %}
+                          {{ form.short_name(class="form-control is-invalid") }}
+                          <div class="invalid-feedback">
+                              {% for error in form.short_name.errors %}
+                                  <span>{{ error }}</span>
+                              {% endfor %}
+                          </div>
+                      {% else %}
+                          {{ form.short_name(class="form-control") }}
+                      {% endif %}                
+                  </div>
+                  <div class="form-group">
+                    {{ form.type.label(class="form-label mt-3") }}
+                    {% if form.type.errors %}
+                      <select name="type" id="type" class="form-select is-invalid" required>
                         <option value="" disabled selected>--Ingredient Type--</option>
                         <option value="Spirit">Spirit</option>
                         <option value="Liqueur">Liqueur</option>
@@ -29,21 +49,54 @@
                         <option value="Juice">Juice</option>
                         <option value="Pantry/Fridge">Pantry/Fridge</option>
                         <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="notes" class="form-label">Notes</label>
-                    <textarea autocomplete="off" class="form-control" id="notes" name="notes" placeholder="Recipe if homemade, etc..." rows="4"></textarea>    
-                </div>
-                <br>
-                <div class="mb-3 text-center form-check">
+                      </select>
+                        <div class="invalid-feedback">
+                            {% for error in form.type.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                      {% else %}
+                        <select name="type" id="type" class="form-select" required>
+                            <option value="" disabled selected>--Ingredient Type--</option>
+                            <option value="Spirit">Spirit</option>
+                            <option value="Liqueur">Liqueur</option>
+                            <option value="Liqueur">Amaro</option>
+                            <option value="Wine/Vermouth/Sherry">Wine/Vermouth/Sherry</option>
+                            <option value="Bitters">Bitters</option>
+                            <option value="Syrup">Syrup</option>
+                            <option value="Juice">Juice</option>
+                            <option value="Pantry/Fridge">Pantry/Fridge</option>
+                            <option value="Other">Other</option>
+                        </select>
+                      {% endif %}
+                    </div>
+                  <div class="form-group">
+                    {{ form.notes.label(class="form-control-label mt-3") }}
+                    {% if form.notes.errors %}
+                        {{ form.notes(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.notes.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.notes(placeholder="Recipe if homemade, etc...", class="form-control", rows="3") }}
+                    {% endif %}                
+                  </div>
+                  <div class=" form-check mt-3">
                     <label for="stock">In Stock:</label>
-                    <input id="stock" name="stock" type="checkbox">
-                </div>
-                <div class="mb-3 text-center">
-                    <button hx-post="/addingredientmodal" hx-swap="none" id="modalbutton" data-bs-dismiss="modal" class="btn btn-primary" type="submit">Add Ingredient</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+                        <input id="stock" name="stock" type="checkbox">           
+                  </div>
+                  <div class="mt-3 text-center">
+                      <button id="modalbutton" class="btn btn-primary" data-bs-dismiss="modal" type="submit">Add Ingredient</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+              
+  <script>
+      $('#ingredientModal').on('shown.bs.modal', function () {
+          $('#ingredientModal input[name="name"]').focus();
+      })
+  </script>

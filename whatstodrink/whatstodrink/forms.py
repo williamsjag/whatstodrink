@@ -68,10 +68,9 @@ class AddIngredientForm(FlaskForm):
     def validate_name(self, name):
         # query = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
         ingredient = db.session.execute(select(Ingredient.name).where(Ingredient.name == name.data).where(Ingredient.user_id == current_user.id)).fetchall()
-        commoningredient = db.session.execute(select(CommonIngredient.name).where(CommonIngredient.name == name.data)).fetchall()
        
         # ingredient = db.session.execute(query, {"name": name, "user_id": current_user.id}).fetchall()
-        if ingredient or commoningredient:
+        if ingredient:
             raise ValidationError("This ingredient already exists")
         
 class AddCocktailForm(FlaskForm):

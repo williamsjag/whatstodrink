@@ -139,9 +139,81 @@
 {% endblock %}
 {% block javascript %}
 <script>
+    // focus first input on load
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('form[id="amountsForm"] input[name="name"]').focus();
     })
+    // listen for response from newingredient
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create an XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Configure the request
+        xhr.open('GET', '/addingredientmodal');
+
+        // Set up a callback function to handle the response
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Access custom headers
+                var customHeader = xhr.getResponseHeader('Ingredient');
+                
+                var originalElement = document.querySelector("#dynamicSelects li:last-child");
+
+                // create a new one
+                var newDiv = originalElement.cloneNode(true);
+
+                // set new id
+                newDiv.id = 'q' + counter;
+
+                // clear new inputs and table
+                var resultsTable = newDiv.querySelector("#results");
+                resultsTable.innerHTML = '';
+                inputs = newDiv.querySelectorAll('input');
+                inputs.forEach(function(input) {
+                    input.value = '';
+                });
+
+                // remove labels from new inputs
+                newDiv.querySelectorAll('label').forEach(function(label) {
+                    label.remove();
+                })
+                // remove old searchtable
+                originalElement.querySelector("#searchtable").remove();
+
+                //increment counter
+                counter++;
+
+                // add new div to dynamicSelects
+                var hostdiv = document.getElementById('dynamicSelects');
+                hostdiv.appendChild(newDiv);
+
+                // get value of header
+                var ingredientval = customHeader;
+
+                // set old field to cellval
+                var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
+                var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
+                document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").value = ingredientval;
+                // make readonly
+                var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
+                oldInput.setAttribute('readonly', 'true');
+                oldInput.removeAttribute('hx-trigger');
+                oldInput.removeAttribute('hx-get');
+                oldInput.removeAttribute('hx-target');
+
+                // focus new field
+                newInput.focus();
+
+                htmx.process(newIngredient);
+                attachEventListeners();
+            }
+        };
+
+        // Send the request
+        xhr.send();
+    });
+
+
     // counter variable for ids
     var counter = 1;
     
