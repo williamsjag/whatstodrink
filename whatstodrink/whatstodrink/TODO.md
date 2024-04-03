@@ -82,20 +82,22 @@ Moved login and register to wtfforms
 Moved addingredient and manageingredient-add to wtf
 Moved Add cocktail to wtf
 Added notes to cocktails
+Added ingredient list and recipe columns to cocktails and common_cocktails for ease of loading
 Changed View Common cocktails to use recipe and ingredient_list
 Changed View User to use recipe and ingredient_list
 Changed Viewall to use recipe and ingredient_list
-Fixed bug in manageingredients search bar
+Fixed bug in manageingredients search ba
+Made amounts editable after selecting an ingredient in addcocktail
 
 ## In Progress
 WTF migration:
-    currently updating viewall view to get everything from the server so no complicated rendering on the front end
-    Make amounts not readonly in add cocktail
+    Make viewall default to all if defaults is on or user if off, no need anymore for separate page with an htmx load
     Add Cocktail new ingredient button - 'addingredientmodal' try having it autofill the most recent empty ingredient then open a new one on submit
 
-Add ingredient list to cocktails tables and configure add and modify to change it as well as update recipe.
-    Add option to rearrange order in edit recipe
-bug: added cocktail not finished with amounts can be re-added over and over for each amount submit
+Make modify recipe and modify ingredient update recipe and ingredientList for affected cocktail
+    write helper function for this?
+Add reorder ingredients to change recipe
+
 bug: more ingredients doesn't work with zero ingredients in change recipe
 bug: next feature not working in login
 
@@ -116,7 +118,5 @@ recipe share page that opens a url like /cocktails-userid-cocktailid.html that c
     -once logged in replace with save to your cocktails
 
 make navbar active class work
-
-Think about hard-coding recipe in cocktail table for sake of page loads/consistency
 
 Search Field for cocktail views

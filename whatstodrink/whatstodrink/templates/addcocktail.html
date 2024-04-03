@@ -6,7 +6,7 @@
 
 {% block main %}
     <h1 class="text-center mb-5">Add Cocktail</h1>
-    <div class="center-xwide text-center explainer p-3 mb-5">
+    <div class="center-wide text-center explainer p-3 mb-5">
         <p>Add a new recipe to your database.</p>
     </div>
     <div class="container">
@@ -43,7 +43,7 @@
                             <label>Ingredient</label>
                             <input type="text" class="form-control ingredientlist mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
                             <!-- ingredient search table -->
-                            <table id ="searchtable" class="table table-borderless table-hover">
+                            <table id ="searchtable" class="table table-sm table-borderless table-hover">
                                 <tbody id="results">
                             </table>
                         </div>

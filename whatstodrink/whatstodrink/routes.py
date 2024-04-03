@@ -393,20 +393,13 @@ def modify_ingredient():
 # Add ingredient modal from Manage Ingredients
 @app.route("/addingredientmodal2", methods=["GET", "POST"])
 @login_required
-def ingredientmodal2():
+def addingredientmodal2():
      
-     form = AddIngredientForm()
+    form = AddIngredientForm()
 
     # reached via post
-     if request.method == "POST":
+    if request.method == "POST":
         if form.validate_on_submit:
-            # Ensure ingredient was submitted
-            if not request.form.get("ingredientname"):
-                return apology("must add ingredient", 400)
-
-            # Ensure type was submitted
-            elif not request.form.get("type"):
-                return apology("must select ingredient type", 400)
 
             # Query database for ingredient
             rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :ingredientname")
@@ -414,27 +407,27 @@ def ingredientmodal2():
 
             # Ensure username exists and password is correct
             if rows:
-                return apology("ingredient already exists", 400)
+                return apology("ingredient already exists", 403)
             else:
                 # insert new ingredient into db
                 new_ingredient = Ingredient(
                     user_id=current_user.id,
-                    name=request.form.get("ingredientname"),
-                    type=request.form.get("type"),
-                    stock=request.form.get("stock"),
-                    short_name=request.form.get("short-name"),
-                    notes=request.form.get("notes"),
+                    name=form.name.data,
+                    type=form.type.data,
+                    stock=form.stock.data,
+                    short_name=form.short_name.data,
+                    notes=form.notes.data,
                 )
                 db.session.add(new_ingredient)
                 db.session.commit()    
                 
-            flash("Ingredient Added")
+            flash("Ingredient Added", "primary")
             return redirect(url_for("manageingredients"))
         else:
             render_template("addingredient.html", form=form)
         
-     # User reached route via GET (as by clicking a link or via redirect)
-     else:
+        # User reached route via GET (as by clicking a link or via redirect)
+    else:
         return render_template(
             "addingredientmodal2.html", form=form
         )

@@ -80,7 +80,7 @@ class AddCocktailForm(FlaskForm):
     ingredient = StringField('Ingredients')
     build = TextAreaField('Build Instructions')
     source = StringField('Source')
-    family = StringField('Family')
+    family = StringField('Cocktail Family')
     notes = TextAreaField('Notes')
     submit = SubmitField('Add Cocktail')
 
