@@ -877,7 +877,7 @@ def missingoneall():
 @login_required
 def missingoneuser():
 
-    cocktailquery = text("SELECT c.name, c.id, c.family, c.build, c.source "
+    cocktailquery = text("SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list "
         "FROM cocktails c "
         "JOIN amounts a ON c.id = a.cocktail_id "
         "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
@@ -890,32 +890,37 @@ def missingoneuser():
         GROUP BY c.id "
         "HAVING COUNT(*) = 1")
     cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
+    # print(f"{cocktails}")
 
-    missingquery = text("WITH sad_cocktails AS (\
-            SELECT c.id "
-            "FROM cocktails c "
-            "JOIN amounts a ON c.id = a.cocktail_id "
-            "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
-            "LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' "
-            "WHERE (\
-                (a.ingredient_source = 'user' AND i.stock != 1 AND i.user_id = :user_id AND c.user_id = :user_id) "
-                "OR \
-                (a.ingredient_source = 'common' AND cs.stock != 1 AND cs.user_id = :user_id AND c.user_id = :user_id) "
-                ") \
-            GROUP BY c.id "
-            "HAVING COUNT(*) = 1\
-        ),\
-        sad_amounts AS (\
-            SELECT ingredient_id FROM amounts WHERE (cocktail_id IN (SELECT id FROM sad_cocktails) AND user_id = :user_id)\
-            UNION\
-            SELECT ingredient_id FROM common_amounts WHERE cocktail_id IN (SELECT id FROM sad_cocktails)\
-        )\
-        SELECT id, name FROM ingredients WHERE (id IN (SELECT ingredient_id FROM sad_amounts) AND stock != 1) \
-        UNION \
-        SELECT ci.id, ci.name FROM common_ingredients ci \
-        JOIN common_stock cs ON ci.id = cs.ingredient_id \
-        WHERE (cs.stock != 1 AND cs.user_id = :user_id AND ci.id IN (SELECT ingredient_id FROM sad_amounts)) \
-        GROUP BY ci.id")
+    missingquery = text("""
+                            WITH sad_cocktails AS (
+                            SELECT c.id 
+                            FROM cocktails c 
+                            JOIN amounts a ON c.id = a.cocktail_id 
+                            LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' 
+                            LEFT JOIN common_stock cs ON a.ingredient_id = cs.ingredient_id AND a.ingredient_source = 'common' 
+                            WHERE (
+                                (a.ingredient_source = 'user' AND i.stock != 1 AND i.user_id = :user_id AND c.user_id = :user_id) 
+                                OR 
+                                (a.ingredient_source = 'common' AND cs.stock != 1 AND cs.user_id = :user_id AND c.user_id = :user_id) 
+                                ) 
+                            GROUP BY c.id 
+                            HAVING COUNT(*) = 1
+                        ),
+                        sad_ingredients AS (
+                            SELECT a.ingredient_id, a.ingredient_source 
+                            FROM amounts a
+                            LEFT JOIN cocktails c ON c.id = a.cocktail_id 
+                            WHERE (c.id IN (SELECT id FROM sad_cocktails) AND a.user_id = :user_id)
+                        )
+                        SELECT id, name FROM ingredients WHERE (id IN (SELECT ingredient_id FROM sad_ingredients) AND stock != 1) 
+                        UNION 
+                        SELECT ci.id, ci.name FROM common_ingredients ci 
+                        JOIN common_stock cs ON ci.id = cs.ingredient_id 
+                        WHERE (cs.stock != 1 AND cs.user_id = :user_id AND ci.id IN (SELECT ingredient_id FROM sad_ingredients)) 
+                        GROUP BY ci.id
+                        """)
+    
     missing_ingredients = db.session.execute(missingquery, {"user_id": current_user.id}).fetchall()
     
     ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
