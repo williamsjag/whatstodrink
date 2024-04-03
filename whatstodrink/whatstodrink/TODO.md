@@ -91,11 +91,11 @@ Made amounts editable after selecting an ingredient in addcocktail
 Changed Manage Ingredients-> View modal to use wtforms
 Changed Manage->View->Modify to use wtforms and updated submit button to submit changes
 Got rid of rename field and made name editable
+Get new ingredient in Add cocktail to auto-add to the most recent ingredient and open a new one
 
 ## In Progress
 WTF migration:
     Make viewall default to all if defaults is on or user if off, no need anymore for separate page with an htmx load
-    Add Cocktail new ingredient button - 'addingredientmodal' try having it autofill the most recent empty ingredient then open a new one on submit
     Add validators to rename in modify ingredient
 
 Make modify recipe and modify ingredient update recipe and ingredientList for affected cocktail
@@ -104,6 +104,7 @@ Add reorder ingredients to change recipe
 
 bug: more ingredients doesn't work with zero ingredients in change recipe
 bug: next feature not working in login
+bug: After creating a new ingredient in add cocktail cursor focus drops
 
 In Add ingredient on addcocktail find a way to flash a message
 

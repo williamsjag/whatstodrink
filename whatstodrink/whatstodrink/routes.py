@@ -780,7 +780,7 @@ def modify_cocktail():
         
 
 @app.route("/viewuser")
-
+@login_required
 def viewuser():
 
     cocktailquery = text("SELECT name, id, family, build, source, notes, recipe, ingredient_list \
@@ -788,7 +788,6 @@ def viewuser():
                         WHERE user_id = :user_id")
    
     usercocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
-    print(f"{usercocktails}")
    
     userfamilies = set(Cocktail.family for Cocktail in usercocktails)
 
@@ -945,7 +944,7 @@ def whatstodrink():
 @login_required
 def whatstodrinkuser():
 
-    cocktailsquery = text("SELECT c.name, c.id, c.family, c.build, c.source "
+    cocktailsquery = text("SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list "
         "FROM cocktails c "
         "JOIN amounts a ON c.id = a.cocktail_id "
         "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
@@ -956,30 +955,17 @@ def whatstodrinkuser():
         "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)")
     cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
 
-    ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
-    ingredientsquery = text("WITH allingredients AS \
-                                (SELECT id, name, short_name FROM common_ingredients \
-                                UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id), \
-                            amounts AS \
-                                (SELECT ingredient_id FROM amounts WHERE user_id = :user_id) \
-                            SELECT id, name, short_name FROM allingredients INNER JOIN amounts ON allingredients.id = amounts.ingredient_id\
-                        ")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
-   
-    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
-
     families = set(Cocktail.family for Cocktail in cocktails)
 
     return render_template(
-        "whatstodrinkuser.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
+        "whatstodrinkuser.html", cocktails=cocktails, families=families
     )
 
 
 @app.route("/whatstodrinkall")
 def whatstodrinkall():
 
-    cocktailquery = text( "SELECT cc.name, cc.id, cc.family, cc.build, cc.source "
+    cocktailquery = text( "SELECT cc.name, cc.id, cc.family, cc.build, cc.source, cc.recipe, cc.ingredient_list, NULL AS notes "
     "FROM common_cocktails cc "
     "JOIN common_amounts ca ON cc.id = ca.cocktail_id "
     "LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id "
@@ -988,7 +974,7 @@ def whatstodrinkall():
     "GROUP BY cc.id "
     "HAVING COUNT(*) = (SELECT COUNT(*) FROM common_amounts a2 WHERE a2.cocktail_id = cc.id) "
     "UNION "
-    "SELECT c.name, c.id, c.family, c.build, c.source "
+    "SELECT c.name, c.id, c.family, c.build, c.source, c.recipe, c.ingredient_list, c.notes "
     "FROM cocktails c "
     "JOIN amounts a ON c.id = a.cocktail_id "
     "LEFT JOIN ingredients i ON a.ingredient_id = i.id AND a.ingredient_source = 'user' "
@@ -998,24 +984,10 @@ def whatstodrinkall():
     "GROUP BY c.id "
     "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)")
     cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
-   
-    # ingredientsquery = text("SELECT id, name, short_name FROM common_ingredients UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id")
-    ingredientsquery = text("WITH allingredients AS \
-                                (SELECT id, name, short_name FROM common_ingredients \
-                                UNION SELECT id, name, short_name FROM ingredients WHERE user_id = :user_id), \
-                            amounts AS \
-                                (SELECT ingredient_id FROM amounts WHERE user_id = :user_id \
-                                UNION SELECT ingredient_id FROM common_amounts)\
-                            SELECT id, name, short_name FROM allingredients INNER JOIN amounts ON allingredients.id = amounts.ingredient_id\
-                        ")
-    ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
-        
-    amountsquery = text("SELECT cocktail_id, ingredient_id, amount FROM common_amounts UNION SELECT cocktail_id, ingredient_id, amount FROM amounts WHERE user_id = :user_id")
-    amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     families = set(Cocktail.family for Cocktail in cocktails)
 
     return render_template(
-        "whatstodrinkall.html", cocktails=cocktails, ingredients=ingredients, amounts=amounts, families=families
+        "whatstodrinkall.html", cocktails=cocktails, families=families
         )
 
