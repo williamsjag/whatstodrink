@@ -11,8 +11,9 @@
     </div>
     <!-- not sure/layout -->
     <div class="container">
-        <form action="/addingredient" class="item-center center-form needs-validation" method="post" novalidate>
+        <form action="/addingredient" name="ingredientform" class="item-center center-form needs-validation" method="post" novalidate>
           {{ form.csrf_token }}
+          <!-- Name -->
             <div class="form-group mb-3">
               {{ form.name.label(class="form-control-label") }}
               {% if form.name.errors %}
@@ -22,10 +23,11 @@
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
-                    {% else %}
-                        {{ form.name(class="form-control") }}
-                    {% endif %} 
+              {% else %}
+                  {{ form.name(class="form-control") }}
+              {% endif %} 
             </div> 
+            <!-- Simplified Name -->
             <div class="form-group">
               {{ form.short_name.label(class="form-control-label mt-3") }} <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i>
               {% if form.short_name.errors %}
@@ -39,6 +41,7 @@
                   {{ form.short_name(class="form-control") }}
               {% endif %}                
           </div>
+          <!-- Type -->
           <div class="form-group">
             {{ form.type.label(class="form-label mt-3") }}
             {% if form.type.errors %}
@@ -74,6 +77,7 @@
                 </select>
               {% endif %}
             </div>
+            <!-- Notes -->
           <div class="form-group">
             {{ form.notes.label(class="form-control-label mt-3") }}
             {% if form.notes.errors %}
@@ -87,33 +91,15 @@
                 {{ form.notes(placeholder="Recipe if homemade, etc...", class="form-control", rows="3") }}
             {% endif %}                
           </div>
+          <!-- Type -->
           <div class=" form-check mt-3">
             <label for="stock">In Stock:</label>
                 <input id="stock" name="stock" type="checkbox">           
           </div>
+          <!-- Submit -->
           <div class="form-group text-center mt-4">
             {{ form.submit(class="btn btn-primary mt-3") }}
           </div>
-
-                <!-- <label for="ingredientname" class="form-label">Ingredient Name</label>
-                <input autocomplete="off" autofocus class="form-control" id="ingredientname" name="ingredientname" placeholder="Name" type="text" required>
-            </div>
-            <div class="form-group mb-3">
-                <label for="short_name" class="form-label">Simplified Name (optional) <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i></label>
-                <input autocomplete="off" autofocus class="form-control" id="short_name" name="short_name" placeholder="Simplified name" type="text">
-            </div> -->
-            
-            <!-- <div class="form-group mb-3">
-                <label for="notes" class="form-label">Notes</label>
-                <textarea autocomplete="off" class="form-control" id="notes" name="notes" placeholder="Recipe if homemade, etc..." rows="4"></textarea>    
-            </div> -->
-            <!-- <div class="mb-3 text-center form-check">
-                <label for="stock">In Stock:</label>
-                <input id="stock" name="stock" type="checkbox">
-            </div>
-            <div class="mb-3 text-center">
-                <button class="btn btn-primary" type="submit">Add Ingredient</button>
-            </div> -->
         </form>
     </div>
 
@@ -140,5 +126,9 @@
 {% endblock %}
 
 {% block javascript %}
-
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+    document.querySelector('form[name="ingredientform"] input[name="name"]').focus();
+   })
+</script>
 {% endblock %}

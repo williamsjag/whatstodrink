@@ -139,6 +139,9 @@
 {% endblock %}
 {% block javascript %}
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelector('form[id="amountsForm"] input[name="name"]').focus();
+    })
     // counter variable for ids
     var counter = 1;
     
