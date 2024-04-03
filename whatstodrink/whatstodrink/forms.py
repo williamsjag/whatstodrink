@@ -89,3 +89,17 @@ class AddCocktailForm(FlaskForm):
 
         if cocktail:
             raise ValidationError("You already have a cocktail by that name")
+        
+class ViewIngredientForm(FlaskForm):
+    name = StringField('Ingredient Name', validators=[DataRequired()])
+    short_name = StringField('Simplified Name')
+    type = StringField('Ingredient Type', validators=[DataRequired()])
+    notes = TextAreaField('Notes')
+
+class ModifyIngredientForm(FlaskForm):
+    name = StringField('Ingredient Name', validators=[DataRequired()])
+    rename = StringField('Rename Ingredient')
+    short_name = StringField('Simplified Name')
+    type = StringField('Ingredient Type', validators=[DataRequired()])
+    notes = TextAreaField('Notes')
+    id = IntegerField('Id')

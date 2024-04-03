@@ -8,24 +8,29 @@
     <div class="modal-body">
         <div class="modal-body" id="body">
             <form>
-                <div class="container-bigcenter me-3 mb-3">
-                    <div class="category item-left">Simplified Name: </div>
-                    <div class="item-center" id="ingredientShort"></div>
+                {{ form.csrf_token }}
+                <div class="me-3 mb-3">
+                    {{ form.name.label(class="form-control-label") }} 
+                    {{ form.name(class="form-control", value=ingredient.name, readonly="true") }}
                 </div>
-                <div class="container-bigcenter me-3 mb-3">
-                    <div class="category item-left">Type: </div>
-                    <div class="item-center" id="ingredientType"></div>
+                {% if ingredient.short_name %}
+                <div class="me-3 mb-3">
+                    {{ form.short_name.label(class="form-control-label") }} 
+                    {{ form.short_name(class="form-control", value=ingredient.short_name, readonly="true")}}
                 </div>
-                <div class="container-bigcenter me-3 mb-5">
-                    <div class="category item-left">Notes: </div>
-                    <div class="item-center" id="ingredientNotes"></div>
+                {% endif %}
+                <div class="me-3 mb-3">
+                    {{ form.type.label(class="form-control-label") }}
+                    {{ form.type(class="form-control", value=ingredient.type, readonly="true")}}
                 </div>
-                <input type="hidden" name="name" id="name">
-                <input type="hidden" id="type" name="type">
-                <input type="hidden" id="short" name="short">
-                <input type="hidden" id="notes" name="notes">
+                {% if ingredient.notes %}
+                <div class="me-3 mb-5">
+                    {{ form.notes.label(class="form-control-label") }}
+                    <textarea class="form-control" id="notes" name="notes" rows="3" readonly="true">{{ ingredient.notes }}</textarea>
+                </div>
+                {% endif %}
 
-                <div class="text-center">
+                <div class="text-center mb-3">
                     <button hx-post="/modify_ingredient" hx-target="#body" id="modifybutton" name="modifybutton" class="btn btn-primary" type="submit">Modify Ingredient</button>
                 </div>
             </form>

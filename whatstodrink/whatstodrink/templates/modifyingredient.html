@@ -1,26 +1,21 @@
 <form action="/modify_ingredient" class="center-form" method="POST" id="modifyForm">
+    {{ form.csrf_token }}
     <div class="modal-body">
         <div class="mb-3">
-            <label for="modifiedIngredientName">Ingredient Name</label>
-            <input type="text" name="modifiedIngredientName" id="modifiedIngredientName" class="form-control" value="{{ ingredient[0].name }}" readonly>
-        </div>
-        <!-- Rename Field -->
-        <label for="renameText">Rename Ingredient</label>
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="New name goes here" aria-label="New ingredient name" aria-describedby="renamebutton" name="renameText" id="renameText">
-            <button id="renamebutton" data-bs-dismiss="modal" name="renamebutton" class="btn btn-primary" type="submit">Rename</button>
+            {{ form.name.label(class="form-control-label") }}
+            {{ form.name(class="form-control", value=ingredient.name) }}
         </div>
         <!-- Short Name Field -->
-        <div class="mb-3">
-            <label for="renameText">Simplified Name</label>
-            <input type="text" class="form-control" placeholder="Simplified Name" name="short_name" id="short_name" value="{{ ingredient[0].short_name}}">
+        <div class="me-3 mb-3">
+            {{ form.short_name.label(class="form-control-label") }} 
+            {{ form.short_name(class="form-control", value=ingredient.short_name)}}
         </div>
         <!-- Type Field -->
         <div class="form-group mb-3">
-            <label for="type" class="form-label">Ingredient Type</label>
+            {{ form.type.label(class="form-control-label") }}
             <select name="type" id="type" class="form-select" required>
                 {% for type in types %}
-                    {% if type.type == ingredient[0].type %}
+                    {% if type.type == ingredient.type %}
                         <option value="{{ type.type }}" selected>{{ type.type }}</option>
                     {% else %}
                         <option value="{{ type.type }}">{{ type.type }}</option>
@@ -28,12 +23,14 @@
                 {% endfor %}
             </select>
         </div>
-        <!-- Notes Field -->
-        <div class="form-group mb-3">
-            <label for="notes" class="form-label">Notes</label>
-            <textarea autocomplete="off" class="form-control" id="notes" name="notes" placeholder="Recipe if homemade, etc..." rows="4">{{ ingredient[0].notes }}</textarea>    
+        <div>
+            {{ form.id(type="hidden", value=ingredient.id) }}
         </div>
-        <br>
+        <!-- Notes Field -->
+        <div class="me-3 mb-5">
+            {{ form.notes.label(class="form-control-label") }}
+            <textarea class="form-control" id="notes" name="notes" rows="3">{{ ingredient.notes }}</textarea>
+        </div>
         <!-- Submit Button -->
         <div class="mb-3 text-center">
             <button id="submitbutton" data-bs-dismiss="modal" name="submitbutton" class="btn btn-primary" type="submit">Submit Changes</button>

@@ -4,7 +4,7 @@ from sqlalchemy import select, union, text, or_, distinct
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
-from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm, AddCocktailForm
+from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm, AddCocktailForm, ViewIngredientForm, ModifyIngredientForm
 from flask_login import login_user, current_user, logout_user, login_required
 
  
@@ -284,7 +284,19 @@ def manageingredients():
 # View ingredient modal from ManageIngredients 
 @app.route("/viewingredientmodal")
 def viewingredientmodal():
-    return render_template("viewingredientmodal.html")
+
+    form = ViewIngredientForm()
+
+    for key, value, in request.args.items():
+        if key.startswith('stock_'):
+            ingredient_name = key.replace('stock_', '')
+            ingredient_id = request.args.get(f'id_{ingredient_name}')
+            
+    ingredient = db.session.execute(select(Ingredient).where(Ingredient.id == ingredient_id)).fetchone()
+    ingredient = ingredient[0]
+    print(f"{ingredient.__dict__}")
+
+    return render_template("viewingredientmodal.html", form=form, ingredient=ingredient)
 
 
 # Modify Ingredient modal from ManageIngredients -> viewingredientmodal
@@ -294,42 +306,22 @@ def modify_ingredient():
     new_name = request.form.get('renameText')
     
     if request.method == "POST":
-
-        if "renamebutton" in request.form:
-
-            if new_name:
-
-                checkquery = text("SELECT id FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT id FROM common_ingredients WHERE name = :name")
-                check = db.session.execute(checkquery, {"name": new_name, "user_id": current_user.id}).fetchall()
-
-                if check:
-
-                    return apology("an ingredient with that name already exists")
-                
-                else:
-
-                    renamequery = text("UPDATE ingredients SET name = :name WHERE name = :old_name AND user_id = :user_id")
-                    db.session.execute(renamequery, {"name": new_name, "old_name": ingredient, "user_id": current_user.id})
-                    db.session.commit()
-                    
-                    # flash("Ingredient Renamed")
-                    flash("Ingredient Renamed")
-                    return redirect(url_for('manageingredients'))
-            else:
-
-                return apology("An ingredient has no name")
             
-        elif "submitbutton" in request.form:
+        if "submitbutton" in request.form:
+            
+            form = ModifyIngredientForm()
 
-            newtype = request.form.get('type')
-            newnotes = request.form.get('notes')
-            ingredient = request.form.get('modifiedIngredientName')
-            shortname = request.form.get('short_name')
-            updatequery = text("UPDATE ingredients SET type = :type, notes = :notes WHERE name = :name AND user_id = :user_id")
-            db.session.execute(updatequery,  {"type": newtype, "notes": newnotes, "name": ingredient, "short_name": shortname, "user_id": current_user.id})
+            id = form.id.data
+            newtype = form.type.data
+            newnotes = form.notes.data
+            newname = form.name.data
+            shortname = form.short_name.data
+            print(f"{id}, {newtype}, {newnotes}")
+            updatequery = text("UPDATE ingredients SET type = :type, notes = :notes, name = :name, short_name = :short_name WHERE id = :id AND user_id = :user_id")
+            db.session.execute(updatequery,  {"id": id, "type": newtype, "notes": newnotes, "name": newname, "short_name": shortname, "user_id": current_user.id})
             db.session.commit()                  
 
-            flash("Ingredient Modified")
+            flash("Ingredient Modified", "primary")
             return redirect(url_for('manageingredients'))
 
 
@@ -355,16 +347,20 @@ def modify_ingredient():
             
         elif "modifybutton" in request.form:
 
-            name = request.form.get('name')
+            form = ViewIngredientForm()
+
+            name = form.name.data
             ingredientquery = text("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = :name AND user_id = :user_id")
             ingredient = db.session.execute(ingredientquery, {"name": name, "user_id": current_user.id}).fetchall()
 
             typesquery = text("SELECT DISTINCT type FROM common_ingredients")
             types = db.session.execute(typesquery).fetchall()
 
+            form = ModifyIngredientForm()
+
             if ingredient:
 
-                return render_template("modifyingredient.html", ingredient=ingredient, types=types)
+                return render_template("modifyingredient.html", ingredient=ingredient[0], types=types, form=form)
             
             else:
 
