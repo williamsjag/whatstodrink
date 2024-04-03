@@ -331,23 +331,25 @@ def modify_ingredient():
 
             form = DeleteForm()
 
-            rowsquery = text("SELECT cocktails.name FROM cocktails \
-                              JOIN amounts ON cocktails.id = amounts.cocktail_id \
-                              LEFT JOIN ingredients ON amounts.ingredient_id = ingredients.id \
-                              WHERE ingredients.name = :name AND ingredients.user_id = :user\
-                              GROUP BY cocktails.name")
-           
-            rows = db.session.execute(rowsquery, {"name": ingredient, "user": current_user.id}).fetchall()
+            ingredientId = db.session.scalar(select(Ingredient.id).where(Ingredient.name == ingredient).where(Ingredient.user_id == current_user.id))
 
-            if not rows:
+            query = text("""
+                         SELECT cocktail_id
+                         FROM amounts
+                         WHERE ingredient_id = :id AND ingredient_source = 'user'
+                         """)
 
-                ingredientId = db.session.scalar(select(Ingredient.id).where(Ingredient.name == ingredient).where(Ingredient.user_id == current_user.id))
+            cocktails = db.session.execute(query, {"id": ingredientId}).fetchall()
+
+            if not cocktails:
 
                 return render_template(
                     "areyousure.html", ingredient=ingredient, form=form, ingredientId=ingredientId
                 )
             
             else:
+                
+                rows = db.session.execute(select(Cocktail.name).where(Cocktail.id == cocktails)).fetchall()
 
                 return render_template(
                     "cannotdelete.html", rows=rows, ingredient=ingredient
