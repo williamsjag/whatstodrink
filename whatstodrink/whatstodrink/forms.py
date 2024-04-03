@@ -97,9 +97,11 @@ class ViewIngredientForm(FlaskForm):
     notes = TextAreaField('Notes')
 
 class ModifyIngredientForm(FlaskForm):
-    name = StringField('Ingredient Name', validators=[DataRequired()])
-    rename = StringField('Rename Ingredient')
+    name = StringField('Name', validators=[DataRequired()])
     short_name = StringField('Simplified Name')
     type = StringField('Ingredient Type', validators=[DataRequired()])
     notes = TextAreaField('Notes')
+    id = IntegerField('Id')
+
+class DeleteForm(FlaskForm):
     id = IntegerField('Id')

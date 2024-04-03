@@ -88,11 +88,15 @@ Changed View User to use recipe and ingredient_list
 Changed Viewall to use recipe and ingredient_list
 Fixed bug in manageingredients search ba
 Made amounts editable after selecting an ingredient in addcocktail
+Changed Manage Ingredients-> View modal to use wtforms
+Changed Manage->View->Modify to use wtforms and updated submit button to submit changes
+Got rid of rename field and made name editable
 
 ## In Progress
 WTF migration:
     Make viewall default to all if defaults is on or user if off, no need anymore for separate page with an htmx load
     Add Cocktail new ingredient button - 'addingredientmodal' try having it autofill the most recent empty ingredient then open a new one on submit
+    Add validators to rename in modify ingredient
 
 Make modify recipe and modify ingredient update recipe and ingredientList for affected cocktail
     write helper function for this?

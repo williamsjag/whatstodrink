@@ -4,7 +4,7 @@ from sqlalchemy import select, union, text, or_, distinct
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
-from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm, AddCocktailForm, ViewIngredientForm, ModifyIngredientForm
+from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm, AddCocktailForm, ViewIngredientForm, ModifyIngredientForm, DeleteForm
 from flask_login import login_user, current_user, logout_user, login_required
 
  
@@ -294,7 +294,6 @@ def viewingredientmodal():
             
     ingredient = db.session.execute(select(Ingredient).where(Ingredient.id == ingredient_id)).fetchone()
     ingredient = ingredient[0]
-    print(f"{ingredient.__dict__}")
 
     return render_template("viewingredientmodal.html", form=form, ingredient=ingredient)
 
@@ -302,8 +301,9 @@ def viewingredientmodal():
 # Modify Ingredient modal from ManageIngredients -> viewingredientmodal
 @app.route("/modify_ingredient", methods=["GET", "POST"])
 def modify_ingredient():
-    ingredient = request.form.get('modifiedIngredientName')
-    new_name = request.form.get('renameText')
+
+    form = ViewIngredientForm()
+    ingredient = form.name.data
     
     if request.method == "POST":
             
@@ -316,7 +316,7 @@ def modify_ingredient():
             newnotes = form.notes.data
             newname = form.name.data
             shortname = form.short_name.data
-            print(f"{id}, {newtype}, {newnotes}")
+        
             updatequery = text("UPDATE ingredients SET type = :type, notes = :notes, name = :name, short_name = :short_name WHERE id = :id AND user_id = :user_id")
             db.session.execute(updatequery,  {"id": id, "type": newtype, "notes": newnotes, "name": newname, "short_name": shortname, "user_id": current_user.id})
             db.session.commit()                  
@@ -326,17 +326,23 @@ def modify_ingredient():
 
 
         elif "deletebutton" in request.form:
+
+            form = DeleteForm()
+
             rowsquery = text("SELECT cocktails.name FROM cocktails \
                               JOIN amounts ON cocktails.id = amounts.cocktail_id \
                               LEFT JOIN ingredients ON amounts.ingredient_id = ingredients.id \
-                              WHERE ingredients.name = :name \
+                              WHERE ingredients.name = :name AND ingredients.user_id = :user\
                               GROUP BY cocktails.name")
            
-            rows = db.session.execute(rowsquery, {"name": ingredient}).fetchall()
+            rows = db.session.execute(rowsquery, {"name": ingredient, "user": current_user.id}).fetchall()
+
             if not rows:
 
+                ingredientId = db.session.scalar(select(Ingredient.id).where(Ingredient.name == ingredient).where(Ingredient.user_id == current_user.id))
+
                 return render_template(
-                    "areyousure.html", ingredient=ingredient
+                    "areyousure.html", ingredient=ingredient, form=form, ingredientId=ingredientId
                 )
             
             else:
@@ -368,13 +374,15 @@ def modify_ingredient():
         
         elif "deleteconfirmed" in request.form:
 
-            ingredient_delete = request.form.get("ingredient_delete")
-            deletequery = text("DELETE FROM ingredients WHERE name = :name AND user_id = :user_id")
-            db.session.execute(deletequery, {"name": ingredient_delete, "user_id": current_user.id})
+            form = DeleteForm()
+
+            ingredient_delete = form.id.data
+
+            deletequery = text("DELETE FROM ingredients WHERE id = :id AND user_id = :user_id")
+            db.session.execute(deletequery, {"id": ingredient_delete, "user_id": current_user.id})
             db.session.commit()
 
-            # flash('Ingredient Deleted')
-            flash("Ingredient Deleted")
+            flash("Ingredient Deleted", "danger")
             return redirect(url_for("manageingredients"))
         
         # elif "cancel" in request.form:
