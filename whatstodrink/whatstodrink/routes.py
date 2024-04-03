@@ -601,11 +601,8 @@ def addingredientmodal():
                 )
                 db.session.add(new_ingredient)
                 db.session.commit()    
-                
-                response = Response()
-                response.headers['Ingredient'] = form.name.data
 
-            return response
+            return form.name.data
         else:
             return (render_template("addingredient.html", form=form))
 

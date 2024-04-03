@@ -6,7 +6,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <form id="addItemForm" action="/addingredientmodal" method="POST" class="center-form" name="addItemForm">
+            <form id="addItemForm" class="center-form" name="addItemForm">
                 <div class="form-group mb-3">
                     {{ form.csrf_token }}
                     <div class="form-group mb-3">
@@ -88,7 +88,7 @@
                         <input id="stock" name="stock" type="checkbox">           
                   </div>
                   <div class="mt-3 text-center">
-                      <button id="modalbutton" class="btn btn-primary" data-bs-dismiss="modal" type="submit">Add Ingredient</button>
+                      <button id="modalbutton" hx-post="/addingredientmodal" class="btn btn-primary" data-bs-dismiss="modal" type="submit">Add Ingredient</button>
                   </div>
               </form>
           </div>

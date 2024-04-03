@@ -24,24 +24,24 @@
                             {% endfor %}
                         </div>
                 {% else %}
-                    {{ form.name(class="form-control") }}
+                    {{ form.name(class="form-control", autocomplete="off") }}
                 {% endif %} 
             </div>
                 <!--ingredients list -->
             <div class="mb-3 form-group">
                 <!-- <label for="q0" class="form-label">Ingredients</label> -->
-                {{ form.ingredient.label(class="form-control-label mb-3") }}
+                {{ form.ingredient.label(class="form-control-label mb-3", autocomplete="off") }}
                 <ol id="dynamicSelects">
                     <!-- first ingredient -->
                     <li id="q0" class="row">
                         <div class="col-md-4">
                             <label>Amount (with units)</label>
-                            <input type="text" class="form-control amountlist" name="amount" placeholder="e.g. 1 1/2 ounces">
+                            <input type="text" autocomplete="off" class="form-control amountlist" name="amount" placeholder="e.g. 1 1/2 ounces">
 
                         </div>
                         <div class="col">
                             <label>Ingredient</label>
-                            <input type="text" class="form-control ingredientlist mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
+                            <input type="text" autocomplete="off" class="form-control ingredientlist mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
                             <!-- ingredient search table -->
                             <table id ="searchtable" class="table table-sm table-borderless table-hover">
                                 <tbody id="results">
@@ -58,12 +58,12 @@
             <!-- Build instructions field -->
             <div class="form-group mb-3">
                 {{ form.build.label(class="form-control-label") }}
-                {{ form.build(class="form-control", placeholder="Build instructions, garnish, glass, etc...", rows="3") }}
+                {{ form.build(class="form-control", placeholder="Build instructions, garnish, glass, etc...", rows="3", autocomplete="off") }}
             </div>
             <!-- Source field -->
             <div class="form-group mb-3">
                 {{ form.source.label(class="form-control-label") }}
-                {{ form.source(class="form-control") }}
+                {{ form.source(class="form-control", autocomplete="off") }}
             </div>
             <!-- Family field -->
             <div class="mb-3 form-group">
@@ -88,7 +88,7 @@
             <!-- Notes field -->
             <div class="form-group mb-3">
                 {{ form.notes.label(class="form-control-label") }}
-                {{ form.notes(class="form-control", placeholder="Any additional information", rows="3") }}
+                {{ form.notes(class="form-control", placeholder="Any additional information", rows="3", autocomplete="off") }}
             </div>
             <!-- Submit button / open amounts modal -->
             <div class="form-group mb-3 text-center">
@@ -143,29 +143,23 @@
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('form[id="amountsForm"] input[name="name"]').focus();
     })
-    // listen for response from newingredient
-    document.addEventListener('DOMContentLoaded', function() {
-        // Create an XMLHttpRequest object
-        var xhr = new XMLHttpRequest();
+    document.addEventListener('htmx:afterRequest', function(evt) {
+        var response = evt.detail.xhr.response; // Get the response from the server
+        console.log(response);
+        if (typeof response === 'string' && response.length < 50) {
+            var targetInput = document.querySelector('#dynamicSelects li:last-child .ingredientlist');
+            if (targetInput) {
+                // Update the field with server response
+                targetInput.value = response;
 
-        // Configure the request
-        xhr.open('GET', '/addingredientmodal');
-
-        // Set up a callback function to handle the response
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                // Access custom headers
-                var customHeader = xhr.getResponseHeader('Ingredient');
-                
+                // Copy last li (ingredient)
                 var originalElement = document.querySelector("#dynamicSelects li:last-child");
-
-                // create a new one
                 var newDiv = originalElement.cloneNode(true);
 
                 // set new id
                 newDiv.id = 'q' + counter;
 
-                // clear new inputs and table
+                // clear inputs and table of new copy
                 var resultsTable = newDiv.querySelector("#results");
                 resultsTable.innerHTML = '';
                 inputs = newDiv.querySelectorAll('input');
@@ -187,13 +181,10 @@
                 var hostdiv = document.getElementById('dynamicSelects');
                 hostdiv.appendChild(newDiv);
 
-                // get value of header
-                var ingredientval = customHeader;
-
-                // set old field to cellval
+                // set new field variables
                 var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
                 var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
-                document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").value = ingredientval;
+                
                 // make readonly
                 var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
                 oldInput.setAttribute('readonly', 'true');
@@ -207,11 +198,78 @@
                 htmx.process(newIngredient);
                 attachEventListeners();
             }
-        };
-
-        // Send the request
-        xhr.send();
+        }
+        
     });
+    // listen for response from newingredient
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     // Create an XMLHttpRequest object
+    //     var xhr = new XMLHttpRequest();
+
+    //     // Configure the request
+    //     xhr.open('GET', '/addingredientmodal');
+
+    //     // Set up a callback function to handle the response
+    //     xhr.onload = function() {
+    //         if (xhr.status === 200) {
+    //             // Access custom headers
+    //             var customHeader = xhr.getResponseHeader('Ingredient');
+                
+    //             var originalElement = document.querySelector("#dynamicSelects li:last-child");
+
+    //             // create a new one
+    //             var newDiv = originalElement.cloneNode(true);
+
+    //             // set new id
+    //             newDiv.id = 'q' + counter;
+
+    //             // clear new inputs and table
+    //             var resultsTable = newDiv.querySelector("#results");
+    //             resultsTable.innerHTML = '';
+    //             inputs = newDiv.querySelectorAll('input');
+    //             inputs.forEach(function(input) {
+    //                 input.value = '';
+    //             });
+
+    //             // remove labels from new inputs
+    //             newDiv.querySelectorAll('label').forEach(function(label) {
+    //                 label.remove();
+    //             })
+    //             // remove old searchtable
+    //             originalElement.querySelector("#searchtable").remove();
+
+    //             //increment counter
+    //             counter++;
+
+    //             // add new div to dynamicSelects
+    //             var hostdiv = document.getElementById('dynamicSelects');
+    //             hostdiv.appendChild(newDiv);
+
+    //             // get value of header
+    //             var ingredientval = customHeader;
+
+    //             // set old field to cellval
+    //             var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
+    //             var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
+    //             document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").value = ingredientval;
+    //             // make readonly
+    //             var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
+    //             oldInput.setAttribute('readonly', 'true');
+    //             oldInput.removeAttribute('hx-trigger');
+    //             oldInput.removeAttribute('hx-get');
+    //             oldInput.removeAttribute('hx-target');
+
+    //             // focus new field
+    //             newInput.focus();
+
+    //             htmx.process(newIngredient);
+    //             attachEventListeners();
+    //         }
+    //     };
+
+    //     // Send the request
+    //     xhr.send();
+    // });
 
 
     // counter variable for ids
