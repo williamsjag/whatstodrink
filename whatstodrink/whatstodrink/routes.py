@@ -4,7 +4,7 @@ from sqlalchemy import select, union, text, or_, distinct
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
-from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm, AddCocktailForm, ViewIngredientForm, ModifyIngredientForm, DeleteForm
+from whatstodrink.forms import RegistrationForm, LoginForm, ManageIngredientsForm, SettingsForm, AddIngredientForm, AddCocktailForm, ViewIngredientForm, ModifyIngredientForm, DeleteForm, ModifyCocktailForm
 from flask_login import login_user, current_user, logout_user, login_required
 
  
@@ -83,7 +83,6 @@ def login():
             else:
                 login_user(user, remember=form.remember.data)
                 next_page = request.args.get('next')
-                print(request.args)
 
                 # Check default cocktail setting
                 session["defaults"] = user.default_cocktails
@@ -620,6 +619,7 @@ def viewcocktails():
 @app.route("/viewallcocktails")
 def viewallcocktails():
 
+
     userquery = text("""       
                     SELECT 'user' AS csource, name, id, family, build, source, recipe, ingredient_list, notes \
                     FROM cocktails
@@ -642,7 +642,9 @@ def viewallcocktails():
 # Modify cocktail modal from viewallcocktails
 @app.route("/modifycocktailmodal")
 def modifycocktailmodal():
-    return render_template("modifycocktailmodal.html")
+
+    form = ModifyCocktailForm()
+    return render_template("modifycocktailmodal.html", form=form)
 
 @app.route("/viewcommon")
 def viewcommon():
@@ -655,8 +657,6 @@ def viewcommon():
 
     familyquery = text("SELECT DISTINCT family FROM common_cocktails")
     allfamilies = db.session.scalars(familyquery).fetchall()
-
-    print(f"{commoncocktails}")
     
     return render_template(
         "viewcommon.html", commoncocktails=commoncocktails, allfamilies=allfamilies
@@ -665,6 +665,7 @@ def viewcommon():
 # Change Recipe modal from viewallcocktails->modifycocktailmodal 
 @app.route("/modify_cocktail", methods=["GET", "POST"])
 def modify_cocktail():
+
     cocktail = request.form.get('modifiedCocktailName')
     new_name = request.form.get('renameText')
 
@@ -676,22 +677,24 @@ def modify_cocktail():
                 rows = db.session.execute(rowsquery, {"new_name": new_name, "user_id": current_user.id}).fetchall()
                 
                 if rows:
-                    return apology("You already have a cocktail by that name", 400)
+                    return apology("You already have a cocktail by that name", 403)
                 else:
                     update = text("UPDATE cocktails SET name = :new_name WHERE name = :cocktail AND user_id = :user_id")
                     db.session.execute(update, {"new_name": new_name, "cocktail": cocktail, "user_id": current_user.id})
                     db.session.commit()
-                    flash("Cocktail Renamed")
+                    flash("Cocktail Renamed", "primary")
                     return redirect(url_for('viewcocktails'))
             else:
                 return apology("A cocktail has not name")
 
         elif "deletebutton" in request.form:
+            form = DeleteForm()
             return render_template(
-                "areyousurecocktail.html", cocktail=cocktail
+                "areyousurecocktail.html", cocktail=cocktail, form=form
             )
 
         elif "deleteconfirmed" in request.form:
+            
             cocktail_delete = request.form.get("cocktail_delete")
             amountsdeletequery = text("WITH CocktailToDelete AS \
                        (SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id LIMIT 1) \
@@ -720,6 +723,7 @@ def modify_cocktail():
             types = db.session.scalars(select(CommonIngredient.type.distinct())).fetchall()
 
             flash("Recipe Modified")
+
             return render_template(
                 "changerecipe.html", cocktail=cocktail, recipe=recipe, amounts=amounts, ingredients=ingredients, families=families, types=types
             )
@@ -777,6 +781,8 @@ def modify_cocktail():
                 db.session.commit()
 
             return redirect(url_for("viewcocktails"))
+        
+        
         
 
 @app.route("/viewuser")
@@ -905,7 +911,6 @@ def missingoneuser():
                         "HAVING COUNT(*) = 1")
     
     cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
-    # print(f"{cocktails}")
 
     missingquery = text("""
                             WITH sad_cocktails AS (

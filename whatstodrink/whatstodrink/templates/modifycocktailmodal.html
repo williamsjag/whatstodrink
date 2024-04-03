@@ -7,22 +7,21 @@
         <div class="modal-body" id="body">
             <div class="modal-body">
                 <form action="/modify_cocktail" class="center-form" method="POST" id="modifyForm">
+                    {{ form.csrf_token }}
                     <div class="mb-4">
-                        <label for="modifiedCocktailName">Cocktail Name</label>
-                        <input type="text" name="modifiedCocktailName" class="form-control" id="modifiedCocktailName" readonly>
+                        {{ form.modifiedCocktailName.label(class="form-control-label") }}
+                        {{ form.modifiedCocktailName(class="form-control", autocomplete="off", readonly="true", value=cocktail) }}
                     </div>
                     <!-- Rename Button -->
-                    <label for="renameText">Rename Cocktail</label>
-                    <div class="input-group mb-5">
-                        <input type="text" class="form-control" placeholder="New name goes here" aria-label="New cocktail name" aria-describedby="renamebutton" name="renameText" id="renameText">
-                        <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit" data-bs-dismiss="modal">Rename</button>
-
-                    </div>
-                    <br>
-                    <div class="mb-3 text-center">
-                        <button hx-post="/modify_cocktail" hx-target="#body" id="changerecipe" name="changerecipe" class="btn btn-primary mb-3" type="submit">Change Recipe</button><br>
-                        <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-danger" type="submit">Delete Cocktail</button>
-                    </div>
+                        <label for="renameText">Rename Cocktail</label>
+                        <div class="input-group mb-5">
+                            <input type="text" class="form-control" placeholder="New name goes here" aria-label="New cocktail name" aria-describedby="renamebutton" name="renameText" id="renameText">
+                            <button id="renamebutton" name="renamebutton" class="btn btn-primary" type="submit" data-bs-dismiss="modal">Rename</button>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <button hx-post="/modify_cocktail" hx-target="#body" id="changerecipe" name="changerecipe" class="btn btn-primary mb-3" type="submit">Change Recipe</button><br>
+                            <button hx-post="/modify_cocktail" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-danger" type="submit">Delete Cocktail</button>
+                        </div>
                 </form>
             </div>
         </div>

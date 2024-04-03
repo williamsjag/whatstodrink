@@ -1,4 +1,5 @@
 <form action="/modify_cocktail" method="POST" class="text-center">
+    {{ form.csrf_token }}
     <p class="mb-3">
         This action cannot be undone. Are you sure you want to delete {{ cocktail }}?
     </p>

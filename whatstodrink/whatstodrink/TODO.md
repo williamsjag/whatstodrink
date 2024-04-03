@@ -92,11 +92,13 @@ Changed Manage Ingredients-> View modal to use wtforms
 Changed Manage->View->Modify to use wtforms and updated submit button to submit changes
 Got rid of rename field and made name editable
 Get new ingredient in Add cocktail to auto-add to the most recent ingredient and open a new one
+Moved Whatstodrink and Whatsmissing to recipe/ingredient_list
 
 ## In Progress
 WTF migration:
-    Make viewall default to all if defaults is on or user if off, no need anymore for separate page with an htmx load
+Modify cocktail
     Add validators to rename in modify ingredient
+    and rename in modify cocktail
 
 Make modify recipe and modify ingredient update recipe and ingredientList for affected cocktail
     write helper function for this?
