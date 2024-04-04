@@ -697,6 +697,28 @@ def modifycocktail():
                 "modifycocktail.html", cocktail=cocktail, amounts=amounts, ingredients=ingredients, types=types, form=form
             )
         
+        elif "deletebutton" in request.form:
+            return render_template(
+                "areyousurecocktail.html", name=name, form=form
+            )
+        
+        elif "deleteconfirmed" in request.form:
+            cocktail_delete = request.form.get("cocktail_delete")
+            amountsdeletequery = text("WITH CocktailToDelete AS \
+                       (SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id LIMIT 1) \
+                       DELETE FROM amounts \
+                       WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)")
+            db.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": current_user.id})
+            cocktaildeletequery = text("DELETE FROM cocktails WHERE name = :name AND user_id = :user_id")
+            db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": current_user.id})
+            db.session.commit()
+            
+            flash('Cocktail Deleted', "danger")
+            return redirect(url_for("viewcocktails"))
+
+        elif "cancel" in request.form:
+            return redirect(url_for("viewcocktails"))
+        
         elif "submitbutton" in request.form:
 
             # update cocktail in db

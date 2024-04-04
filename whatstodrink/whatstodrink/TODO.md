@@ -96,6 +96,7 @@ Moved Whatstodrink and Whatsmissing to recipe/ingredient_list
 Fixed rename cocktail for wtforms
 Added sequence to database models and to write function in add cocktail
 Added new modifycocktail.html
+Added route for submitbutton
 
 ## In Progress
 WTF migration:

@@ -1,11 +1,11 @@
-<form action="/modify_cocktail" method="POST" class="text-center">
+<form action="/modifycocktail" method="POST" class="text-center">
     {{ form.csrf_token }}
-    <p class="mb-3">
-        This action cannot be undone. Are you sure you want to delete {{ cocktail }}?
+    <p class="mt-4 mb-3">
+        This action cannot be undone. Are you sure you want to delete the <strong>{{ name }}</strong>?
     </p>
-    <input type="hidden" name="cocktail_delete" value="{{ cocktail }}">
-    <button name="deleteconfirmed" data-bs-dismiss="modal" class="btn btn-danger mt-3 mb-3">DELETE</button>
-    <button name="cancel" data-bs-dismiss="modal" class="btn btn-primary mt-3 mb-3">Cancel</button>
+    <input type="hidden" name="cocktail_delete" value="{{ name }}">
+    <button name="deleteconfirmed" data-bs-dismiss="modal" class="btn btn-danger mt-3 mb-4 me-4">DELETE</button>
+    <button name="cancel" data-bs-dismiss="modal" class="btn btn-primary mt-3 mb-4">Cancel</button>
 </form>
 <script>
 </script>
