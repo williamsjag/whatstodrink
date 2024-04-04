@@ -643,12 +643,23 @@ def viewallcocktails():
         "viewallcocktails.html",  allfamilies=allfamilies, allcocktails=allcocktails, defaults=session["defaults"], form=form
     )
 
-# Modify cocktail modal from viewallcocktails
-@app.route("/modifycocktailmodal")
-def modifycocktailmodal():
+@app.route("/viewuser")
+@login_required
+def viewuser():
 
     form = ModifyCocktailForm()
-    return render_template("modifycocktailmodal.html", form=form)
+
+    cocktailquery = text("SELECT name, id, family, build, source, notes, recipe, ingredient_list \
+                        FROM cocktails \
+                        WHERE user_id = :user_id")
+   
+    usercocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
+   
+    userfamilies = set(Cocktail.family for Cocktail in usercocktails)
+
+    return render_template(
+        "viewuser.html", usercocktails=usercocktails, userfamilies=userfamilies, form=form
+    )
 
 @app.route("/viewcommon")
 def viewcommon():
@@ -682,7 +693,6 @@ def modifycocktail():
 
             amountsquery = text("SELECT ingredient_id, amount, ingredient_source, sequence FROM amounts WHERE cocktail_id = :cocktail_id ORDER BY sequence ASC")
             amounts = db.session.execute(amountsquery, {"cocktail_id": cocktail.id}).fetchall()
-            print(f"{amounts}")
 
             ingredientsquery = text("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = :user_id")
             ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
@@ -733,7 +743,6 @@ def modifycocktail():
             # Check for existing cocktail
             rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
             rows = db.session.scalar(rowsquery, {"name": form.name.data, "user_id": current_user.id})
-            print(f"{rows}")
 
             if rows and rows != form.name.data:
                 return apology("You already have a cocktail by that name", 403)
@@ -788,148 +797,8 @@ def modifycocktail():
                     db.session.execute(insertquery, {"cocktail_id": form.id.data, "ingredient_id": ingredient_id, "amount": dbamount, "user_id": current_user.id, "ingredient_source": ingredient_source, "sequence": (i + 1)})
                     db.session.commit()
 
-                return redirect(url_for("viewcocktails"))
-
-# OLDChange Recipe modal from viewallcocktails->modifycocktailmodal 
-@app.route("/modify_cocktail", methods=["GET", "POST"])
-def modify_cocktail():
-
-    cocktail = request.form.get('modifiedCocktailName')
-    new_name = request.form.get('renameText')
-
-    
-    if request.method == "POST":
-        if "renamebutton" in request.form:
-            if new_name:
-                rowsquery = text("SELECT name FROM cocktails WHERE name = :new_name AND user_id = :user_id")
-                rows = db.session.execute(rowsquery, {"new_name": new_name, "user_id": current_user.id}).fetchall()
-                
-                if rows:
-                    return apology("You already have a cocktail by that name", 403)
-                else:
-                    update = text("UPDATE cocktails SET name = :new_name WHERE name = :cocktail AND user_id = :user_id")
-                    db.session.execute(update, {"new_name": new_name, "cocktail": cocktail, "user_id": current_user.id})
-                    db.session.commit()
-                    flash("Cocktail Renamed", "primary")
-                    return redirect(url_for('viewcocktails'))
-            else:
-                return apology("A cocktail has not name")
-
-        elif "deletebutton" in request.form:
-            form = DeleteForm()
-            return render_template(
-                "areyousurecocktail.html", cocktail=cocktail, form=form
-            )
-
-        elif "deleteconfirmed" in request.form:
-            
-            cocktail_delete = request.form.get("cocktail_delete")
-            amountsdeletequery = text("WITH CocktailToDelete AS \
-                       (SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id LIMIT 1) \
-                       DELETE FROM amounts \
-                       WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)")
-            db.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": current_user.id})
-            cocktaildeletequery = text("DELETE FROM cocktails WHERE name = :name AND user_id = :user_id")
-            db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": current_user.id})
-            db.session.commit()
-            
-            flash('Cocktail Deleted')
-            return redirect(url_for("viewcocktails"))
+                return redirect(url_for("viewcocktails"))        
         
-        elif "changerecipe" in request.form:
-            recipequery = text("SELECT id, name, build, source, family FROM cocktails WHERE name = :name AND user_id = :user_id")
-            recipe = db.session.execute(recipequery, {"name": cocktail, "user_id": current_user.id}).fetchone()
-
-            amountsquery = text("SELECT ingredient_id, amount, ingredient_source FROM amounts WHERE cocktail_id = :cocktail_id")
-            amounts = db.session.execute(amountsquery, {"cocktail_id": recipe.id}).fetchall()
-
-            ingredientsquery = text("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = :user_id")
-            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
-
-            families = db.session.scalars(select(CommonCocktail.family.distinct())).fetchall()
-            
-            types = db.session.scalars(select(CommonIngredient.type.distinct())).fetchall()
-
-            flash("Recipe Modified")
-
-            return render_template(
-                "changerecipe.html", cocktail=cocktail, recipe=recipe, amounts=amounts, ingredients=ingredients, families=families, types=types
-            )
-        
-        elif "submit-changes" in request.form:
-            id = request.form.get('id')
-            build = request.form.get('build')
-            source = request.form.get('source')
-            family = request.form.get('family')
-
-            # update cocktail in db
-            updatequery = text("UPDATE cocktails \
-                       SET build = :build, \
-                       source = :source, \
-                       family = :family \
-                       WHERE (id = :id AND user_id = :user_id)")
-            db.session.execute(updatequery, {"build": build, "source": source, "family": family, "id": id, "user_id": current_user.id})
-            db.session.commit()
-
-            # get number of rows
-            amounts = request.form.getlist('amount[]')
-            ingredients = request.form.getlist('ingredient[]')
-
-            # check that amounts isn't empty
-            for i in range(len(amounts)):
-                if not amounts[i]:
-                    return apology("amounts cannot be empty")
-
-            # clear amounts for cocktail
-            clearamounts = text("DELETE FROM amounts WHERE cocktail_id = :cocktail_id AND user_id = :user_id")
-            db.session.execute(clearamounts, {"cocktail_id": id, "user_id": current_user.id})
-            db.session.commit()
-
-            # for each table row...
-            for i in range(len(amounts)):
-                 # get values for amounts and ingredients
-                amount = amounts[i]
-                ingredient = ingredients[i]
-                # get ingredient source
-                id_sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
-                    WHERE name = :name \
-                    UNION SELECT \
-                    'user' AS source, id \
-                    FROM ingredients \
-                    WHERE name = :name AND user_id = :user_id")
-                id_source = db.session.execute(id_sourcequery, {"name": ingredient, "user_id": current_user.id}).fetchone()
-                
-                ingredient_source = id_source.source
-                ingredient_id = id_source.id   
-
-                # write into database
-                insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source) \
-                           VALUES(:cocktail_id, :ingredient_id, :amount, :user_id, :ingredient_source)")
-                db.session.execute(insertquery, {"cocktail_id": id, "ingredient_id": ingredient_id, "amount": amount, "user_id": current_user.id, "ingredient_source": ingredient_source})
-                db.session.commit()
-
-            return redirect(url_for("viewcocktails"))
- 
-        
-        
-        
-
-@app.route("/viewuser")
-@login_required
-def viewuser():
-
-    cocktailquery = text("SELECT name, id, family, build, source, notes, recipe, ingredient_list \
-                        FROM cocktails \
-                        WHERE user_id = :user_id")
-   
-    usercocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
-   
-    userfamilies = set(Cocktail.family for Cocktail in usercocktails)
-
-    return render_template(
-        "viewuser.html", usercocktails=usercocktails, userfamilies=userfamilies
-    )
-
 
 # Missingone and related routes
 

@@ -31,9 +31,17 @@
                                     {% endif %}
                                 </div>
                                 <!-- Modify Button -->
-                                <div class="col ms-auto">
-                                    <button class="btn btn-outline-primary" type="button" hx-get="/modifycocktailmodal" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button>
-                                </div>
+                                <form>
+                                    {{ form.csrf_token }}
+                                    <!-- button to call modal -->
+                                    <div>
+                                        {{ form.name(type="hidden", value=cocktail.name) }}
+                                    </div>
+                                    <div class="col ms-auto">
+                                        <button name="modify" class="btn btn-outline-primary" type="button" hx-post="/modifycocktail" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" hx-vals="{{ cocktail.name }}">Modify</button>
+                                        <!-- onclick="populateModal('{{ cocktail.name }}')" -->
+                                    </div>
+                                </form>
                             </div>
                             {% if cocktail.build %}
                                 <div class="row row-cols-auto mb-3">

@@ -109,7 +109,10 @@ Make modify recipe and modify ingredient update recipe and ingredientList for af
     write helper function for this?
 Add reorder ingredients to change recipe
 
-bug: add cocktail: need to figure out how to filter response without interfering with searchtable, perhaps add a keyword before the ingredient to be filtered out by javascript
+bug: what's missing showing cocktails missing two ingredients in two spots
+bug: view button in manageingredients doesn't work when using filter bar. Does work after filter search.
+bug: add cocktail: need to figure out how to filter response without interfering with searchtable, perhaps add a keyword before the ingredient to be filtered out by javascript.
+    search bar seems to only occasionaly be working in add cocktail
 bug: more ingredients doesn't work with zero ingredients in modifycocktail
 bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
