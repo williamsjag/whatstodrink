@@ -94,6 +94,7 @@ Got rid of rename field and made name editable
 Get new ingredient in Add cocktail to auto-add to the most recent ingredient and open a new one
 Moved Whatstodrink and Whatsmissing to recipe/ingredient_list
 Fixed rename cocktail for wtforms
+Added sequence to database models and to write function in add cocktail
 
 ## In Progress
 WTF migration:

@@ -107,5 +107,9 @@ class DeleteForm(FlaskForm):
     id = IntegerField('Id')
 
 class ModifyCocktailForm(FlaskForm):
-    modifiedCocktailName = StringField('Cocktail Name')
-    rename = StringField('Rename')
+    name = StringField('Cocktail Name')
+    build = TextAreaField('Build Instructions')
+    source = StringField('Source')
+    family = SelectField('Cocktail Family')
+    notes = TextAreaField('Notes')
+    id = IntegerField('Id')

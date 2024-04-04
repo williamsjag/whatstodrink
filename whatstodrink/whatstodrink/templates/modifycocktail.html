@@ -1,0 +1,142 @@
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" id="modalform">
+        <div class="text-center modal-header">
+            <h3 class="modal-title w-100">Modify Cocktail: {{ cocktail.name }}</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/modifycocktail" class="center-form" method="POST" id="modifyForm">
+            {{ form.csrf_token }}
+            
+            <div class="modal-body">
+                <!-- ID hidden Field -->
+                <div>
+                    {{ form.id(class="form-control", type="hidden", value=cocktail.id) }}
+                </div>
+                <!-- Name Field -->
+                <div class="mb-3">
+                    {{ form.name.label(class="form-control-label") }}
+                    {{ form.name(class="form-control", value=cocktail.name) }}
+                </div>
+                <!-- Ingredients Table -->
+                <div class="mb-3" id="table-div">
+                    <table class="table table-hover" id="ingredients" name="ingredients">
+                        <thead>
+                            <tr>
+                                <th>Amount</th>
+                                <th>Ingredient</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="body">
+                            {% for amount in amounts %}
+                                <tr>
+                                    <td><input class="form-control" id="amount[{{ loop.index }}]" name="amount[{{ loop.index }}]" value="{{ amount.amount }}"></td>
+                                    <td><div id="ingredient[{{ loop.index }}]"><select name="ingredient[{{ loop.index }}]" class="form-select">
+                                            <option value="disabled" disabled>--Ingredient--</option>
+                                            {% for type in types %}
+                                            <optgroup label="{{ type }}">
+                                                {% for ingredient in ingredients %}
+                                                    {% if ingredient.type == type %}
+                                                        {% if ingredient.id == amount.ingredient_id %}
+                                                            <option value="{{ ingredient.name }}" selected>{{ ingredient.name|title }}</option>
+                                                        {% else %}
+                                                            <option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </optgroup>
+                                            {% endfor %}
+                                        </select></div>
+                                    </td>
+                                    <!-- Remove icon -->
+                                    <td class="button-cell text-right">
+                                        <svg fill="#ff0000" height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-8.42 -8.42 227.25 227.25" xml:space="preserve" stroke="#ff0000" stroke-width="9.889458"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier" onclick="removeRow(this)"> <g> <g> <g> <path d="M105.207,0C47.196,0,0,47.196,0,105.207c0,58.011,47.196,105.207,105.207,105.207 c58.011,0,105.207-47.196,105.207-105.207C210.414,47.196,163.218,0,105.207,0z M105.207,202.621 c-53.715,0-97.414-43.699-97.414-97.414c0-53.715,43.699-97.414,97.414-97.414c53.715,0,97.414,43.699,97.414,97.414 C202.621,158.922,158.922,202.621,105.207,202.621z"></path> <path d="M155.862,101.31H54.552c-2.152,0-3.897,1.745-3.897,3.897c0,2.152,1.745,3.897,3.897,3.897h101.31 c2.152,0,3.897-1.745,3.897-3.897C159.759,103.055,158.014,101.31,155.862,101.31z"></path> </g> </g> </g> </g></svg>
+                                        <!-- <i>onclick="removeRow(this)">Remove</button> -->
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- More Ingredients Button -->
+                <div class="mt-4 mb-3 text-center">
+                    <button class="btn btn-primary btn-sm" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
+                </div>
+            
+                <!-- Build Field -->
+                <div class="mb-3">
+                    {{ form.build.label(class="form-control-label") }}
+                    <textarea class="form-control" id="notes" name="notes" rows="3">{{ cocktail.build }}</textarea>
+                </div>
+                <!-- Source Field -->
+                <div class="mb-3">
+                    {{ form.source.label(class="form-control-label") }} 
+                    {{ form.source(class="form-control", value=cocktail.source) }}
+                </div>
+                <!-- Family Field -->
+                <div class="mb-3">
+                    {{ form.family.label(class="form-control-label") }}
+                    {{ form.family(class="form-select", value=cocktail.family) }}
+                </div>
+                <!-- Notes Field -->
+                <div class="mb-5">
+                    {{ form.notes.label(class="form-control-label") }}
+                    <textarea class="form-control" id="notes" name="notes" rows="3">{{ cocktail.notes }}</textarea>
+                </div>
+                <!-- Submit Button -->
+                <div class="mb-3 text-center">
+                    <button id="submitbutton" data-bs-dismiss="modal" name="submitbutton" class="btn btn-primary" type="submit">Submit Changes</button>
+                </div>   
+                <!--Delete Button  -->
+                <div class="mb-3 text-center">
+                    <button hx-post="/modify_ingredient" hx-target="#body" id="deletebutton" name="deletebutton" class="btn btn-danger" type="submit">Delete Cocktail</button>
+                </div>
+        </form>
+
+
+
+
+
+<script>
+    function createNewDiv() {
+
+    // Clone the first row
+    var newRow = $('#ingredients tbody tr:first').clone();
+
+    // Reset the input value in the new row
+    newRow.find('input').val('');
+
+    // Reset the select value in the new row
+    newRow.find('select').val('disabled').change();
+
+    // Append the new row to the table
+    $('#ingredients tbody').append(newRow);
+    }
+    
+    // Check if rows exist
+    var existingRows = $('#ingredients tbody tr');
+    // Create a row if no rows exist
+    if (existingRows.length === 0) {
+        var firstRow = document.createElement('tr');
+        var amountCell = document.createElement('td');
+        var ingredientCell = document.createElement('td');
+        var buttonCell = document.createElement('td');
+
+        // append elements to cells
+        amountCell.innerHTML = '<input class="form-control" id="amount[]" name="amount[]" value="">';
+        ingredientCell.innerHTML = '<div id="selectmenu"><select name="ingredient[]" class="form-select"><option value="disabled" selected disabled>--Ingredient--</option>{% for type in types %}<optgroup label="{{ type.type }}">{% for ingredient in ingredients %}{% if ingredient.type == type.type %}<option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>{% endif %}{% endfor %}</optgroup>{% endfor %}</select></div>';
+        buttonCell.innerHTML = '<button class="btn btn-primary" type="button" onclick="removeRow(this)">Remove</button>';
+
+        // append cells to row
+        firstRow.appendChild(amountCell);
+        firstRow.appendChild(ingredientCell);
+        firstRow.appendChild(buttonCell);
+
+        // append row to table
+        $('#ingredients tbody').append(firstRow);
+    }
+    function removeRow(button) {
+    // find row button was in and remove
+    $(button).closest('tr').remove();
+    }
+</script>

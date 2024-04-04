@@ -666,7 +666,38 @@ def viewcommon():
         "viewcommon.html", commoncocktails=commoncocktails, allfamilies=allfamilies
     )
 
-# Change Recipe modal from viewallcocktails->modifycocktailmodal 
+# NEW Change Recipe Modal from viewallcocktails/viewuser->modify
+@app.route("/modifycocktail", methods=["GET", "POST"])
+@login_required
+def modifycocktail():
+
+    form = ModifyCocktailForm()
+    name = form.name.data
+
+    if request.method == "POST":
+
+        if "modify" in request.form:
+            cocktailquery = text("SELECT id, name, build, source, family, notes FROM cocktails WHERE name = :name AND user_id = :user_id")
+            cocktail = db.session.execute(cocktailquery, {"name": name, "user_id": current_user.id}).fetchone()
+
+            amountsquery = text("SELECT ingredient_id, amount, ingredient_source, sequence FROM amounts WHERE cocktail_id = :cocktail_id ORDER BY sequence ASC")
+            amounts = db.session.execute(amountsquery, {"cocktail_id": cocktail.id}).fetchall()
+            print(f"{amounts}")
+
+            ingredientsquery = text("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = :user_id")
+            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
+
+            form.family.choices = [(f, f) for f in db.session.scalars(union((select(CommonCocktail.family.distinct())), (select(Cocktail.family.distinct())))).fetchall()]
+            family = cocktail.family
+            form.family.data = family
+            
+            types = db.session.scalars(select(CommonIngredient.type.distinct())).fetchall()
+
+            return render_template(
+                "modifycocktail.html", cocktail=cocktail, amounts=amounts, ingredients=ingredients, types=types, form=form
+            )
+
+# OLDChange Recipe modal from viewallcocktails->modifycocktailmodal 
 @app.route("/modify_cocktail", methods=["GET", "POST"])
 def modify_cocktail():
 
