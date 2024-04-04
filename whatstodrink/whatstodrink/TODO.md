@@ -93,6 +93,7 @@ Changed Manage->View->Modify to use wtforms and updated submit button to submit 
 Got rid of rename field and made name editable
 Get new ingredient in Add cocktail to auto-add to the most recent ingredient and open a new one
 Moved Whatstodrink and Whatsmissing to recipe/ingredient_list
+Fixed rename cocktail for wtforms
 
 ## In Progress
 WTF migration:
@@ -100,6 +101,7 @@ Modify cocktail
     Add validators to rename in modify ingredient
     and rename in modify cocktail
 
+Make sure ingredient name is always validated for both tables
 Make modify recipe and modify ingredient update recipe and ingredientList for affected cocktail
     write helper function for this?
 Add reorder ingredients to change recipe

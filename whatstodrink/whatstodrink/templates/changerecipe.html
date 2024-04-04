@@ -1,77 +1,79 @@
-<div class="text-center mb-3">
-    <h3 class="mb-3">Change Recipe: {{ cocktail }}</h3>
-</div>
-<form action="/modify_cocktail" class="center-form" method="POST">
-    <div class="mb-3" id="table-div">
-        <table class="table table-hover" id="ingredients" name="ingredients">
-            <thead>
-                <tr>
-                    <th>Amount</th>
-                    <th>Ingredient</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="body">
-                {% for amount in amounts %}
-                    <tr>
-                        <td><input class="form-control" id="amount[]" name="amount[]" value="{{ amount.amount }}"></td>
-                        <td><div id="selectmenu"><select name="ingredient[]" class="form-select">
-                                <option value="disabled" disabled>--Ingredient--</option>
-                                {% for type in types %}
-                                <optgroup label="{{ type }}">
-                                    {% for ingredient in ingredients %}
-                                        {% if ingredient.type == type %}
-                                            {% if ingredient.id == amount.ingredient_id %}
-                                                <option value="{{ ingredient.name }}" selected>{{ ingredient.name|title }}</option>
-                                            {% else %}
-                                                <option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
-                                </optgroup>
-                                {% endfor %}
-                            </select></div>
-                        </td>
-                        <td class="button-cell text-right">
-                            <button class="btn btn-primary" type="button" onclick="removeRow(this)">Remove</button>
-                        </td>
-                        
-                        
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="mb-3 text-center">
-        <button class="btn btn-primary btn-sm" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
-    </div>
-   
-    <div class="form-group mb-3">
-        <label for="build" class="form-label">Build Instructions</label>
-        <textarea autocomplete="off" class="form-control" id="build" name="build" rows="4">{{ recipe.build }}</textarea>
-    </div>
-    <div class="form-group mb-3">
-        <label for="source" class="form-label">Source</label>
-        <input autocomplete="off" class="form-control" id="source" name="source" value="{{ recipe.source }}" type="text">
-    </div>
-    <div class="mb-3 form-group">
-        <label for="family" class="form-label">Cocktail Family</label>
-        <select name="family" class="form-select ingredient_select" id="family">
-            {% for family in families %}
-                {% if family == recipe.family %}
-                    <option value="{{ family }}" selected>{{ family }}</option>
-                {% else %}
-                    <option value="{{ family }}">{{ family }}</option>
-                {% endif %}
-            {% endfor %}
-            
-        </select>
-    </div>
-    <input type="hidden" id="id" name="id" value="{{ recipe.id }}">
-    <div class="mb-3 text-center">
-        <button name="submit-changes" class="btn btn-primary" data-bs-dismiss="modal" type="submit">Submit Changes</button>
-    </div>
-</form>
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" id="modalform">
+        <div class="text-center mb-3">
+            <h3 class="mb-3">Change Recipe: {{ cocktail }}</h3>
+        </div>
+        <form action="/modify_cocktail" class="center-form" method="POST">
+            <div class="mb-3" id="table-div">
+                <table class="table table-hover" id="ingredients" name="ingredients">
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Ingredient</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="body">
+                        {% for amount in amounts %}
+                            <tr>
+                                <td><input class="form-control" id="amount[]" name="amount[]" value="{{ amount.amount }}"></td>
+                                <td><div id="selectmenu"><select name="ingredient[]" class="form-select">
+                                        <option value="disabled" disabled>--Ingredient--</option>
+                                        {% for type in types %}
+                                        <optgroup label="{{ type }}">
+                                            {% for ingredient in ingredients %}
+                                                {% if ingredient.type == type %}
+                                                    {% if ingredient.id == amount.ingredient_id %}
+                                                        <option value="{{ ingredient.name }}" selected>{{ ingredient.name|title }}</option>
+                                                    {% else %}
+                                                        <option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </optgroup>
+                                        {% endfor %}
+                                    </select></div>
+                                </td>
+                                <td class="button-cell text-right">
+                                    <button class="btn btn-primary" type="button" onclick="removeRow(this)">Remove</button>
+                                </td>
+                                
+                                
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mb-3 text-center">
+                <button class="btn btn-primary btn-sm" id="more_ingredients" type="button" onclick="createNewDiv()">More Ingredients</button>
+            </div>
+        
+            <div class="form-group mb-3">
+                <label for="build" class="form-label">Build Instructions</label>
+                <textarea autocomplete="off" class="form-control" id="build" name="build" rows="4">{{ recipe.build }}</textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label for="source" class="form-label">Source</label>
+                <input autocomplete="off" class="form-control" id="source" name="source" value="{{ recipe.source }}" type="text">
+            </div>
+            <div class="mb-3 form-group">
+                <label for="family" class="form-label">Cocktail Family</label>
+                <select name="family" class="form-select ingredient_select" id="family">
+                    {% for family in families %}
+                        {% if family == recipe.family %}
+                            <option value="{{ family }}" selected>{{ family }}</option>
+                        {% else %}
+                            <option value="{{ family }}">{{ family }}</option>
+                        {% endif %}
+                    {% endfor %}
+                    
+                </select>
+            </div>
+            <input type="hidden" id="id" name="id" value="{{ recipe.id }}">
+            <div class="mb-3 text-center">
+                <button name="submit-changes" class="btn btn-primary" data-bs-dismiss="modal" type="submit">Submit Changes</button>
+            </div>
+        </form>
 
 <script>
     function createNewDiv() {

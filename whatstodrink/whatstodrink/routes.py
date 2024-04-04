@@ -526,8 +526,10 @@ def addcocktail():
                 db.session.commit()
                 # Find id for new cocktail
                 cocktail_id = db.session.scalar(select(Cocktail.id).where(Cocktail.name == form.name.data).where(Cocktail.user_id == current_user.id))
+
                 # Add amounts to db
                 # get source for ingredients
+                counter = 1
                 for amount, ingredient in zip(amounts, ingredients):
                     sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
                         WHERE name = :name \
@@ -536,9 +538,10 @@ def addcocktail():
                         FROM ingredients \
                         WHERE name = :name AND user_id = :user_id")
                     id_source = db.session.execute(sourcequery, {"name": ingredient, "user_id": current_user.id}).fetchone()
-                    insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id)")
-                    db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount":amount, "ingredient_source":id_source.source, "user_id": current_user.id})
+                    insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id, sequence) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id, :counter)")
+                    db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount":amount, "ingredient_source":id_source.source, "user_id": current_user.id, "counter": counter})
                     db.session.commit()
+                    counter += 1
 
             flash("Cocktail Added", 'primary')
             return redirect(url_for(
@@ -619,6 +622,7 @@ def viewcocktails():
 @app.route("/viewallcocktails")
 def viewallcocktails():
 
+    form = ModifyCocktailForm()
 
     userquery = text("""       
                     SELECT 'user' AS csource, name, id, family, build, source, recipe, ingredient_list, notes \
@@ -636,7 +640,7 @@ def viewallcocktails():
 
 
     return render_template(
-        "viewallcocktails.html",  allfamilies=allfamilies, allcocktails=allcocktails, defaults=session["defaults"]
+        "viewallcocktails.html",  allfamilies=allfamilies, allcocktails=allcocktails, defaults=session["defaults"], form=form
     )
 
 # Modify cocktail modal from viewallcocktails
@@ -781,6 +785,7 @@ def modify_cocktail():
                 db.session.commit()
 
             return redirect(url_for("viewcocktails"))
+ 
         
         
         

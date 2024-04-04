@@ -32,10 +32,14 @@
                                     {% endif %}
                                 </div>
                                 {% if cocktail.csource == "user" %}
+                                <form>
+                                    {{ form.csrf_token }}
                                     <!-- button to call modal -->
                                     <div class="col ms-auto">
                                         <button class="btn btn-outline-primary" type="button" hx-get="/modifycocktailmodal" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" onclick="populateModal('{{ cocktail.name }}')">Modify</button>
                                     </div>
+                                </form>
+                                    
                                 {% endif %}
                             </div>
                             {% if cocktail.build %}
