@@ -95,6 +95,7 @@ Get new ingredient in Add cocktail to auto-add to the most recent ingredient and
 Moved Whatstodrink and Whatsmissing to recipe/ingredient_list
 Fixed rename cocktail for wtforms
 Added sequence to database models and to write function in add cocktail
+Added new modifycocktail.html
 
 ## In Progress
 WTF migration:
@@ -107,7 +108,8 @@ Make modify recipe and modify ingredient update recipe and ingredientList for af
     write helper function for this?
 Add reorder ingredients to change recipe
 
-bug: more ingredients doesn't work with zero ingredients in change recipe
+bug: add cocktail: need to figure out how to filter response without interfering with searchtable, perhaps add a keyword before the ingredient to be filtered out by javascript
+bug: more ingredients doesn't work with zero ingredients in modifycocktail
 bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
 

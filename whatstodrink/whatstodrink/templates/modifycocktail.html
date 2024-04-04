@@ -30,8 +30,8 @@
                         <tbody id="body">
                             {% for amount in amounts %}
                                 <tr>
-                                    <td><input class="form-control" id="amount[{{ loop.index }}]" name="amount[{{ loop.index }}]" value="{{ amount.amount }}"></td>
-                                    <td><div id="ingredient[{{ loop.index }}]"><select name="ingredient[{{ loop.index }}]" class="form-select">
+                                    <td><input class="form-control" id="amount{{ loop.index }}" name="amount" value="{{ amount.amount }}"></td>
+                                    <td><div id="ingredient{{ loop.index }}"><select name="ingredient" class="form-select">
                                             <option value="disabled" disabled>--Ingredient--</option>
                                             {% for type in types %}
                                             <optgroup label="{{ type }}">
@@ -68,7 +68,7 @@
                 <!-- Build Field -->
                 <div class="mb-3">
                     {{ form.build.label(class="form-control-label") }}
-                    <textarea class="form-control" id="notes" name="notes" rows="3">{{ cocktail.build }}</textarea>
+                    <textarea class="form-control" id="build" name="build" rows="3">{{ cocktail.build }}</textarea>
                 </div>
                 <!-- Source Field -->
                 <div class="mb-3">

@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, request, session, url_for, Response
 from whatstodrink import app, db
-from sqlalchemy import select, union, text, or_, distinct
+from sqlalchemy import select, union, text, or_, update
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.helpers import apology, apologynaked
 from whatstodrink.models import User, Amount, Cocktail, Ingredient, CommonCocktail, CommonAmount, CommonIngredient, CommonStock, Tag, TagMapping
@@ -696,6 +696,77 @@ def modifycocktail():
             return render_template(
                 "modifycocktail.html", cocktail=cocktail, amounts=amounts, ingredients=ingredients, types=types, form=form
             )
+        
+        elif "submitbutton" in request.form:
+
+            # update cocktail in db
+
+             # Get list of amounts
+            rawamounts = request.form.getlist('amount')
+            amounts = list(filter(None, rawamounts))
+            # Get list of ingredients
+            rawingredients = request.form.getlist('ingredient')
+            ingredients = list(filter(None, rawingredients))
+
+            # Check for existing cocktail
+            rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
+            rows = db.session.scalar(rowsquery, {"name": form.name.data, "user_id": current_user.id})
+            print(f"{rows}")
+
+            if rows and rows != form.name.data:
+                return apology("You already have a cocktail by that name", 403)
+            
+            else:
+                # Generate text for ingredients and ingredient_list
+                recipe = ""
+                ingredientList = ', '.join(ingredients)
+               
+                for amount, ingredient in zip(amounts, ingredients):
+                    # concatenate amount/ingredient, and newline
+                    recipe += f"{amount} {ingredient}\n"
+                
+                # Update cocktail in db
+                db.session.execute(
+                    update(Cocktail).where(Cocktail.id == form.id.data)
+                    .where(Cocktail.user_id == current_user.id)
+                    .values(name=form.name.data, 
+                            build=form.build.data, 
+                            source=form.source.data, 
+                            family=form.family.data, 
+                            notes=form.notes.data, 
+                            recipe=recipe, 
+                            ingredient_list=ingredientList))
+                db.session.commit()
+
+                # clear amounts for cocktail
+                clearamounts = text("DELETE FROM amounts WHERE cocktail_id = :cocktail_id AND user_id = :user_id")
+                db.session.execute(clearamounts, {"cocktail_id": form.id.data, "user_id": current_user.id})
+                db.session.commit()
+
+                # for each table row...
+                for i in range(len(amounts)):
+                    # get values for amounts and ingredients
+                    dbamount = amounts[i]
+                    dbingredient = ingredients[i]
+                    # get ingredient source
+                    id_sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
+                        WHERE name = :name \
+                        UNION SELECT \
+                        'user' AS source, id \
+                        FROM ingredients \
+                        WHERE name = :name AND user_id = :user_id")
+                    id_source = db.session.execute(id_sourcequery, {"name": dbingredient, "user_id": current_user.id}).fetchone()
+                    
+                    ingredient_source = id_source.source
+                    ingredient_id = id_source.id   
+
+                    # write into database
+                    insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source, sequence) \
+                            VALUES(:cocktail_id, :ingredient_id, :amount, :user_id, :ingredient_source, :sequence)")
+                    db.session.execute(insertquery, {"cocktail_id": form.id.data, "ingredient_id": ingredient_id, "amount": dbamount, "user_id": current_user.id, "ingredient_source": ingredient_source, "sequence": (i + 1)})
+                    db.session.commit()
+
+                return redirect(url_for("viewcocktails"))
 
 # OLDChange Recipe modal from viewallcocktails->modifycocktailmodal 
 @app.route("/modify_cocktail", methods=["GET", "POST"])
