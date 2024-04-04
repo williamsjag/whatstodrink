@@ -19,7 +19,7 @@
                 </div>
                 <!-- Ingredients Table -->
                 <div class="mb-3" id="table-div">
-                    <table class="table table-hover" id="ingredients" name="ingredients">
+                    <table class="table" id="ingredients" name="ingredients">
                         <thead>
                             <tr>
                                 <th>Amount</th>
@@ -49,8 +49,10 @@
                                         </select></div>
                                     </td>
                                     <!-- Remove icon -->
-                                    <td class="button-cell text-right">
-                                        <svg fill="#ff0000" height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-8.42 -8.42 227.25 227.25" xml:space="preserve" stroke="#ff0000" stroke-width="9.889458"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier" onclick="removeRow(this)"> <g> <g> <g> <path d="M105.207,0C47.196,0,0,47.196,0,105.207c0,58.011,47.196,105.207,105.207,105.207 c58.011,0,105.207-47.196,105.207-105.207C210.414,47.196,163.218,0,105.207,0z M105.207,202.621 c-53.715,0-97.414-43.699-97.414-97.414c0-53.715,43.699-97.414,97.414-97.414c53.715,0,97.414,43.699,97.414,97.414 C202.621,158.922,158.922,202.621,105.207,202.621z"></path> <path d="M155.862,101.31H54.552c-2.152,0-3.897,1.745-3.897,3.897c0,2.152,1.745,3.897,3.897,3.897h101.31 c2.152,0,3.897-1.745,3.897-3.897C159.759,103.055,158.014,101.31,155.862,101.31z"></path> </g> </g> </g> </g></svg>
+                                    <td class="text-right">
+                                        <a href="#" class="svg" onclick="removeRow(this)">
+                                            <svg fill="#ff0000" height="25px" width="25px" version="1.1" id="Layer_1" viewBox="-8.42 -8.42 227.25 227.25" xml:space="preserve" stroke="#ff0000" stroke-width="9.889458" onclick="removeRow(this)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <g> <path d="M105.207,0C47.196,0,0,47.196,0,105.207c0,58.011,47.196,105.207,105.207,105.207 c58.011,0,105.207-47.196,105.207-105.207C210.414,47.196,163.218,0,105.207,0z M105.207,202.621 c-53.715,0-97.414-43.699-97.414-97.414c0-53.715,43.699-97.414,97.414-97.414c53.715,0,97.414,43.699,97.414,97.414 C202.621,158.922,158.922,202.621,105.207,202.621z"></path> <path d="M155.862,101.31H54.552c-2.152,0-3.897,1.745-3.897,3.897c0,2.152,1.745,3.897,3.897,3.897h101.31 c2.152,0,3.897-1.745,3.897-3.897C159.759,103.055,158.014,101.31,155.862,101.31z"></path> </g> </g> </g> </g></svg>
+                                        </a>
                                         <!-- <i>onclick="removeRow(this)">Remove</button> -->
                                     </td>
                                 </tr>
@@ -98,43 +100,52 @@
 
 
 <script>
+
+    table = document.getElementById("ingredients");
+    var rowCount = table.rows.length;
+
     function createNewDiv() {
 
-    // Clone the first row
-    var newRow = $('#ingredients tbody tr:first').clone();
+        // Clone the first row
+        var newRow = $('#ingredients tbody tr:first').clone();
 
-    // Reset the input value in the new row
-    newRow.find('input').val('');
+        // Reset the input value in the new row and assign id
+        newRow.find('input').val('');
+        newRow.find('input').attr('id', "amount[" + rowCount + "]");
 
-    // Reset the select value in the new row
-    newRow.find('select').val('disabled').change();
+        // Reset the select value in the new row and assign id
+        newRow.find('select').val('disabled').change();
+        newRow.find('select').attr('id', "ingredient[" + rowCount + "]");
 
-    // Append the new row to the table
-    $('#ingredients tbody').append(newRow);
-    }
-    
-    // Check if rows exist
-    var existingRows = $('#ingredients tbody tr');
-    // Create a row if no rows exist
-    if (existingRows.length === 0) {
-        var firstRow = document.createElement('tr');
-        var amountCell = document.createElement('td');
-        var ingredientCell = document.createElement('td');
-        var buttonCell = document.createElement('td');
+        // Append the new row to the table
+        $('#ingredients tbody').append(newRow);
 
-        // append elements to cells
-        amountCell.innerHTML = '<input class="form-control" id="amount[]" name="amount[]" value="">';
-        ingredientCell.innerHTML = '<div id="selectmenu"><select name="ingredient[]" class="form-select"><option value="disabled" selected disabled>--Ingredient--</option>{% for type in types %}<optgroup label="{{ type.type }}">{% for ingredient in ingredients %}{% if ingredient.type == type.type %}<option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>{% endif %}{% endfor %}</optgroup>{% endfor %}</select></div>';
-        buttonCell.innerHTML = '<button class="btn btn-primary" type="button" onclick="removeRow(this)">Remove</button>';
+        rowCount++;
+        }
 
-        // append cells to row
-        firstRow.appendChild(amountCell);
-        firstRow.appendChild(ingredientCell);
-        firstRow.appendChild(buttonCell);
+        
+        // // Check if rows exist
+        // var existingRows = $('#ingredients tbody tr');
+        // // Create a row if no rows exist
+        // if (existingRows.length === 0) {
+        //     var firstRow = document.createElement('tr');
+        //     var amountCell = document.createElement('td');
+        //     var ingredientCell = document.createElement('td');
+        //     var buttonCell = document.createElement('td');
 
-        // append row to table
-        $('#ingredients tbody').append(firstRow);
-    }
+        //     // append elements to cells
+        //     amountCell.innerHTML = '<input class="form-control" id="amount[]" name="amount[]" value="">';
+        //     ingredientCell.innerHTML = '<div id="selectmenu"><select name="ingredient[]" class="form-select"><option value="disabled" selected disabled>--Ingredient--</option>{% for type in types %}<optgroup label="{{ type.type }}">{% for ingredient in ingredients %}{% if ingredient.type == type.type %}<option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>{% endif %}{% endfor %}</optgroup>{% endfor %}</select></div>';
+        //     buttonCell.innerHTML = '<button class="btn btn-primary" type="button" onclick="removeRow(this)">Remove</button>';
+
+        //     // append cells to row
+        //     firstRow.appendChild(amountCell);
+        //     firstRow.appendChild(ingredientCell);
+        //     firstRow.appendChild(buttonCell);
+
+        //     // append row to table
+        //     $('#ingredients tbody').append(firstRow);
+        // }
     function removeRow(button) {
     // find row button was in and remove
     $(button).closest('tr').remove();
