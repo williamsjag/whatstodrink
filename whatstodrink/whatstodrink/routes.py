@@ -338,7 +338,8 @@ def modify_ingredient():
                          WHERE ingredient_id = :id AND ingredient_source = 'user'
                          """)
 
-            cocktails = db.session.execute(query, {"id": ingredientId}).fetchall()
+            cocktails = db.session.scalars(query, {"id": ingredientId}).fetchall()
+            print(f"{cocktails}")
 
             if not cocktails:
 
@@ -348,7 +349,8 @@ def modify_ingredient():
             
             else:
                 
-                rows = db.session.execute(select(Cocktail.name).where(Cocktail.id == cocktails)).fetchall()
+                rows = db.session.scalars(select(Cocktail.name).where(Cocktail.id == cocktails)).fetchall()
+                print(f"{rows}")
 
                 return render_template(
                     "cannotdelete.html", rows=rows, ingredient=ingredient

@@ -97,23 +97,24 @@ Fixed rename cocktail for wtforms
 Added sequence to database models and to write function in add cocktail
 Added new modifycocktail.html
 Added route for submitbutton
+Added route for cancel, delete, and deleteconfirmed
 
 ## In Progress
 WTF migration:
+    Last thing to do is view/edit My cocktails
+
 Modify cocktail
     Add validators to rename in modify ingredient
     and rename in modify cocktail
 
+Make ingredient field in change recipe into search bar from add cocktail
 Make sure ingredient name is always validated for both tables
-Make modify recipe and modify ingredient update recipe and ingredientList for affected cocktail
-    write helper function for this?
+Make modify ingredient update recipe and ingredientList for affected cocktails
 Add reorder ingredients to change recipe
 
 bug: what's missing showing cocktails missing two ingredients in two spots
 bug: view button in manageingredients doesn't work when using filter bar. Does work after filter search.
-bug: add cocktail: need to figure out how to filter response without interfering with searchtable, perhaps add a keyword before the ingredient to be filtered out by javascript.
-    search bar seems to only occasionaly be working in add cocktail
-bug: more ingredients doesn't work with zero ingredients in modifycocktail
+bug: search bar seems to only occasionaly be working in add cocktail
 bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
@@ -124,7 +125,6 @@ In Add ingredient on addcocktail find a way to flash a message
 user modifiability to all ingredients (incl. hide)
 
 Color/Theme/Prettify
-
 
 implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
     - Add grouping options for cocktail views
