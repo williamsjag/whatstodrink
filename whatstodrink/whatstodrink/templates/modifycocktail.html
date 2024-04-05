@@ -31,7 +31,7 @@
                             {% for amount in amounts %}
                                 <tr>
                                     <td><input class="form-control" id="amount{{ loop.index }}" name="amount" value="{{ amount.amount }}"></td>
-                                    <td><div id="ingredient{{ loop.index }}"><select name="ingredient" class="form-select">
+                                    <td><div><select id="ingredient{{ loop.index }}" name="ingredient" class="form-select">
                                             <option value="disabled" disabled>--Ingredient--</option>
                                             {% for type in types %}
                                             <optgroup label="{{ type }}">
@@ -109,42 +109,57 @@
         // Clone the first row
         var newRow = $('#ingredients tbody tr:first').clone();
 
-        // Reset the input value in the new row and assign id
-        newRow.find('input').val('');
-        newRow.find('input').attr('id', "amount[" + rowCount + "]");
+        // Check if a row exists
+        if (newRow.length > 0) {
 
-        // Reset the select value in the new row and assign id
-        newRow.find('select').val('disabled').change();
-        newRow.find('select').attr('id', "ingredient[" + rowCount + "]");
+            // Reset the input value in the new row and assign id
+            newRow.find('input').val('');
+            newRow.find('input').attr('id', "amount[" + rowCount + "]");
 
-        // Append the new row to the table
-        $('#ingredients tbody').append(newRow);
+            // Reset the select value in the new row and assign id
+            newRow.find('select').val('disabled').change();
+            newRow.find('select').attr('id', "ingredient[" + rowCount + "]");
 
-        rowCount++;
+            // Append the new row to the table
+            $('#ingredients tbody').append(newRow);
+
+            rowCount++;
         }
+        // If not, create new one
+        else {
+            var firstRow = document.createElement('tr');
+            var amountCell = document.createElement('td');
+            var ingredientCell = document.createElement('td');
+            var buttonCell = document.createElement('td');
+
+            // create select element
+            var selectElement = document.createElement('select');
+            selectElement.name = "ingredient";
+            selectElement.id = "ingredient1";
+            selectElement.className = "form-select";
+            selectElement.innerHTML = '<option value="disabled" selected disabled>--Ingredient--</option>'
+         
+            // append elements to cells
+            amountCell.innerHTML = '<input class="form-control" id="amount1" name="amount" value="">';
+            ingredientCell.appendChild(selectElement);
+            buttonCell.innerHTML = '<a href="#" class="svg" onclick="removeRow(this)"><svg fill="#ff0000" height="25px" width="25px" version="1.1" id="Layer_1" viewBox="-8.42 -8.42 227.25 227.25" xml:space="preserve" stroke="#ff0000" stroke-width="9.889458" onclick="removeRow(this)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <g> <path d="M105.207,0C47.196,0,0,47.196,0,105.207c0,58.011,47.196,105.207,105.207,105.207 c58.011,0,105.207-47.196,105.207-105.207C210.414,47.196,163.218,0,105.207,0z M105.207,202.621 c-53.715,0-97.414-43.699-97.414-97.414c0-53.715,43.699-97.414,97.414-97.414c53.715,0,97.414,43.699,97.414,97.414 C202.621,158.922,158.922,202.621,105.207,202.621z"></path> <path d="M155.862,101.31H54.552c-2.152,0-3.897,1.745-3.897,3.897c0,2.152,1.745,3.897,3.897,3.897h101.31 c2.152,0,3.897-1.745,3.897-3.897C159.759,103.055,158.014,101.31,155.862,101.31z"></path> </g> </g> </g> </g></svg></a>'
+
+            // append cells to row
+            firstRow.appendChild(amountCell);
+            firstRow.appendChild(ingredientCell);
+            firstRow.appendChild(buttonCell);
+
+            // append row to table
+            $('#ingredients tbody').append(firstRow);
+        }
+    }
 
         
         // // Check if rows exist
         // var existingRows = $('#ingredients tbody tr');
         // // Create a row if no rows exist
         // if (existingRows.length === 0) {
-        //     var firstRow = document.createElement('tr');
-        //     var amountCell = document.createElement('td');
-        //     var ingredientCell = document.createElement('td');
-        //     var buttonCell = document.createElement('td');
-
-        //     // append elements to cells
-        //     amountCell.innerHTML = '<input class="form-control" id="amount[]" name="amount[]" value="">';
-        //     ingredientCell.innerHTML = '<div id="selectmenu"><select name="ingredient[]" class="form-select"><option value="disabled" selected disabled>--Ingredient--</option>{% for type in types %}<optgroup label="{{ type.type }}">{% for ingredient in ingredients %}{% if ingredient.type == type.type %}<option value="{{ ingredient.name }}">{{ ingredient.name|title }}</option>{% endif %}{% endfor %}</optgroup>{% endfor %}</select></div>';
-        //     buttonCell.innerHTML = '<button class="btn btn-primary" type="button" onclick="removeRow(this)">Remove</button>';
-
-        //     // append cells to row
-        //     firstRow.appendChild(amountCell);
-        //     firstRow.appendChild(ingredientCell);
-        //     firstRow.appendChild(buttonCell);
-
-        //     // append row to table
-        //     $('#ingredients tbody').append(firstRow);
+        
         // }
     function removeRow(button) {
     // find row button was in and remove
