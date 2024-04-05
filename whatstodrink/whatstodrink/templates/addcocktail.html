@@ -143,65 +143,71 @@
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('form[id="amountsForm"] input[name="name"]').focus();
     })
-    // document.addEventListener('htmx:afterRequest', function(evt) {
-    //     var response = evt.detail.xhr.response; // Listen for response
-    //     var method = evt.detail.method; // But only for Post requests
+    document.addEventListener('htmx:afterRequest', function(evt) {
+        var response = evt.detail.xhr.response; // Listen for response
+        var source = evt.detail.elt; // But only for Post requests
+        btn = document.getElementById("modalbutton")
 
-    //     if (method === 'post') {
-    //         var targetInput = document.querySelector('#dynamicSelects li:last-child .ingredientlist');
+
+        if (source === btn) {
+            var targetInput = document.querySelector('#dynamicSelects li:last-child .ingredientlist');
             
 
-    //         if (targetInput) {
-    //             // Update the field with server response
-    //             targetInput.value = response;
+            if (targetInput) {
+                // Update the field with server response
+                targetInput.value = response;
 
-    //             // Copy last li (ingredient)
-    //             var originalElement = document.querySelector("#dynamicSelects li:last-child");
-    //             var newDiv = originalElement.cloneNode(true);
+                // Copy last li (ingredient)
+                var originalElement = document.querySelector("#dynamicSelects li:last-child");
+                var newDiv = originalElement.cloneNode(true);
 
-    //             // set new id
-    //             newDiv.id = 'q' + counter;
+                // set new id
+                newDiv.id = 'q' + counter;
 
-    //             // clear inputs and table of new copy
-    //             var resultsTable = newDiv.querySelector("#results");
-    //             resultsTable.innerHTML = '';
-    //             inputs = newDiv.querySelectorAll('input');
-    //             inputs.forEach(function(input) {
-    //                 input.value = '';
-    //             });
+                // clear inputs and table of new copy
+                var resultsTable = newDiv.querySelector("#results");
+                resultsTable.innerHTML = '';
+                inputs = newDiv.querySelectorAll('input');
+                inputs.forEach(function(input) {
+                    input.value = '';
+                });
 
-    //             // remove labels from new inputs
-    //             newDiv.querySelectorAll('label').forEach(function(label) {
-    //                 label.remove();
-    //             })
-    //             // remove old searchtable
-    //             originalElement.querySelector("#searchtable").remove();
+                // remove labels from new inputs
+                newDiv.querySelectorAll('label').forEach(function(label) {
+                    label.remove();
+                })
+                // remove old searchtable
+                originalElement.querySelector("#searchtable").remove();
 
-    //             //increment counter
-    //             counter++;
+                //increment counter
+                counter++;
 
-    //             // add new div to dynamicSelects
-    //             var hostdiv = document.getElementById('dynamicSelects');
-    //             hostdiv.appendChild(newDiv);
+                // add new div to dynamicSelects
+                var hostdiv = document.getElementById('dynamicSelects');
+                hostdiv.appendChild(newDiv);
 
-    //             // set new field variables
-    //             var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
-    //             var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
+                // set new field variables
+                var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
+
+                var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
                 
-    //             // make readonly
-    //             var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
-    //             oldInput.setAttribute('readonly', 'true');
-    //             oldInput.removeAttribute('hx-trigger');
-    //             oldInput.removeAttribute('hx-get');
-    //             oldInput.removeAttribute('hx-target');
+                // make readonly
+                var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
+                oldInput.setAttribute('readonly', 'true');
+                oldInput.removeAttribute('hx-trigger');
+                oldInput.removeAttribute('hx-get');
+                oldInput.removeAttribute('hx-target');
 
-    //             htmx.process(newIngredient);
-    //             attachEventListeners();
+                htmx.process(newIngredient);
 
-    //         }
-    //     }
+                newInput.focus();
+                
+                attachEventListeners();
+
+            }
+        }
         
-    // });
+    });
 
     // counter variable for ids
     var counter = 1;
