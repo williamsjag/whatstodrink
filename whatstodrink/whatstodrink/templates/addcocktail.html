@@ -140,16 +140,24 @@
 {% block javascript %}
 <script>
     // focus first input on load
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelector('form[id="amountsForm"] input[name="name"]').focus();
-    })
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('name').focus();
+        attachEventListeners();
+    });
+
+    // counter variable for ids
+    var counter = 1;
+
     document.addEventListener('htmx:afterRequest', function(evt) {
         var response = evt.detail.xhr.response; // Listen for response
         var source = evt.detail.elt; // But only for Post requests
+        link = document.getElementById("layout")
         btn = document.getElementById("modalbutton")
 
-
         if (source === btn) {
+            
+            evt.preventDefault();
             var targetInput = document.querySelector('#dynamicSelects li:last-child .ingredientlist');
             
 
@@ -168,6 +176,8 @@
                 var resultsTable = newDiv.querySelector("#results");
                 resultsTable.innerHTML = '';
                 inputs = newDiv.querySelectorAll('input');
+                focus = newDiv.querySelector(".amountlist")
+                
                 inputs.forEach(function(input) {
                     input.value = '';
                 });
@@ -199,23 +209,15 @@
                 oldInput.removeAttribute('hx-target');
 
                 htmx.process(newIngredient);
-
+                
                 newInput.focus();
                 
                 attachEventListeners();
 
             }
         }
-        
     });
-
-    // counter variable for ids
-    var counter = 1;
     
-    document.addEventListener('DOMContentLoaded', function() {
-        attachEventListeners();
-    });
-
     function attachEventListeners() {
 
         var searchTable = document.getElementById('results');

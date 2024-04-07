@@ -17,7 +17,7 @@
 
     </head>
 
-    <body hx-boost="true">
+    <!-- <body id="layout" hx-boost="true"> -->
 
         <nav class="bg-light border navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
@@ -34,7 +34,7 @@
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{ url_for('manageingredients') }}">Manage Ingredients</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('addingredient') }}">Add Ingredient</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('addcocktail') }}">Add Cocktail</a></li>
+                                    <li><a class="dropdown-item" id="addcocktail" href="{{ url_for('addcocktail') }}">Add Cocktail</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">

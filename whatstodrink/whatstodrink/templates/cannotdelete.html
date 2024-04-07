@@ -1,4 +1,5 @@
 <form action="/modify_ingredient" method="POST">
+    {{ form.csrf_token }}
     <div class="text-center">
         <h4 class="mb-3">Cannot Delete {{ ingredient }}.</strong></h4>
         <p><strong>It is used in the following cocktails:</strong></p>

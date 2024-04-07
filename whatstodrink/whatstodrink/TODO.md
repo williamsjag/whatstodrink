@@ -98,10 +98,10 @@ Added sequence to database models and to write function in add cocktail
 Added new modifycocktail.html
 Added route for submitbutton
 Added route for cancel, delete, and deleteconfirmed
+Added view/edit My cocktails for wtforms
+Fixed issue with eventHandlers in addcocktail
 
 ## In Progress
-WTF migration:
-    Last thing to do is view/edit My cocktails
 
 Modify cocktail
     Add validators to rename in modify ingredient
@@ -112,9 +112,9 @@ Make sure ingredient name is always validated for both tables
 Make modify ingredient update recipe and ingredientList for affected cocktails
 Add reorder ingredients to change recipe
 
+
 bug: what's missing showing cocktails missing two ingredients in two spots
 bug: view button in manageingredients doesn't work when using filter bar. Does work after filter search.
-bug: search bar seems to only occasionaly be working in add cocktail
 bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
