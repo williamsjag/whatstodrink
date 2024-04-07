@@ -694,9 +694,19 @@ def modifycocktail():
             amountsquery = text("SELECT ingredient_id, amount, ingredient_source, sequence FROM amounts WHERE cocktail_id = :cocktail_id ORDER BY sequence ASC")
             amounts = db.session.execute(amountsquery, {"cocktail_id": cocktail.id}).fetchall()
 
-            ingredientsquery = text("SELECT id, name, type FROM common_ingredients UNION SELECT id, name, type FROM ingredients WHERE user_id = :user_id")
-            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
-
+            ingredientsquery = text("""
+                                    SELECT ci.id, ci.name FROM common_ingredients ci
+                                    LEFT JOIN amounts a ON ci.id = a.ingredient_id
+                                    WHERE a.cocktail_id = :cocktail_id AND a.ingredient_source = 'common'
+                                    UNION 
+                                    SELECT i.id, i.name FROM ingredients i 
+                                    LEFT JOIN amounts a ON i.id = a.ingredient_id
+                                    WHERE a.user_id = :user_id AND a.cocktail_id = :cocktail_id AND a.ingredient_source = 'user'
+                                    """)
+            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "cocktail_id": cocktail.id}).fetchall()
+            print(f"{ingredients}")
+            print(f"{amounts}")
+            
             form.family.choices = [(f, f) for f in db.session.scalars(union((select(CommonCocktail.family.distinct())), (select(Cocktail.family.distinct())))).fetchall()]
             family = cocktail.family
             form.family.data = family
