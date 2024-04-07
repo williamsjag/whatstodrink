@@ -77,7 +77,7 @@ class AddIngredientForm(FlaskForm):
 class AddCocktailForm(FlaskForm):
     name = StringField('Cocktail Name', validators=[DataRequired()])
     amount = StringField('Amount')
-    ingredient = StringField('Ingredients')
+    ingredient = StringField('Recipe')
     build = TextAreaField('Build Instructions')
     source = StringField('Source')
     family = StringField('Cocktail Family')
@@ -110,6 +110,6 @@ class ModifyCocktailForm(FlaskForm):
     name = StringField('Cocktail Name')
     build = TextAreaField('Build Instructions')
     source = StringField('Source')
-    family = SelectField('Cocktail Family')
+    family = SelectField('Cocktail Family', choices=[])
     notes = TextAreaField('Notes')
     id = IntegerField('Id')

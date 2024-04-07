@@ -188,3 +188,7 @@ ul, li {
   margin: 0;
   padding: 0;
   }
+  .handle {
+    cursor: move;
+    cursor: -webkit-grabbing;
+  }

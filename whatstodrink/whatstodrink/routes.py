@@ -706,7 +706,7 @@ def modifycocktail():
             ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "cocktail_id": cocktail.id}).fetchall()
             print(f"{ingredients}")
             print(f"{amounts}")
-            
+
             form.family.choices = [(f, f) for f in db.session.scalars(union((select(CommonCocktail.family.distinct())), (select(Cocktail.family.distinct())))).fetchall()]
             family = cocktail.family
             form.family.data = family
@@ -747,9 +747,9 @@ def modifycocktail():
             rawamounts = request.form.getlist('amount')
             amounts = list(filter(None, rawamounts))
             # Get list of ingredients
-            rawingredients = request.form.getlist('ingredient')
+            rawingredients = request.form.getlist('q')
             ingredients = list(filter(None, rawingredients))
-
+            
             # Check for existing cocktail
             rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
             rows = db.session.scalar(rowsquery, {"name": form.name.data, "user_id": current_user.id})
