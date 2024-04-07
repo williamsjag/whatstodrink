@@ -320,7 +320,54 @@ def modify_ingredient():
         
             updatequery = text("UPDATE ingredients SET type = :type, notes = :notes, name = :name, short_name = :short_name WHERE id = :id AND user_id = :user_id")
             db.session.execute(updatequery,  {"id": id, "type": newtype, "notes": newnotes, "name": newname, "short_name": shortname, "user_id": current_user.id})
-            db.session.commit()                  
+            db.session.commit()   
+
+            # Check for cocktails using this ingredient
+            query = text("""
+                         SELECT cocktail_id
+                         FROM amounts
+                         WHERE ingredient_id = :id AND ingredient_source = 'user'
+                         """)
+            cocktails = db.session.scalars(query, {"id": id}).fetchall()
+
+            for cocktail in cocktails:
+                ingredientsq = text("""
+                                   SELECT * FROM (
+                                        SELECT i.id, i.name, i.short_name, 'user' AS source, a.sequence
+                                        FROM ingredients i
+                                        LEFT JOIN amounts a ON i.id = a.ingredient_id
+                                        WHERE a.ingredient_source = 'user' AND a.cocktail_id = :cocktail AND a.user_id = :user_id
+                                        
+                                        UNION
+                                        
+                                        SELECT ci.id, ci.name, ci.short_name, 'common' AS source, aa.sequence
+                                        FROM common_ingredients ci
+                                        LEFT JOIN amounts aa ON ci.id = aa.ingredient_id
+                                        WHERE aa.ingredient_source = 'common' AND aa.cocktail_id = :cocktail AND aa.user_id = :user_id
+                                    ) AS combined_ingredients
+                                    ORDER BY sequence ASC;
+                                    """)
+                ingredients = db.session.execute(ingredientsq, {"user_id": current_user.id, "cocktail": cocktail}).fetchall()
+                amountsq = text("""
+                                SELECT ingredient_id, amount, cocktail_id, sequence
+                                FROM amounts
+                                WHERE cocktail_id = :cocktail AND user_id = :user_id
+                                ORDER BY sequence ASC
+                                """)
+                amounts = db.session.execute(amountsq, {"cocktail": cocktail, "user_id": current_user.id})
+
+                recipe = ""
+                for amount, ingredient in zip(amounts, ingredients):
+                    recipe += f"{amount.amount} {ingredient.name}\n"
+                
+                ingredient_list = ', '.join([row.short_name if row.short_name else row.name for row in ingredients])
+                
+                db.session.execute(
+                    update(Cocktail).where(Cocktail.id == cocktail)
+                    .where(Cocktail.user_id == current_user.id)
+                    .values(recipe=recipe, 
+                            ingredient_list=ingredient_list))
+                db.session.commit()
 
             flash("Ingredient Modified", "primary")
             return redirect(url_for('manageingredients'))
@@ -348,7 +395,7 @@ def modify_ingredient():
             
             else:
                 
-                rows = db.session.scalars(select(Cocktail.name).where(Cocktail.id == cocktails)).fetchall()
+                rows = db.session.scalars(select(Cocktail.name).where(Cocktail.id.in_(cocktails))).fetchall()
 
                 return render_template(
                     "cannotdelete.html", rows=rows, ingredient=ingredient, form=form
@@ -704,8 +751,6 @@ def modifycocktail():
                                     WHERE a.user_id = :user_id AND a.cocktail_id = :cocktail_id AND a.ingredient_source = 'user'
                                     """)
             ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "cocktail_id": cocktail.id}).fetchall()
-            print(f"{ingredients}")
-            print(f"{amounts}")
 
             form.family.choices = [(f, f) for f in db.session.scalars(union((select(CommonCocktail.family.distinct())), (select(Cocktail.family.distinct())))).fetchall()]
             family = cocktail.family

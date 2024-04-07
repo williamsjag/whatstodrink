@@ -101,6 +101,8 @@ Added route for cancel, delete, and deleteconfirmed
 Added view/edit My cocktails for wtforms
 Fixed issue with eventHandlers in addcocktail
 Made ingredient field in change recipe into search bar from add cocktail
+Added reorder ingredients to change recipe and add cocktail
+Made modify ingredient also modify recipe and ingredientlist for cocktails
 
 ## In Progress
 
@@ -111,9 +113,8 @@ Modify cocktail
 
 Make sure ingredient name is always validated for both tables
 Make modify ingredient update recipe and ingredientList for affected cocktails
-Add reorder ingredients to change recipe
 
-
+bug: modify cocktail and add cocktail only use name for ingredientlist
 bug: what's missing showing cocktails missing two ingredients in two spots
 bug: view button in manageingredients doesn't work when using filter bar. Does work after filter search.
 bug: next feature not working in login
