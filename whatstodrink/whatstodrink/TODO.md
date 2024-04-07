@@ -100,6 +100,7 @@ Added route for submitbutton
 Added route for cancel, delete, and deleteconfirmed
 Added view/edit My cocktails for wtforms
 Fixed issue with eventHandlers in addcocktail
+Made ingredient field in change recipe into search bar from add cocktail
 
 ## In Progress
 
@@ -107,7 +108,7 @@ Modify cocktail
     Add validators to rename in modify ingredient
     and rename in modify cocktail
 
-Make ingredient field in change recipe into search bar from add cocktail
+
 Make sure ingredient name is always validated for both tables
 Make modify ingredient update recipe and ingredientList for affected cocktails
 Add reorder ingredients to change recipe
