@@ -19,7 +19,7 @@
                 </div>
                 <!-- Ingredients Table -->
                 <div class="mb-3 form-group">
-                    <ol id="dynamicSelects">
+                    <ul id="dynamicSelects">
                         <li id="labels" class="row">
                             <div class="col-md-4">
                                 <strong>Amount</strong>
@@ -51,7 +51,7 @@
                             </div>
                         </li>
                         {% endfor %}
-                    </ol>
+                    </ul>
                             
                 </div>
                 <!-- More Ingredients Button -->
@@ -94,6 +94,8 @@
 
 
 <script>
+    var el = document.getElementById('dynamicselects');
+    var sortable = Sortable.create(el);
 
     document.addEventListener("htmx:afterSwap", function(event) {
         attachEventListeners();

@@ -184,4 +184,7 @@ svg {
   pointer-events: none;
 }
 
-.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}
+ul, li {
+  margin: 0;
+  padding: 0;
+  }

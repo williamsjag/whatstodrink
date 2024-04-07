@@ -31,13 +31,12 @@
             <div class="mb-3 form-group">
                 <!-- <label for="q0" class="form-label">Ingredients</label> -->
                 {{ form.ingredient.label(class="form-control-label mb-3", autocomplete="off") }}
-                <ol id="dynamicSelects">
+                <ul id="dynamicSelects">
                     <!-- first ingredient -->
                     <li id="q0" class="row">
                         <div class="col-md-4">
                             <label>Amount (with units)</label>
                             <input type="text" autocomplete="off" class="form-control amountlist" name="amount" placeholder="e.g. 1 1/2 ounces">
-
                         </div>
                         <div class="col">
                             <label>Ingredient</label>
@@ -48,7 +47,7 @@
                             </table>
                         </div>
                     </li>
-                </ol>
+                </ul>
                 
             </div>
             <!-- Create new ingredient button -->
