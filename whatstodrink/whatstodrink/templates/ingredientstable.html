@@ -18,7 +18,7 @@
                             <td class="button-cell">
                                 {% if ingredient.source == 'user' %}
                                 <!-- button for calling modal -->
-                                    <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}', '{{ingredient.notes}}')">View</button>
+                                    <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" hx-include="next form" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}', '{{ingredient.notes}}')">View</button>
                                 {% endif %}
                             </td>
                             <!-- Checkbox checked -->

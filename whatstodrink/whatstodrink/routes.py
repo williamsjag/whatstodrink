@@ -195,7 +195,7 @@ def manageingredients():
         # check for search queries 
         q = request.args.get('q')
 
-        # if filter bar is used
+        # if filter bar is entered
         if q is not None:
             # Get Types included in search for headers
             common_query = (
