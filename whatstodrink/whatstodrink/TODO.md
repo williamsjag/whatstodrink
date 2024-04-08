@@ -103,6 +103,7 @@ Fixed issue with eventHandlers in addcocktail
 Made ingredient field in change recipe into search bar from add cocktail
 Added reorder ingredients to change recipe and add cocktail
 Made modify ingredient also modify recipe and ingredientlist for cocktails
+Fixed modifycocktail to use short_name for ingredientlist
 
 ## In Progress
 
