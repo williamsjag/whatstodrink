@@ -104,6 +104,7 @@ Made ingredient field in change recipe into search bar from add cocktail
 Added reorder ingredients to change recipe and add cocktail
 Made modify ingredient also modify recipe and ingredientlist for cocktails
 Fixed modifycocktail to use short_name for ingredientlist
+Fixed addcocktail to use short_name for ingredientlist
 
 ## In Progress
 
@@ -114,7 +115,6 @@ Modify cocktail
 
 Make sure ingredient name is always validated for both tables
 
-bug: modify cocktail and add cocktail only use name for ingredientlist
 bug: in modifycocktail- when no ingredients, add ingredient doesn't include drag handles
 bug: what's missing showing cocktails missing two ingredients in two spots
 bug: view button in manageingredients doesn't work when using filter bar. Does work after filter search.
