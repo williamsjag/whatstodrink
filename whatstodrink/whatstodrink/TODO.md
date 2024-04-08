@@ -115,6 +115,7 @@ Modify cocktail
 Make sure ingredient name is always validated for both tables
 
 bug: modify cocktail and add cocktail only use name for ingredientlist
+bug: in modifycocktail- when no ingredients, add ingredient doesn't include drag handles
 bug: what's missing showing cocktails missing two ingredients in two spots
 bug: view button in manageingredients doesn't work when using filter bar. Does work after filter search.
 bug: next feature not working in login

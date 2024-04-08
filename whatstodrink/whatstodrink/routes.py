@@ -542,7 +542,7 @@ def addcocktail():
             ingredients = list(filter(None, rawingredients))
 
             if not ingredients:
-                return apologynaked("an empty glass is not a cocktail", 403)
+                return apology("an empty glass is not a cocktail", 403)
             
             # Check for existing cocktail
             rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
@@ -551,10 +551,8 @@ def addcocktail():
             if rows:
                 return apology("You already have a cocktail by that name", 403)
             else:
-                # Generate text for ingredients and ingredient_list
-                recipe = ""
-                ingredientList = ', '.join(ingredients)
                
+                recipe = ""
                 for amount, ingredient in zip(amounts, ingredients):
                     # concatenate amount/ingredient, and newline
                     recipe += f"{amount} {ingredient}\n"
@@ -566,11 +564,11 @@ def addcocktail():
                                        user_id=current_user.id, 
                                        family=form.family.data, 
                                        notes=form.notes.data,
-                                       recipe=recipe,
-                                       ingredient_list=ingredientList
+                                       recipe=recipe
                                        )
                 db.session.add(newcocktail)
                 db.session.commit()
+
                 # Find id for new cocktail
                 cocktail_id = db.session.scalar(select(Cocktail.id).where(Cocktail.name == form.name.data).where(Cocktail.user_id == current_user.id))
 
@@ -578,10 +576,10 @@ def addcocktail():
                 # get source for ingredients
                 counter = 1
                 for amount, ingredient in zip(amounts, ingredients):
-                    sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
+                    sourcequery = text("SELECT 'common' AS source, id, short_name, name FROM common_ingredients \
                         WHERE name = :name \
                         UNION SELECT \
-                        'user' AS source, id \
+                        'user' AS source, id, short_name, name \
                         FROM ingredients \
                         WHERE name = :name AND user_id = :user_id")
                     id_source = db.session.execute(sourcequery, {"name": ingredient, "user_id": current_user.id}).fetchone()
@@ -589,6 +587,33 @@ def addcocktail():
                     db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount":amount, "ingredient_source":id_source.source, "user_id": current_user.id, "counter": counter})
                     db.session.commit()
                     counter += 1
+
+                recipequery = text("""
+                                   SELECT * FROM (
+                                        SELECT i.name, i.short_name, a.sequence
+                                        FROM ingredients i
+                                        LEFT JOIN amounts a ON i.id = a.ingredient_id
+                                        WHERE a.cocktail_id = :cocktail AND a.user_id = :user_id
+                                        
+                                        UNION
+                                        
+                                        SELECT ci.name, ci.short_name, aa.sequence
+                                        FROM common_ingredients ci
+                                        LEFT JOIN amounts aa ON ci.id = aa.ingredient_id
+                                        WHERE aa.cocktail_id = :cocktail AND aa.user_id = :user_id
+                                    ) AS combined_ingredients
+                                    ORDER BY sequence ASC; 
+                                   """)
+                reciperesults = db.session.execute(recipequery, {"user_id": current_user.id, "cocktail": cocktail_id}).fetchall()
+                ingredient_list = ', '.join([row.short_name if row.short_name else row.name for row in reciperesults])
+              
+                db.session.execute(
+                    update(Cocktail).where(Cocktail.id == cocktail_id)
+                    .where(Cocktail.user_id == current_user.id)
+                    .values(ingredient_list=ingredient_list)
+                )
+                db.session.commit()
+
 
             flash("Cocktail Added", 'primary')
             return redirect(url_for(
@@ -809,7 +834,7 @@ def modifycocktail():
                 db.session.execute(clearamounts, {"cocktail_id": form.id.data, "user_id": current_user.id})
                 db.session.commit()
 
-                # for each table row...
+                # for each li...
                 for i in range(len(amounts)):
                     # get values for amounts and ingredients
                     dbamount = amounts[i]
