@@ -112,7 +112,6 @@ Modify cocktail
 
 
 Make sure ingredient name is always validated for both tables
-Make modify ingredient update recipe and ingredientList for affected cocktails
 
 bug: modify cocktail and add cocktail only use name for ingredientlist
 bug: what's missing showing cocktails missing two ingredients in two spots
