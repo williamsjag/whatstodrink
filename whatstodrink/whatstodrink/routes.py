@@ -309,8 +309,12 @@ def modify_ingredient():
     if request.method == "POST":
             
         if "submitbutton" in request.form:
-            
+
             form = ModifyIngredientForm()
+
+            # if form.validate_on_submit():
+            
+                
 
             id = form.id.data
             newtype = form.type.data
@@ -324,15 +328,15 @@ def modify_ingredient():
 
             # Check for cocktails using this ingredient
             query = text("""
-                         SELECT cocktail_id
-                         FROM amounts
-                         WHERE ingredient_id = :id AND ingredient_source = 'user'
-                         """)
+                        SELECT cocktail_id
+                        FROM amounts
+                        WHERE ingredient_id = :id AND ingredient_source = 'user'
+                        """)
             cocktails = db.session.scalars(query, {"id": id}).fetchall()
 
             for cocktail in cocktails:
                 ingredientsq = text("""
-                                   SELECT * FROM (
+                                SELECT * FROM (
                                         SELECT i.id, i.name, i.short_name, 'user' AS source, a.sequence
                                         FROM ingredients i
                                         LEFT JOIN amounts a ON i.id = a.ingredient_id
@@ -371,6 +375,9 @@ def modify_ingredient():
 
             flash("Ingredient Modified", "primary")
             return redirect(url_for('manageingredients'))
+            
+            # else:
+            #     return render_template ("modifyingredient.html", form=form)
 
 
         elif "deletebutton" in request.form:

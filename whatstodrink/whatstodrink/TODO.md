@@ -107,22 +107,21 @@ Fixed modifycocktail to use short_name for ingredientlist
 Fixed addcocktail to use short_name for ingredientlist
 Fixed more ingredients in modify cocktail to correctly add drag handles to new field
 Fixed view button in add ingredients when a search is typed but not entered
+Fixed bug in whatsmissing that led to missing ingredients and duplicated cocktails
 
 ## In Progress
 
-Modify cocktail
+Validators:
     Add validators to rename in modify ingredient
     and rename in modify cocktail
+    Make sure ingredient name is always validated unique for both i and ci
 
-Make sure ingredient name is always validated for both tables
-
-bug: what's missing showing cocktails missing two ingredients in two spots
 bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
-In Add ingredient on addcocktail find a way to flash a message
-
 ## Todo 
+
+Forgot password email
 
 user modifiability to all ingredients (incl. hide)
 
