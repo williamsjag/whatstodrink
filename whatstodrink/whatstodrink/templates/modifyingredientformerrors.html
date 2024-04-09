@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    What's to drink?
+{% endblock %}
+
+{% block main %}
+
+<form action="/modify_ingredient" method="POST" class="center-form" id="modifyForm">
+    {{ form.csrf_token }}
+    <div class="modal-body">
+        <div class="mb-3">
+            {{ form.name.label(class="form-control-label") }}
+            {% if form.name.errors %}
+                        {{ form.name(class="form-control is-invalid", value=ingredient.name) }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control", value=ingredient.name) }}
+                    {% endif %}    
+        </div>
+        <!-- Short Name Field -->
+        <div class="me-3 mb-3">
+            {{ form.short_name.label(class="form-control-label") }} 
+            {{ form.short_name(class="form-control", value=form.short_name.data)}}
+        </div>
+        <!-- Type Field -->
+        <div class="form-group mb-3">
+            {{ form.type.label(class="form-control-label") }}
+            <select name="type" id="type" class="form-select" required>
+                {% for type in types %}
+                    {% if type.type == form.type.data %}
+                        <option value="{{ type.type }}" selected>{{ type.type }}</option>
+                    {% else %}
+                        <option value="{{ type.type }}">{{ type.type }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            {{ form.id(type="hidden", value=ingredient.id) }}
+        </div>
+        <!-- Notes Field -->
+        <div class="me-3 mb-5">
+            {{ form.notes.label(class="form-control-label") }}
+            <textarea class="form-control" id="notes" name="notes" rows="3">{{ ingredient.notes }}</textarea>
+        </div>
+        <!-- Submit Button -->
+        <div class="mb-3 text-center">
+            <button id="submitbutton" name="submitbutton" class="btn btn-primary" type="submit">Submit Changes</button>
+        </div>   
+         <!--Delete Button  -->
+        <div class="mb-3 text-center">
+            <button hx-post="/modify_ingredient" hx-target="#body" hx-trigger="click" id="deletebutton" name="deletebutton" class="btn btn-danger" type="submit" data-bs-toggle="modal" data-bs-target="#viewModal">Delete Ingredient</button>
+        </div>
+</form>
+
+<!-- Modal for delete -->
+ <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="modal-form">
+            <div class="modal-header center-text">
+                <h5 class="modal-title w-100" id="viewModalLabel">{{ ingredient.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body" id="body">
+        </div>
+    </div>
+</div>
+    
+{% endblock %}

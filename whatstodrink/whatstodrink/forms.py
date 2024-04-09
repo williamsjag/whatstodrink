@@ -104,14 +104,14 @@ class ModifyIngredientForm(FlaskForm):
     id = IntegerField('Id')
 
     # To be added when modals and errors are figured out
-    # def validate_name(self, name):
-    #     oldName = db.session.scalar(select(Ingredient.name).where(Ingredient.id == self.id.data).where(Ingredient.user_id == current_user.id))
-    #     if name.data != oldName:
-    #         newNameUser = select(Ingredient.name).where(Ingredient.name == name.data).where(Ingredient.user_id == current_user.id)
-    #         newNameCommon = select(CommonIngredient.name).where(CommonIngredient.name == name.data)
-    #         newName = db.session.execute(newNameUser.union(newNameCommon)).fetchall()
-    #         if newName:
-    #             raise ValidationError('There is already an ingredient with that name')
+    def validate_name(self, name):
+        oldName = db.session.scalar(select(Ingredient.name).where(Ingredient.id == self.id.data).where(Ingredient.user_id == current_user.id))
+        if name.data != oldName:
+            newNameUser = select(Ingredient.name).where(Ingredient.name == name.data).where(Ingredient.user_id == current_user.id)
+            newNameCommon = select(CommonIngredient.name).where(CommonIngredient.name == name.data)
+            newName = db.session.execute(newNameUser.union(newNameCommon)).fetchall()
+            if newName:
+                raise ValidationError('There is already an ingredient with that name')
 
 class DeleteForm(FlaskForm):
     id = IntegerField('Id')

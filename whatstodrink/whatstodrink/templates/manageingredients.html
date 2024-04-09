@@ -48,7 +48,7 @@
                                 <td class="button-cell">
                                     {% if ingredient.source == 'user' %}
                                     <!-- button for calling modal -->
-                                        <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" hx-include="next form" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}', '{{ingredient.notes}}')">View</button>
+                                        <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" hx-include="next form" data-bs-toggle="modal" data-bs-target="#viewModal">View</button>
                                     {% endif %}
                                 </td>
                                 <!-- Checkbox checked -->
@@ -103,18 +103,7 @@
 {% endblock %}
 {% block javascript %}
 <script>
-    function populateModal(ingredientName, ingredientSource, ingredientType, ingredientShort, ingredientNotes) {
-        document.addEventListener('htmx:afterRequest', function(evt) {
-            document.getElementById('viewModalLabel').textContent = ingredientName;
-            document.getElementById('ingredientType').textContent = ingredientType;
-            document.getElementById('ingredientShort').textContent = ingredientShort;
-            document.getElementById('ingredientNotes').textContent = ingredientNotes;
-            document.getElementById('name').value = ingredientName;
-            document.getElementById('type').value = ingredientType;
-            document.getElementById('short').value = ingredientShort;
-            document.getElementById('notes').value = ingredientNotes;
-        });
-    };
+    
  
-    </script>
+</script>
 {% endblock %}
