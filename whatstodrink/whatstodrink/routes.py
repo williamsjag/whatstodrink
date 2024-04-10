@@ -77,7 +77,7 @@ def login():
             if not user or not check_password_hash(
                 user.hash, password
             ):
-                flash('Login failed. Double-check username and/or password', 'danger')
+                flash('Login failed. Double-check username and/or password', 'warning')
                 return redirect(url_for('login'))
 
             else:
@@ -443,7 +443,7 @@ def modify_ingredient():
             db.session.execute(deletequery, {"id": ingredient_delete, "user_id": current_user.id})
             db.session.commit()
 
-            flash("Ingredient Deleted", "danger")
+            flash("Ingredient Deleted", "warning")
             return redirect(url_for("manageingredients"))
         
         # elif "cancel" in request.form:
@@ -464,7 +464,8 @@ def addingredientmodal2():
 
     # reached via post
     if request.method == "POST":
-        if form.validate_on_submit:
+        
+        if form.validate_on_submit():
 
             # Query database for ingredient
             rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id")
@@ -489,7 +490,7 @@ def addingredientmodal2():
             flash("Ingredient Added", "primary")
             return redirect(url_for("manageingredients"))
         else:
-            render_template("addingredient.html", form=form)
+            return render_template("addingredient.html", form=form)
         
         # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -667,7 +668,7 @@ def addingredientmodal():
         return render_template("addingredientmodal.html", form=form)
     else:
         # Ensure ingredient was submitted
-        if form.validate_on_submit:
+        if form.validate_on_submit():
 
             # Query database for ingredient
             rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id")
@@ -691,7 +692,7 @@ def addingredientmodal():
 
             return form.name.data
         else:
-            return (render_template("addingredient.html", form=form))
+            return form.name.data
 
 # Viewall and related routes
   
@@ -817,7 +818,7 @@ def modifycocktail():
             db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": current_user.id})
             db.session.commit()
             
-            flash('Cocktail Deleted', "danger")
+            flash('Cocktail Deleted', "warning")
             return redirect(url_for("viewcocktails"))
 
         elif "cancel" in request.form:

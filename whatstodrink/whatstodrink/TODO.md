@@ -109,11 +109,12 @@ Fixed more ingredients in modify cocktail to correctly add drag handles to new f
 Fixed view button in add ingredients when a search is typed but not entered
 Fixed bug in whatsmissing that led to missing ingredients and duplicated cocktails
 Added validation to modifyingredient by making a new route that renders the modal as a page
+Did the same to modifycocktail
 
 ## In Progress
 
 Validators:
-    and rename in modify cocktail
+    
     Make sure ingredient name is always validated unique for both i and ci
 
 bug: modify ingredient forms are not the right length
