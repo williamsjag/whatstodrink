@@ -45,10 +45,10 @@
                         {% if ingredient.type == type.type %}
                             <tr>
                                 <td class="left-text">{{ ingredient.name }}</td>
-                                <td class="button-cell">
+                                <td class="button-cell right-text">
                                     {% if ingredient.source == 'user' %}
                                     <!-- button for calling modal -->
-                                        <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" hx-include="next form" data-bs-toggle="modal" data-bs-target="#viewModal">View</button>
+                                        <button class="btn btn-outline-primary btn-sm viewbtn" style="--bs-btn-padding-y: .2rem; --bs-btn-line-height: 1.2rem; --bs-btn-font-size: 1rem" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" hx-include="next form" data-bs-toggle="modal" data-bs-target="#viewModal">View</button>
                                     {% endif %}
                                 </td>
                                 <!-- Checkbox checked -->

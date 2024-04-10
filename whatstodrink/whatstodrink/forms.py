@@ -111,7 +111,7 @@ class ModifyIngredientForm(FlaskForm):
             newNameCommon = select(CommonIngredient.name).where(CommonIngredient.name == name.data)
             newName = db.session.execute(newNameUser.union(newNameCommon)).fetchall()
             if newName:
-                raise ValidationError('There is already an ingredient with that name')
+                raise ValidationError('An ingredient with that name already exists')
 
 class DeleteForm(FlaskForm):
     id = IntegerField('Id')

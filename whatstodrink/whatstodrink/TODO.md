@@ -108,14 +108,15 @@ Fixed addcocktail to use short_name for ingredientlist
 Fixed more ingredients in modify cocktail to correctly add drag handles to new field
 Fixed view button in add ingredients when a search is typed but not entered
 Fixed bug in whatsmissing that led to missing ingredients and duplicated cocktails
+Added validation to modifyingredient by making a new route that renders the modal as a page
 
 ## In Progress
 
 Validators:
-    Add validators to rename in modify ingredient
     and rename in modify cocktail
     Make sure ingredient name is always validated unique for both i and ci
 
+bug: modify ingredient forms are not the right length
 bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
 

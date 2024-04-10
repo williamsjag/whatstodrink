@@ -74,6 +74,7 @@ class CommonStock(db.Model):
     ingredient_id = db.Column(db.Integer, db.ForeignKey('common_ingredients.id'), primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
     stock = db.Column(db.String(2))
+    notes = db.Column(db.String(1000))
 
 class CommonCocktail(db.Model):
     __tablename__ = 'common_cocktails'
