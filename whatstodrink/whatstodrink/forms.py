@@ -103,7 +103,6 @@ class ModifyIngredientForm(FlaskForm):
     notes = TextAreaField('Notes')
     id = IntegerField('Id')
 
-    # To be added when modals and errors are figured out
     def validate_name(self, name):
         oldName = db.session.scalar(select(Ingredient.name).where(Ingredient.id == self.id.data).where(Ingredient.user_id == current_user.id))
         if name.data != oldName:
@@ -120,16 +119,17 @@ class ModifyCocktailForm(FlaskForm):
     name = StringField('Cocktail Name')
     build = TextAreaField('Build Instructions')
     source = StringField('Source')
-    family = SelectField('Cocktail Family', choices=[])
+    family = SelectField('Cocktail Family', choices=[('Vermouth Cocktails', 'Vermouth Cocktails'), ('Sours', 'Sours'), ('Amaro Cocktails', 'Amaro Cocktails'), ('Old Fashioneds', 'Old Fashioneds'), ('Highballs', 'Highballs'), ('Champagne Cocktails', 'Champagne Cocktails'), ('Juleps and Smashes', 'Juleps and Smashes'), ('Hot Drinks', 'Hot Drinks'), ('Orphans', 'Orphans'), ('Tiki Cocktails', 'Tiki Cocktails'), ('Duos and Trios', 'Duos and Trios')])
     notes = TextAreaField('Notes')
     id = IntegerField('Id')
 
-    # To be added when modals and errors are figured out
-    # def validate_name(self, name):
-    #     oldName = db.session.scalar(select(Cocktail.name).where(Cocktail.id == id.data).where(Cocktail.user_id == current_user.id))
-    #     if name.data != oldName:
-    #         newNameUser = select(Cocktail.name).where(Cocktail.name == name.data).where(Cocktail.user_id == current_user.id)
-    #         newNameCommon = select(CommonCocktail.name).where(CommonCocktail.name == name.data)
-    #         newName = db.session.execute(newNameUser.union(newNameCommon)).fetchall()
-    #         if newName:
-    #             raise ValidationError('There is already a Cocktail with that name')
+    def validate_name(self, name):
+        oldName = db.session.scalar(select(Cocktail.name).where(Cocktail.id == self.id.data).where(Cocktail.user_id == current_user.id))
+        print(f"'{name.data}'")
+        print(f"'{oldName}'")
+        if name.data != oldName:
+            newNameUser = select(Cocktail.name).where(Cocktail.name == name.data).where(Cocktail.user_id == current_user.id)
+            newNameCommon = select(CommonCocktail.name).where(CommonCocktail.name == name.data)
+            newName = db.session.execute(newNameUser.union(newNameCommon)).fetchall()
+            if newName:
+                raise ValidationError('There is already a Cocktail with that name')
