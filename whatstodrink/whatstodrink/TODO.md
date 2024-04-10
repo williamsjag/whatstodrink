@@ -110,12 +110,9 @@ Fixed view button in add ingredients when a search is typed but not entered
 Fixed bug in whatsmissing that led to missing ingredients and duplicated cocktails
 Added validation to modifyingredient by making a new route that renders the modal as a page
 Did the same to modifycocktail
+Added Ingredient name validators to addingredient modals
 
 ## In Progress
-
-Validators:
-    
-    Make sure ingredient name is always validated unique for both i and ci
 
 bug: modify ingredient forms are not the right length
 bug: next feature not working in login

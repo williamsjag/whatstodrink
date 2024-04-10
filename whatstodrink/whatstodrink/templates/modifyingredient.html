@@ -6,7 +6,7 @@
             {{ form.name(class="form-control", value=ingredient.name) }}
         </div>
         <!-- Short Name Field -->
-        <div class="me-3 mb-3">
+        <div class="mb-3">
             {{ form.short_name.label(class="form-control-label") }} 
             {{ form.short_name(class="form-control", value=ingredient.short_name)}}
         </div>
@@ -27,7 +27,7 @@
             {{ form.id(type="hidden", value=ingredient.id) }}
         </div>
         <!-- Notes Field -->
-        <div class="me-3 mb-5">
+        <div class="mb-5">
             {{ form.notes.label(class="form-control-label") }}
             <textarea class="form-control" id="notes" name="notes" rows="3">{{ ingredient.notes }}</textarea>
         </div>
