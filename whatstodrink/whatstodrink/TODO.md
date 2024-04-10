@@ -111,10 +111,10 @@ Fixed bug in whatsmissing that led to missing ingredients and duplicated cocktai
 Added validation to modifyingredient by making a new route that renders the modal as a page
 Did the same to modifycocktail
 Added Ingredient name validators to addingredient modals
+Fixed length of fields in modifyingredient
 
 ## In Progress
 
-bug: modify ingredient forms are not the right length
 bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
 

@@ -282,6 +282,7 @@ def manageingredients():
 
 # View ingredient modal from ManageIngredients 
 @app.route("/viewingredientmodal")
+@login_required
 def viewingredientmodal():
 
     form = ViewIngredientForm()
@@ -301,6 +302,7 @@ def viewingredientmodal():
 
 # Modify Ingredient modal from ManageIngredients -> viewingredientmodal
 @app.route("/modify_ingredient", methods=["GET", "POST"])
+@login_required
 def modify_ingredient():
 
     form = ViewIngredientForm()
@@ -640,6 +642,7 @@ def addcocktail():
 
 # Ingredient Search Box from Add Cocktail
 @app.route("/ingredientsearch")
+@login_required
 def ingredientsearch():
     q = request.args.get("q")
 
@@ -660,6 +663,7 @@ def ingredientsearch():
 
 # Create New Ingredient modal from Add Cocktail
 @app.route("/addingredientmodal", methods=["GET", "POST"])
+@login_required
 def addingredientmodal():
 
     form = AddIngredientForm()
@@ -697,6 +701,7 @@ def addingredientmodal():
 # Viewall and related routes
   
 @app.route("/viewcocktails", methods=["GET", "POST"])
+@login_required
 def viewcocktails():
 
     return render_template(
@@ -704,6 +709,7 @@ def viewcocktails():
     )
 
 @app.route("/viewallcocktails")
+@login_required
 def viewallcocktails():
 
     form = ModifyCocktailForm()
@@ -746,6 +752,7 @@ def viewuser():
     )
 
 @app.route("/viewcommon")
+@login_required
 def viewcommon():
 
     commoncocktailsquery = text("""
@@ -1193,6 +1200,7 @@ def whatstodrinkuser():
 
 
 @app.route("/whatstodrinkall")
+@login_required
 def whatstodrinkall():
 
     cocktailquery = text( "SELECT cc.name, cc.id, cc.family, cc.build, cc.source, cc.recipe, cc.ingredient_list, NULL AS notes "
