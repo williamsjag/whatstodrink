@@ -1,0 +1,123 @@
+from flask import flash, redirect, render_template, request, session, url_for, Blueprint
+from whatstodrink.__init__ import db
+from sqlalchemy import select, or_
+from werkzeug.security import check_password_hash, generate_password_hash
+from whatstodrink.models import User, CommonIngredient, CommonStock
+from whatstodrink.users.forms import RegistrationForm, LoginForm
+from flask_login import login_user, current_user, logout_user, login_required
+
+users = Blueprint('users', __name__)
+
+@users.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user"""
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    # Forget any user_id
+    session.clear()
+    form = RegistrationForm()
+
+    if request.method == "POST":
+
+        # check to see if user exists
+        if form.validate_on_submit():
+            # insert into users table
+            hash = generate_password_hash(
+                form.password.data, method="pbkdf2", salt_length=16
+            )
+            newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails='on')
+            db.session.add(newuser)
+            db.session.commit()
+
+            flash("Your account has been created! You are now able to log in", 'success')
+
+            return redirect(url_for('users.login'))
+            
+        else:
+            return render_template("register.html", form=form)
+    
+    # if GET
+    else:
+        return render_template("register.html", form=form)
+
+
+@users.route("/login", methods=["GET", "POST"])
+def login():
+    """Log user in"""
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    # Forget any user_id
+    session.clear()
+    form = LoginForm()
+
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        if form.validate_on_submit():
+           
+            # Query database for username
+            uname = form.username.data
+            password = form.password.data
+            query = select(User).where(or_(User.username == uname, User.email == uname))
+            user = db.session.scalars(query).first()
+
+            # Ensure username exists and password is correct
+            if not user or not check_password_hash(
+                user.hash, password
+            ):
+                flash('Login failed. Double-check username and/or password', 'warning')
+                return redirect(url_for('users.login'))
+
+            else:
+                login_user(user, remember=form.remember.data)
+                next_page = request.args.get('next')
+
+                # Check default cocktail setting
+                session["defaults"] = user.default_cocktails
+
+                # make sure user has stock values for all common ingredients on login
+                query = select(CommonIngredient.id)
+                common_ingredients = db.session.scalars(query).all()
+
+                # get all ids in common_ingredients
+                for ingredient in common_ingredients:
+                    # check if user has ingredient in common_stock
+                    result = db.session.scalars(select(CommonStock.ingredient_id).where(CommonStock.user_id == current_user.id).where(CommonStock.ingredient_id == ingredient)).first()
+
+                    # if not, insert a default
+                    if not result:
+                        newingredient = CommonStock(ingredient_id=ingredient, user_id = current_user.id, stock='')
+                        db.session.add(newingredient)
+                        db.session.commit()
+
+                # Redirect user to home page
+                flash("Successfully logged in, welcome {}!".format(user.username), 'primary')
+                if next_page:
+                    return redirect(next_page)
+                else:
+                    return redirect(url_for('main.index'))
+        
+        else:
+            return render_template("login.html", form=form)
+
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+
+        return render_template("login.html", form=form)
+
+
+@users.route("/logout")
+@login_required
+def logout():
+    """Log user out"""
+
+    logout_user()
+    flash('Logged Out', 'primary')
+    # Redirect user to login form
+    return redirect(url_for('users.login'))
+    
+
+@users.route("/account")
+@login_required
+def account():
+
+    return render_template("account.html")

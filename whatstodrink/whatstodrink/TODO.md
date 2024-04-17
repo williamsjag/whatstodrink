@@ -115,6 +115,11 @@ Fixed length of fields in modifyingredient
 
 ## In Progress
 
+Make sure create ingredient always has a cancel button
+
+bug: adding an ingredient that already exists in add cocktail doesn't get drag handles
+bug: cancel button on are you surecocktail after edit cocktail/same name cancels everything and not just delete
+
 bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
