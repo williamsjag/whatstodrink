@@ -22,11 +22,14 @@ def create_app(config_class=Config):
     from whatstodrink.create.routes import create
     from whatstodrink.modify.routes import modify
     from whatstodrink.view.routes import view
+    from whatstodrink.errors.handlers import errors
     app.register_blueprint(users)
     app.register_blueprint(main)
     app.register_blueprint(create)
     app.register_blueprint(modify)
     app.register_blueprint(view)
+    app.register_blueprint(errors)
+
 
     csrf.init_app(app)
     login_manager.init_app(app)
