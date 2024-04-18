@@ -118,10 +118,10 @@ Changed project to use app factory model
 Fixed bug in login page that eliminated flash messages
 Fixed bug with next feature of login
 Added cancel button to create ingredient modals and created addingredienterrors.html
+Added validators to addingredient in addcocktail and made javascript ignore invalid ings when not in db
 
 ## In Progress
 
-but: creating empty ingredient in add cocktail fills an empty cell and makes readonly- add validator
 
 bug: adding an ingredient that already exists in add cocktail doesn't get drag handles
 bug: cancel button on are you surecocktail after edit cocktail/same name cancels everything and not just delete

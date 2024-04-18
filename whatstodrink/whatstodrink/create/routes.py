@@ -203,30 +203,34 @@ def addingredientmodal():
 
     if request.method == "GET":
         return render_template("addingredientmodal.html", form=form)
+    # If POST
     else:
         # Ensure ingredient was submitted
         if form.validate_on_submit():
-
-            # Query database for ingredient
-            rowsquery = text("SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id")
-            rows = db.session.execute(rowsquery, {"ingredientname": request.form.get("ingredientname"), "user_id": current_user.id}).fetchall()
-
-            # Ensure username exists and password is correct
-            if rows:
-                return apology("ingredient already exists", 403)
-            else:
-                # insert new ingredient into db
-                new_ingredient = Ingredient(
-                    user_id=current_user.id,
-                    name=form.name.data,
-                    type=form.type.data,
-                    stock=form.stock.data,
-                    short_name=form.short_name.data,
-                    notes=form.notes.data,
-                )
-                db.session.add(new_ingredient)
-                db.session.commit()    
+            # insert new ingredient into db
+            new_ingredient = Ingredient(
+                user_id=current_user.id,
+                name=form.name.data,
+                type=form.type.data,
+                stock=form.stock.data,
+                short_name=form.short_name.data,
+                notes=form.notes.data,
+            )
+            db.session.add(new_ingredient)
+            db.session.commit()    
 
             return form.name.data
+        # if not validated
         else:
-            return "ignore"
+            # Query database for ingredient
+            rowsquery = text("""SELECT name FROM ingredients WHERE name = :ingredientname AND user_id = :user_id
+                             UNION
+                             SELECT name FROM common_ingredients WHERE name = :ingredientname""")
+            rows = db.session.execute(rowsquery, {"ingredientname": form.name.data, "user_id": current_user.id}).fetchall()
+
+            # if it already exists, return the name of the ingredient
+            if rows:
+                return form.name.data
+            # if it doesn't, return the "ignore" keyword
+            else:
+                return "ignore"
