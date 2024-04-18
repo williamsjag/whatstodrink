@@ -229,4 +229,4 @@ def addingredientmodal():
 
             return form.name.data
         else:
-            return form.name.data
+            return "ignore"

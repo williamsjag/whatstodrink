@@ -158,6 +158,7 @@
             return true;
         }
     });
+    // Remove Ingredient
     function removeRow(button) {
     // find row button was in and remove
         $(button).closest('li').remove();
@@ -172,73 +173,77 @@
     // counter variable for ids
     var counter = 1;
 
+    // Listener for Add ingredient
     document.addEventListener('htmx:afterRequest', function(evt) {
         var response = evt.detail.xhr.response; // Listen for response
-        var source = evt.detail.elt; // But only for Post requests
-        link = document.getElementById("layout")
-        btn = document.getElementById("modalbutton")
+        if (response != ignore) {
+            var source = evt.detail.elt; // But only for Post requests
+            link = document.getElementById("layout")
+            btn = document.getElementById("modalbutton")
 
-        if (source === btn) {
-            
-            evt.preventDefault();
-            var targetInput = document.querySelector('#dynamicSelects li:last-child .ingredientlist');
-            
-
-            if (targetInput) {
-                // Update the field with server response
-                targetInput.value = response;
-
-                // Copy last li (ingredient)
-                var originalElement = document.querySelector("#dynamicSelects li:last-child");
-                var newDiv = originalElement.cloneNode(true);
-
-                // set new id
-                newDiv.id = 'q' + counter;
-
-                // clear inputs and table of new copy
-                var resultsTable = newDiv.querySelector("#results");
-                resultsTable.innerHTML = '';
-                inputs = newDiv.querySelectorAll('input');
-                focus = newDiv.querySelector(".amountlist")
+            if (source === btn) {
                 
-                inputs.forEach(function(input) {
-                    input.value = '';
-                });
-
-                // remove labels from new inputs
-                newDiv.querySelectorAll('label').forEach(function(label) {
-                    label.remove();
-                })
-                // remove old searchtable
-                originalElement.querySelector("#searchtable").remove();
-
-                //increment counter
-                counter++;
-
-                // add new div to dynamicSelects
-                var hostdiv = document.getElementById('dynamicSelects');
-                hostdiv.appendChild(newDiv);
-
-                // set new field variables
-                var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
-
-                var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
+                evt.preventDefault();
+                var targetInput = document.querySelector('#dynamicSelects li:last-child .ingredientlist');
                 
-                // make readonly
-                var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
-                oldInput.setAttribute('readonly', 'true');
-                oldInput.removeAttribute('hx-trigger');
-                oldInput.removeAttribute('hx-get');
-                oldInput.removeAttribute('hx-target');
 
-                htmx.process(newIngredient);
-                
-                newInput.focus();
-                
-                attachEventListeners();
+                if (targetInput) {
+                    // Update the field with server response
+                    targetInput.value = response;
 
+                    // Copy last li (ingredient)
+                    var originalElement = document.querySelector("#dynamicSelects li:last-child");
+                    var newDiv = originalElement.cloneNode(true);
+
+                    // set new id
+                    newDiv.id = 'q' + counter;
+
+                    // clear inputs and table of new copy
+                    var resultsTable = newDiv.querySelector("#results");
+                    resultsTable.innerHTML = '';
+                    inputs = newDiv.querySelectorAll('input');
+                    focus = newDiv.querySelector(".amountlist")
+                    
+                    inputs.forEach(function(input) {
+                        input.value = '';
+                    });
+
+                    // remove labels from new inputs
+                    newDiv.querySelectorAll('label').forEach(function(label) {
+                        label.remove();
+                    })
+                    // remove old searchtable
+                    originalElement.querySelector("#searchtable").remove();
+
+                    //increment counter
+                    counter++;
+
+                    // add new div to dynamicSelects
+                    var hostdiv = document.getElementById('dynamicSelects');
+                    hostdiv.appendChild(newDiv);
+
+                    // set new field variables
+                    var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
+
+                    var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
+                    
+                    // make readonly
+                    var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
+                    oldInput.setAttribute('readonly', 'true');
+                    oldInput.removeAttribute('hx-trigger');
+                    oldInput.removeAttribute('hx-get');
+                    oldInput.removeAttribute('hx-target');
+
+                    htmx.process(newIngredient);
+                    
+                    newInput.focus();
+                    
+                    attachEventListeners();
+
+                }
             }
         }
+            
     });
     
     function attachEventListeners() {
