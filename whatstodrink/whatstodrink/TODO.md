@@ -119,11 +119,11 @@ Fixed bug in login page that eliminated flash messages
 Fixed bug with next feature of login
 Added cancel button to create ingredient modals and created addingredienterrors.html
 Added validators to addingredient in addcocktail and made javascript ignore invalid ings when not in db
+Added drag handle/remove icon/dragability to added ingredients in add cocktail
 
 ## In Progress
 
 
-bug: adding an ingredient that already exists in add cocktail doesn't get drag handles
 bug: cancel button on are you surecocktail after edit cocktail/same name cancels everything and not just delete
 
 bug: After creating a new ingredient in add cocktail cursor focus drops
