@@ -44,4 +44,19 @@ class LoginForm(FlaskForm):
         if mail:
             if not check_password_hash(mail.hash, password.data):
                 raise ValidationError("Incorrect Password")
+            
+class RequestResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, email):
+        email = db.session.scalars(select(User.email).where(User.email == email.data)).first()
+        if not email:
+            raise ValidationError('There is no account with that email.')
+        
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirmation = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
+
 

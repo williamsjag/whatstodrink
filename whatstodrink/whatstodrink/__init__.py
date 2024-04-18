@@ -4,12 +4,14 @@ from flask_sqlalchemy import SQLAlchemy
 from whatstodrink.config import Config
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
+from flask_mail import Mail
 
 # Configure application
 csrf = CSRFProtect()
 login_manager = LoginManager()
 login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
+mail = Mail()
 
 db = SQLAlchemy()
 
@@ -35,6 +37,7 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     Session(app)
     db.init_app(app)
+    mail.init_app(app)
 
     @app.after_request
     def after_request(response):

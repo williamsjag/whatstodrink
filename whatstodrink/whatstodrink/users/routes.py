@@ -1,10 +1,12 @@
-from flask import flash, redirect, render_template, request, session, url_for, Blueprint
+from flask import flash, redirect, render_template, request, session, url_for, Blueprint, current_app
 from whatstodrink.__init__ import db
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, update
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.models import User, CommonIngredient, CommonStock
-from whatstodrink.users.forms import RegistrationForm, LoginForm
+from whatstodrink.users.forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm
 from flask_login import login_user, current_user, logout_user, login_required
+from whatstodrink.helpers import send_reset_email
+from whatstodrink.config import Config
 
 users = Blueprint('users', __name__)
 
@@ -121,3 +123,50 @@ def logout():
 def account():
 
     return render_template("account.html")
+
+
+
+@users.route("/resetpassword", methods=["GET", "POST"])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))   
+
+    form = RequestResetForm()
+
+    if form.validate_on_submit():
+        user = db.session.scalar(select(User).where(User.email == form.email.data))
+        print(f"{user}")
+        print(f"{Config.MAIL_PASSWORD}")
+        if user:
+            send_reset_email(user)
+            flash('An email has been sent with instructions to reset your password.', 'primary')
+            return redirect(url_for('users.login'))
+
+    return render_template("resetrequest.html", form=form) 
+
+@users.route("/resetpassword/<token>.html", methods=["GET", "POST"])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    user = User.verify_reset_token(token)
+    if not user:
+        flash('Error: invalid or expired token', 'warning')
+        return redirect(url_for('users.reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+            # insert into users table
+            hash = generate_password_hash(
+                form.password.data, method="pbkdf2", salt_length=16
+            )
+            db.session.execute(
+                update(User).where(User.id == user)
+                .values(hash=hash)
+            )
+            db.session.commit()
+
+            flash('Your password has been updated! You are now able to log in', 'primary')
+            
+            return redirect(url_for('users.login'))
+
+    return render_template("resettoken.html", methods=["GET", "POST"], form=form)
+
