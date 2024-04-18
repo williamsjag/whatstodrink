@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Ingredient
+{% endblock %}
+
+{% block main %}
+    <h1 class="text-center mb-5">Add Ingredient</h1>
+    <div class="center text-center explainer p-3 mb-5">
+        <p>Add a new ingredient to your list of ingredients.</p>
+    </div>
+    <!-- not sure/layout -->
+    <div class="container">
+        <form action="/addingredient" name="ingredientform" class="item-center center-form needs-validation" method="post" novalidate>
+          {{ form.csrf_token }}
+          <!-- Name -->
+            <div class="form-group mb-3">
+              {{ form.name.label(class="form-control-label") }}
+              {% if form.name.errors %}
+                        {{ form.name(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+              {% else %}
+                  {{ form.name(class="form-control") }}
+              {% endif %} 
+            </div> 
+            <!-- Simplified Name -->
+            <div class="form-group">
+              {{ form.short_name.label(class="form-control-label mt-3") }} <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#simpleModal"></i>
+              {% if form.short_name.errors %}
+                  {{ form.short_name(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.short_name.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.short_name(class="form-control") }}
+              {% endif %}                
+            </div>
+            <!-- Type -->
+            <div class="form-group">
+                {{ form.type.label(class="form-label mt-3") }}
+                {% if form.type.errors %}
+                <select name="type" id="type" class="form-select is-invalid" required>
+                    <option value="" disabled selected>--Ingredient Type--</option>
+                    <option value="Spirit">Spirit</option>
+                    <option value="Liqueur">Liqueur</option>
+                    <option value="Liqueur">Amaro</option>
+                    <option value="Wine/Vermouth/Sherry">Wine/Vermouth/Sherry</option>
+                    <option value="Bitters">Bitters</option>
+                    <option value="Syrup">Syrup</option>
+                    <option value="Juice">Juice</option>
+                    <option value="Pantry/Fridge">Pantry/Fridge</option>
+                    <option value="Other">Other</option>
+                </select>
+                    <div class="invalid-feedback">
+                        {% for error in form.type.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <select name="type" id="type" class="form-select" required>
+                        <option value="" disabled selected>--Ingredient Type--</option>
+                        <option value="Spirit">Spirit</option>
+                        <option value="Liqueur">Liqueur</option>
+                        <option value="Liqueur">Amaro</option>
+                        <option value="Wine/Vermouth/Sherry">Wine/Vermouth/Sherry</option>
+                        <option value="Bitters">Bitters</option>
+                        <option value="Syrup">Syrup</option>
+                        <option value="Juice">Juice</option>
+                        <option value="Pantry/Fridge">Pantry/Fridge</option>
+                        <option value="Other">Other</option>
+                    </select>
+                {% endif %}
+            </div>
+                <!-- Notes -->
+            <div class="form-group">
+                {{ form.notes.label(class="form-control-label mt-3") }}
+                {% if form.notes.errors %}
+                    {{ form.notes(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.notes.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.notes(placeholder="Recipe if homemade, etc...", class="form-control", rows="3") }}
+                {% endif %}                
+            </div>
+            <!-- Type -->
+            <div class=" form-check mt-3">
+                <label for="stock">In Stock:</label>
+                <input id="stock" name="stock" type="checkbox">           
+            </div>
+            <!-- Submit -->
+            <div class="form-group text-center mt-4">
+                {{ form.submit(class="btn btn-primary mt-3") }}
+            </div>
+            <div class="form-group text-center mt-4">
+                <button id="cancelbutton" name="cancelbutton" class="btn btn-secondary mb-3" data-bs-dismiss="modal">Cancel</button>               
+            </div>
+        </form>
+    </div>
+
+
+    <!-- Simplified name modal -->
+  <div class="modal fade" id="simpleModal" tabindex="-1" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Simplified Name</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>A shortened name that will appear when extra information is not necessary, such as in the ingredient summaries in "What's to drink?"</p>
+          <p>Here we see the Simplified Names in the header and the full Names in the description:</p>
+          <img class="center" src="/static/example1.png" alt="Example screenshot" style="width:600px;">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+    document.querySelector('form[name="ingredientform"] input[name="name"]').focus();
+   })
+</script>
+{% endblock %}

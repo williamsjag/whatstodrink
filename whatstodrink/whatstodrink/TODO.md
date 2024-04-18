@@ -116,15 +116,16 @@ Added request password reset functionality with email
 Updated layout of project to use blueprints
 Changed project to use app factory model
 Fixed bug in login page that eliminated flash messages
+Fixed bug with next feature of login
+Added cancel button to create ingredient modals and created addingredienterrors.html
 
 ## In Progress
 
-Make sure create ingredient always has a cancel button
+but: creating empty ingredient in add cocktail fills an empty cell and makes readonly- add validator
 
 bug: adding an ingredient that already exists in add cocktail doesn't get drag handles
 bug: cancel button on are you surecocktail after edit cocktail/same name cancels everything and not just delete
 
-bug: next feature not working in login
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
 ## Todo 

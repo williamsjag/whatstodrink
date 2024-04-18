@@ -43,7 +43,7 @@ def addingredientmodal2():
             flash("Ingredient Added", "primary")
             return redirect(url_for("modify.manageingredients"))
         else:
-            return render_template("addingredient.html", form=form)
+            return render_template("addingredienterrors.html", form=form)
         
         # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -64,6 +64,8 @@ def addingredient():
     # reached via post
     if request.method == "POST":
         if form.validate_on_submit():
+            if "cancelbutton" in request.form:
+                return redirect(url_for("modify.manageingredients"))
             # insert new ingredient into db
             newingredient = Ingredient(name=form.name.data, short_name=form.short_name.data, type=form.type.data, notes=form.notes.data, stock=form.stock.data, user_id=current_user.id)
             db.session.add(newingredient)
@@ -75,6 +77,8 @@ def addingredient():
                 "addingredient.html", form=form
             )
         else:
+            if "cancelbutton" in request.form:
+                return redirect(url_for("modify.manageingredients"))
             return render_template('addingredient.html', form=form)
     # User reached route via GET (as by clicking a link or via redirect)
     else:
