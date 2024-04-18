@@ -31,7 +31,7 @@ def register():
             db.session.add(newuser)
             db.session.commit()
 
-            flash("Your account has been created! You are now able to log in", 'success')
+            flash("Your account has been created! You are now able to log in", 'primary')
 
             return redirect(url_for('users.login'))
             
@@ -49,11 +49,12 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     # Forget any user_id
-    session.clear()
+    
     form = LoginForm()
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
+        session.clear()
         if form.validate_on_submit():
            
             # Query database for username
