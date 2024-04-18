@@ -120,11 +120,11 @@ Fixed bug with next feature of login
 Added cancel button to create ingredient modals and created addingredienterrors.html
 Added validators to addingredient in addcocktail and made javascript ignore invalid ings when not in db
 Added drag handle/remove icon/dragability to added ingredients in add cocktail
+Fixed cancel button in areyousurecocktail to close modal to keep modifycocktailformerrors from loading view cocktails
 
 ## In Progress
 
 
-bug: cancel button on are you surecocktail after edit cocktail/same name cancels everything and not just delete
 
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
