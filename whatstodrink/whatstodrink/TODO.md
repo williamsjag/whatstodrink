@@ -112,6 +112,10 @@ Added validation to modifyingredient by making a new route that renders the moda
 Did the same to modifycocktail
 Added Ingredient name validators to addingredient modals
 Fixed length of fields in modifyingredient
+Added request password reset functionality with email
+Updated layout of project to use blueprints
+Changed project to use app factory model
+Fixed bug in login page that eliminated flash messages
 
 ## In Progress
 

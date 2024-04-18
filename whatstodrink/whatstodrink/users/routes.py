@@ -8,6 +8,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from whatstodrink.helpers import send_reset_email
 from whatstodrink.config import Config
 
+
 users = Blueprint('users', __name__)
 
 @users.route("/register", methods=["GET", "POST"])
@@ -54,7 +55,7 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        session.clear()
+        
         if form.validate_on_submit():
            
             # Query database for username
@@ -71,8 +72,9 @@ def login():
                 return redirect(url_for('users.login'))
 
             else:
+                
+                session.clear()
                 login_user(user, remember=form.remember.data)
-                next_page = request.args.get('next')
 
                 # Check default cocktail setting
                 session["defaults"] = user.default_cocktails
@@ -94,8 +96,9 @@ def login():
 
                 # Redirect user to home page
                 flash("Successfully logged in, welcome {}!".format(user.username), 'primary')
-                if next_page:
-                    return redirect(next_page)
+
+                if form.next_page.data:
+                    return redirect(form.next_page.data)
                 else:
                     return redirect(url_for('main.index'))
         
@@ -104,8 +107,9 @@ def login():
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-
-        return render_template("login.html", form=form)
+        next_page = request.args.get('next')
+        print(f"{next_page}")
+        return render_template("login.html", form=form, next_page=next_page)
 
 
 @users.route("/logout")

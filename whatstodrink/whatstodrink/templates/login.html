@@ -39,11 +39,15 @@
                 <div class="form-check mb-4 mt-4">
                     {{ form.remember(class="form-check-input") }}
                     {{ form.remember.label(class="form-check-label") }}
-
                 </div>
             </fieldset>
             <div class="form-group text-center mb-4">
                 {{ form.submit(class="btn btn-primary") }}
+            </div>
+            <div class="form-group" type="hidden">
+                {% if next_page %}
+                    {{ form.next_page(type="hidden", value=next_page) }}
+                {% endif %}
             </div>
             <small class="text-muted ml-2">
                 <a href="{{ url_for('users.reset_request') }}">Forgot Password?</a>
