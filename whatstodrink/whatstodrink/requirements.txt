@@ -9,3 +9,4 @@ SQLAlchemy==2.0.23
 Werkzeug==3.0.2
 WTForms==3.1.2
 python-dotenv
+email_validator
