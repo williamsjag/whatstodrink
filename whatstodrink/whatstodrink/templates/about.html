@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-<div class="">
+<div class="center-accordion">
     <div class="text-center mb-5">
         <h1>About</h1>
     </div>
@@ -27,7 +27,7 @@
             This site is not meant for discovering new recipes, it's meant for storing ones you already like. 
             I don't like most recipes I find on the internet, and I don't want to see them as options when I'm deciding what I want to make next. Also, since these all YOUR recipes, every ingredient that goes in them is up to you,
             so each one can be as specific or as general as you wish for that particular recipe.
-            There is a short list of classic cocktails included to get you started, but you can disable either all of them or just the ones you don't want whenever you want.
+            There is a short list of classic cocktails included to get you started, but you can disable them whenever you want.
         </p>
 
         <h2 class="mb-4">How do I use it?</h2>
@@ -35,8 +35,7 @@
             <h3 class="blue mb-3" id="manage">Home</h3>
 
                 <p>
-                    On the homepage are links to the other pages of the site as well as a Settings box. Here you can select whether you want the list of default cocktails to appear in your database on the pages under <strong>View</strong>>
-                    in the navbar. When disabled, each page will default to the list of user-added cocktails and not show options to view others. 
+                    On the homepage are links to the other pages of the site. 
                 </p>
 
             <h3 class="blue mb-3" id="manage">Manage Ingredients</h3>
@@ -78,7 +77,7 @@
             <h3 class="blue mb-3" id="addIngredient">Add Ingredient</h3>
 
                 <p>
-                    This page lets you add a new ingredient to the ingredient list used throughout the site. You can also do this in <a href="#manage">Manage Ingredients</a> and <a href="#addCocktail"></a>, but if you have several 
+                    This page lets you add a new ingredient to the ingredient list used throughout the site. You can also do this in <a href="#manage">Manage Ingredients</a> and <a href="#addCocktail">Add Cocktail</a>, but if you have several 
                     ingredients to add at once, it may be easier to do here as the page reloads ready to add another when "<strong>Add Ingredient</strong>" is clicked. Use the notes field for whatever you wish, but it is especially
                     useful for saving the recipe for homemade ingredients you may need to recreate later.
                 </p>
@@ -88,32 +87,47 @@
                 <p>
                     This is where you add new recipes to your database. To add an ingredient to the recipe, start typing in the Ingredient search box and ingredients in your ingredients list that match your search will appear below.
                     Click the one you want and a new ingredient search box will appear ready to add another ingredient. If what you need isn't already in your database, "<strong>Create New Ingredient</strong>" will allow you to add it
-                    without leaving the page or reloading what you've already entered. Once created, it can be found in the Ingredient search box.
+                    without leaving the page or reloading what you've already entered. Once created, it will automatically appear in the cocktail. Once an ingredient has been added, you will see a remove ingredient icon as well as a drag
+                    handle to let you reorder the ingredients should you desire. Ingredients will appear in the recipe tabs in the order input during creation. This can also be changed later.
                 </p>
                 <p>
                     Don't forget to add the unit of measurement for each amount, or you risk being very confused later. The app doesn't force any particular units of measurement, it allows you to use what you prefer. This avoids
-                    the need for awkward translations from 1.5 ounces to 44.36 ml. Once you're satisfied, the "<strong>Submit</strong>" button will save the recipe to your database.
+                    the need for awkward translations like "1.5 ounces to 44.36 ml".
+                </p>
+                <p>
+                    Once you're satisfied, the "<strong>Submit</strong>" button will save the recipe to your database.
+                </p>
+
+            <h3 class="blue mb-3" id="account">Account</h3>
+
+                <p>
+                    This is the account options page. There's not currently a lot there, but there is the Settings pane. Here you can select whether you want the list of default cocktails to appear in your database on the pages under <strong>View</strong>
+                    in the navbar. When disabled, each page will default to the list of user-added cocktails and not show options to view others.
                 </p>
 
         <h2 class="mb-4">Upcoming Features</h2>
 
             <p>This app is still very much in development, here is a peek at what you can expect to see here soon:</p>
-            <h3>User Interface Improvements/Prettification</h3>
+            <h4>User Interface Improvements/Prettification</h4>
                 <p>
-                    Changes to visual identity/color scheme, as well as accessibility improvements, mobile formatting, and other quality of life improvements, like a search bar for cocktail views.
+                    Changes to visual identity/color scheme, as well as accessibility improvements, mobile formatting, and other quality of life improvements.
                 </p>
-            <!-- <h3>Allow modification to all ingredients</h3>
+            <!-- <h4>Allow modification to all ingredients</h4>
                 <p>
                     This will allow users to modify all ingredients in the list, not just ones that they've added. This will include rename as well as hide options.
                 </p> -->
-            <h3>View Recipe as Page</h3>
+            <h4>View Recipe as Page</h4>
                 <p>
                     Open a recipe as a page to itself that will enable sharing via its url, and enable other users to save to their database.
                 </p>
-            <h3>Recipe Tags</h3>
+            <h4>Recipe Tags</h4>
                 <p>
                     This will allow tags to be associated with recipes, which will then be a selectable grouping option for pages that list cocktails. This can be used for creating user-defined groups of cocktails,
                     maybe events, menus, subcategories, personal favorites, family member favorites, etc...
+                </p>
+            <h4>Cocktail/Tag Search</h4>
+                <p>
+                    This will allow filtering in cocktail views in order to search for a cocktail by name, ones with a particular ingredient, the book you got it from, or your dog's personal favorites.
                 </p>
     </div>
 </div>
