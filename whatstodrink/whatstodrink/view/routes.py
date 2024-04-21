@@ -134,7 +134,8 @@ def missingoneall():
                         JOIN common_amounts ca ON cc.id = ca.cocktail_id 
                         LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id 
                         LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id 
-                        WHERE (cs.stock != 1 AND cs.user_id = :user_id) 
+                        WHERE 
+                          (cs.stock != 1 AND cs.user_id = :user_id) 
                         GROUP BY cc.id 
                         HAVING COUNT(*) = 1 
                         UNION 
@@ -152,6 +153,7 @@ def missingoneall():
                         HAVING COUNT(*) = 1
                           """) 
     cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
+    
 
     missingquery = text("""WITH sad_cocktails AS (
                             SELECT cc.name, 'common' AS source
@@ -160,7 +162,9 @@ def missingoneall():
                             LEFT JOIN common_ingredients ci ON ca.ingredient_id = ci.id 
                             LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id 
                             WHERE 
-                                (cs.stock != 1 AND cs.user_id = :user_id) 
+                                (cs.stock != 1 AND cs.user_id = :user_id)
+                            GROUP BY cc.id
+                            HAVING COUNT(*) = 1
                             UNION 
                             SELECT c.name, 'user' AS source
                             FROM cocktails c 
@@ -184,7 +188,8 @@ def missingoneall():
                             SELECT ca.ingredient_id, ca.ingredient_source 
                             FROM common_amounts ca
                             LEFT JOIN common_cocktails coco ON coco.id = ca.cocktail_id
-                            WHERE (coco.name IN (SELECT name FROM sad_cocktails))
+                            LEFT JOIN common_stock cs ON ca.ingredient_id = cs.ingredient_id
+                            WHERE (coco.name IN (SELECT name FROM sad_cocktails) AND cs.user_id = :user_id)
                         )
                         # Main Query
                         SELECT id, name, 'user' AS source 
@@ -218,7 +223,7 @@ def missingoneall():
                         GROUP BY ci.id
                           """)
     missing_ingredients = db.session.execute(missingquery, {"user_id": current_user.id}).fetchall()
-      
+
     amountsquery = text("""
                         SELECT ca.cocktail_id, ca.ingredient_id, ca.amount, ca.ingredient_source, cc.name
                         FROM common_amounts ca
@@ -231,6 +236,7 @@ def missingoneall():
                         """)
     amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
+    
     return render_template(
         "missingoneall.html", cocktails=cocktails, amounts=amounts, missing_ingredients=missing_ingredients, defaults=session["defaults"]
     )
