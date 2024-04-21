@@ -121,21 +121,25 @@ def logout():
     return redirect(url_for('users.login'))
     
 
-@users.route("/account")
+@users.route("/account",  methods=["GET", "POST"])
 @login_required
 def account():
     form = SettingsForm()
 
     if request.method == "GET":
         defaults = session.get("defaults")
+        
         if defaults is None:
             session['defaults'] = current_user.default_cocktails
             defaults = session['defaults']
+
         return render_template(
             "account.html", defaults=defaults, form=form
         )
+    
     elif request.method == "POST":
         cocktails = request.form.get('cocktailswitch')
+        print(f"cocktails: {cocktails}")
 
         if cocktails:
             # Update database defaults for next login

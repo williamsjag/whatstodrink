@@ -13,9 +13,9 @@
             {{ form.csrf_token }}
             <label class="list-group-item form-switch" for="flexSwitchCheckChecked">Enable default cocktails:
               {% if defaults %}
-                <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked hx-post="/" hx-trigger="click">
+                <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked hx-post="account" hx-trigger="click">
               {% else %}
-                <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" hx-post="/" hx-trigger="click">
+                <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" hx-post="account" hx-trigger="click">
               {% endif %}
             </label>
           </form>
