@@ -40,6 +40,8 @@ def create_app():
     db.init_app(app)
     mail.init_app(app)
 
+    db.create_all()
+
     @app.after_request
     def after_request(response):
         """Ensure responses aren't cached"""
