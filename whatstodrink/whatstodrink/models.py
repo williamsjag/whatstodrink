@@ -39,7 +39,7 @@ class Amount(db.Model):
     __tablename__ = 'amounts'
 
     cocktail_id = db.Column(db.Integer, db.ForeignKey('cocktails.id'), primary_key=True)
-    sequence = db.Column(db.Integer)
+    sequence = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.String(50))
     ingredient_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -74,9 +74,9 @@ class CommonAmount(db.Model):
 
     cocktail_id = db.Column(db.Integer, db.ForeignKey('common_cocktails.id'), primary_key=True)
     amount = db.Column(db.String(50))
-    sequence = db.Column(db.Integer)
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('common_ingredients.id'), primary_key=True)
-    ingredient_source = db.Column(db.String(50), primary_key=True)
+    ingredient_id = db.Column(db.Integer, db.ForeignKey('common_ingredients.id'))
+    ingredient_source = db.Column(db.String(50))
+    sequence = db.Column(db.Integer, primary_key=True)
     
 class CommonIngredient(db.Model):
     __tablename__ = 'common_ingredients'
