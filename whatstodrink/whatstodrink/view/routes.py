@@ -92,6 +92,9 @@ def viewuser():
                         WHERE user_id = :user_id")
    
     usercocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
+
+    if not usercocktails:
+        return render_template("errors/no_cocktails.html")
    
     userfamilies = set(Cocktail.family for Cocktail in usercocktails)
 
@@ -153,7 +156,8 @@ def missingoneall():
                         HAVING COUNT(*) = 1
                           """) 
     cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
-    
+    if not cocktails:
+        return render_template("errors/no_cocktails.html")
 
     missingquery = text("""WITH sad_cocktails AS (
                             SELECT cc.name, 'common' AS source
@@ -259,7 +263,8 @@ def missingoneuser():
                         GROUP BY c.id "
                         "HAVING COUNT(*) = 1")
     cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
-
+    if not cocktails:
+        return render_template("errors/no_cocktails.html")
     missingquery = text("""
                             WITH sad_cocktails AS (
                             SELECT c.name 
@@ -352,6 +357,8 @@ def whatstodrinkuser():
         "GROUP BY c.id "
         "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)")
     cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
+    if not cocktails:
+        return render_template("errors/no_cocktails.html")
 
     families = set(Cocktail.family for Cocktail in cocktails)
 
@@ -383,6 +390,8 @@ def whatstodrinkall():
     "GROUP BY c.id "
     "HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts a3 WHERE a3.cocktail_id = c.id)")
     cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
+    if not cocktails:
+        return render_template("errors/no_cocktails.html")
 
     families = set(Cocktail.family for Cocktail in cocktails)
 

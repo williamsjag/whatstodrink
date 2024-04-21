@@ -121,14 +121,17 @@ Added cancel button to create ingredient modals and created addingredienterrors.
 Added validators to addingredient in addcocktail and made javascript ignore invalid ings when not in db
 Added drag handle/remove icon/dragability to added ingredients in add cocktail
 Fixed cancel button in areyousurecocktail to close modal to keep modifycocktailformerrors from loading view cocktails
+Posted v 1.0 online!
+Fixed another bug in whatsmissing where extra ingredients were being shown.
+Fixed bug in settings not working due to moved route and hx-post
+
 
 ## In Progress
 
+No cocktails indicator if nothing
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
 ## Todo 
-
-Forgot password email
 
 user modifiability to all ingredients (incl. hide)
 
