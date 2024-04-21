@@ -124,8 +124,6 @@ Fixed cancel button in areyousurecocktail to close modal to keep modifycocktailf
 
 ## In Progress
 
-
-
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
 ## Todo 

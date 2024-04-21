@@ -9,99 +9,98 @@
     <div class="center-wide text-center explainer p-3 mb-5">
         <p>Add a new recipe to your database.</p>
     </div>
-    <div class="container">
-        <!-- Add cocktail form -->
-        <form action="/addcocktail" id="amountsForm" class="item-center center-form" method="post" novalidate>
-            {{ form.csrf_token }}
-            <!-- name field -->
-            <div class="form-group mb-3">
-                {{ form.name.label(class="form-control-label") }}
-                {% if form.name.errors %}
-                        {{ form.name(class="form-control is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.name.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                {% else %}
-                    {{ form.name(class="form-control", autocomplete="off") }}
-                {% endif %} 
-            </div>
-                <!--ingredients list -->
-            <div class="form-group">
-                {{ form.ingredient.label(class="form-control-label", autocomplete="off") }}
-                <ul id="dynamicSelects">
-                    <li id="labels" class="row exclude-item">
-                        <div class="col-md-1"></div>
-                        <div class="col-md-4">
-                            <strong>Amount (with units)</strong>
-                        </div>
-                        <div class="col">
-                            <strong>Ingredient</strong>
-                        </div>
-                    </li>
-                    <!-- first ingredient -->
-                    <li id="q0" class="row exclude-item">
-                        <div id="temp" class="col-md-1"></div>
-                        <div class="col-md-4">
-                            <input type="text" autocomplete="off" class="form-control amountlist" name="amount" placeholder="e.g. 1 1/2 ounces">
-                        </div>
-                        <div class="col">
-                            <input type="text" autocomplete="off" class="form-control ingredientlist mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
-                            <!-- ingredient search table -->
-                            <table id ="searchtable" class="table table-sm table-borderless table-hover">
-                                <tbody id="results">
-                            </table>
-                        </div>
-                    </li>
-                </ul>
-                
-            </div>
-            <!-- Create new ingredient button -->
-            <div class="mb-3 text-center">
-                <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">Create New Ingredient</button>
-            </div>
-            <!-- Build instructions field -->
-            <div class="form-group mb-3">
-                {{ form.build.label(class="form-control-label") }}
-                {{ form.build(class="form-control", placeholder="Build instructions, garnish, glass, etc...", rows="3", autocomplete="off") }}
-            </div>
-            <!-- Source field -->
-            <div class="form-group mb-3">
-                {{ form.source.label(class="form-control-label") }}
-                {{ form.source(class="form-control", autocomplete="off") }}
-            </div>
-            <!-- Family field -->
-            <div class="mb-3 form-group">
-                {{ form.family.label(class="form-control-label") }}  <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#familyModal"></i>
-                <select name="family" class="form-select" id="family">
-                    <option value="" disabled selected>--Family--</option>
-                    <option value="Old Fashioneds">Old Fashioneds</option>
-                    <option value="Sours">Sours</option>
-                    <option value="Vermouth Cocktails">Vermouth Cocktails</option>
-                    <option value="Amaro Cocktails">Amaro Cocktails</option>
-                    <option value="Duos and Trios">Duos and Trios</option>
-                    <option value="Champagne Cocktails">Champagne Cocktails</option>
-                    <option value="Highballs">Highballs</option>
-                    <option value="Juleps and Smashes">Juleps and Smashes</option>
-                    <option value="Hot Drinks">Hot Drinks</option>
-                    <option value="Flips and Nogs">Flips and Nogs</option>
-                    <option value="Tiki Cocktails">Tiki Cocktails</option>
-                    <option value="Punches">Punches</option>
-                    <option value="Orphans">Orphans</option>
-                </select>
-            </div>
-            <!-- Notes field -->
-            <div class="form-group mb-3">
-                {{ form.notes.label(class="form-control-label") }}
-                {{ form.notes(class="form-control", placeholder="Any additional information", rows="3", autocomplete="off") }}
-            </div>
-            <!-- Submit button / open amounts modal -->
-            <div class="form-group mb-3 text-center">
-                {{ form.submit(class="btn btn-primary mt-3") }}
-            </div>
-        </form>
-    </div>
+    <!-- Add cocktail form -->
+    <form action="/addcocktail" id="amountsForm" class="item-center center-form" method="post" novalidate>
+        {{ form.csrf_token }}
+        <!-- name field -->
+        <div class="form-group mb-3">
+            {{ form.name.label(class="form-control-label") }}
+            {% if form.name.errors %}
+                    {{ form.name(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+            {% else %}
+                {{ form.name(class="form-control", autocomplete="off") }}
+            {% endif %} 
+        </div>
+            <!--ingredients list -->
+        <div class="form-group">
+            {{ form.ingredient.label(class="form-control-label", autocomplete="off") }}
+            <ul id="dynamicSelects">
+                <li id="labels" class="row exclude-item">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4">
+                        <strong>Amount (with units)</strong>
+                    </div>
+                    <div class="col">
+                        <strong>Ingredient</strong>
+                    </div>
+                </li>
+                <!-- first ingredient -->
+                <li id="q0" class="row exclude-item">
+                    <div id="temp" class="col-md-1"></div>
+                    <div class="col-md-4">
+                        <input type="text" autocomplete="off" class="form-control amountlist" name="amount" placeholder="e.g. 1 1/2 ounces">
+                    </div>
+                    <div class="col">
+                        <input type="text" autocomplete="off" class="form-control ingredientlist mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
+                        <!-- ingredient search table -->
+                        <table id ="searchtable" class="table table-sm table-borderless table-hover">
+                            <tbody id="results">
+                        </table>
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+        <!-- Create new ingredient button -->
+        <div class="mb-3 text-center">
+            <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">Create New Ingredient</button>
+        </div>
+        <!-- Build instructions field -->
+        <div class="form-group mb-3">
+            {{ form.build.label(class="form-control-label") }}
+            {{ form.build(class="form-control", placeholder="Build instructions, garnish, glass, etc...", rows="3", autocomplete="off") }}
+        </div>
+        <!-- Source field -->
+        <div class="form-group mb-3">
+            {{ form.source.label(class="form-control-label") }}
+            {{ form.source(class="form-control", autocomplete="off") }}
+        </div>
+        <!-- Family field -->
+        <div class="mb-3 form-group">
+            {{ form.family.label(class="form-control-label") }}  <i class="fa-solid fa-circle-info" data-bs-toggle="modal" data-bs-target="#familyModal"></i>
+            <select name="family" class="form-select" id="family">
+                <option value="" disabled selected>--Family--</option>
+                <option value="Old Fashioneds">Old Fashioneds</option>
+                <option value="Sours">Sours</option>
+                <option value="Vermouth Cocktails">Vermouth Cocktails</option>
+                <option value="Amaro Cocktails">Amaro Cocktails</option>
+                <option value="Duos and Trios">Duos and Trios</option>
+                <option value="Champagne Cocktails">Champagne Cocktails</option>
+                <option value="Highballs">Highballs</option>
+                <option value="Juleps and Smashes">Juleps and Smashes</option>
+                <option value="Hot Drinks">Hot Drinks</option>
+                <option value="Flips and Nogs">Flips and Nogs</option>
+                <option value="Tiki Cocktails">Tiki Cocktails</option>
+                <option value="Punches">Punches</option>
+                <option value="Orphans">Orphans</option>
+            </select>
+        </div>
+        <!-- Notes field -->
+        <div class="form-group mb-3">
+            {{ form.notes.label(class="form-control-label") }}
+            {{ form.notes(class="form-control", placeholder="Any additional information", rows="3", autocomplete="off") }}
+        </div>
+        <!-- Submit button / open amounts modal -->
+        <div class="form-group mb-3 text-center">
+            {{ form.submit(class="btn btn-primary mt-3") }}
+        </div>
+    </form>
+
 
 
     <!-- Modal for adding ingredient -->
