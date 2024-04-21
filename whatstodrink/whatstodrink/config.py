@@ -1,6 +1,7 @@
 import os
 
-class Config:
+class DevelopmentConfig:
+
     SESSION_PERMANENT = False
     SESSION_TYPE = 'filesystem'
     SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -10,6 +11,7 @@ class Config:
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    DEBUG = True
 
 class ProductionConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -18,3 +20,8 @@ class ProductionConfig:
     SQLALCHEMY_DATABASE_URI = 'mysql://williamsjag.mysql.pythonanywhere-services.com/williamsjag$whatstodrink'
     SQLALCHEMY_POOL_RECYCLE = 299
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MAIL_SERVER = 'smtp.mail.me.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')

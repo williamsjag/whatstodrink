@@ -1,12 +1,11 @@
 from flask import flash, redirect, render_template, request, session, url_for, Blueprint, current_app
 from whatstodrink.__init__ import db
-from sqlalchemy import select, or_, update
+from sqlalchemy import select, or_, update, text
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.models import User, CommonIngredient, CommonStock
-from whatstodrink.users.forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm
+from whatstodrink.users.forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm, SettingsForm
 from flask_login import login_user, current_user, logout_user, login_required
 from whatstodrink.helpers import send_reset_email
-from whatstodrink.config import Config
 
 
 users = Blueprint('users', __name__)
@@ -108,7 +107,6 @@ def login():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         next_page = request.args.get('next')
-        print(f"{next_page}")
         return render_template("login.html", form=form, next_page=next_page)
 
 
@@ -126,8 +124,38 @@ def logout():
 @users.route("/account")
 @login_required
 def account():
+    form = SettingsForm()
 
-    return render_template("account.html")
+    if request.method == "GET":
+        defaults = session.get("defaults")
+        if defaults is None:
+            session['defaults'] = current_user.default_cocktails
+            defaults = session['defaults']
+        return render_template(
+            "account.html", defaults=defaults, form=form
+        )
+    elif request.method == "POST":
+        cocktails = request.form.get('cocktailswitch')
+
+        if cocktails:
+            # Update database defaults for next login
+            cocktailupdate = text("UPDATE users SET default_cocktails = 'on' WHERE id = :user_id")
+            db.session.execute(cocktailupdate, {"user_id": current_user.id})
+            db.session.commit()
+
+            # Update current session defaults
+            session["defaults"] = 'on'
+
+        else:
+            # Update database defaults for next login
+            cocktailupdate = text("UPDATE users SET default_cocktails = '' WHERE id = :user_id")
+            db.session.execute(cocktailupdate, {"user_id": current_user.id})
+            db.session.commit()
+
+            # Update current session defaults
+            session["defaults"] = ''
+
+        return render_template("account.html", form=form)
 
 
 
@@ -140,8 +168,6 @@ def reset_request():
 
     if form.validate_on_submit():
         user = db.session.scalar(select(User).where(User.email == form.email.data))
-        print(f"{user}")
-        print(f"{Config.MAIL_PASSWORD}")
         if user:
             send_reset_email(user)
             flash('An email has been sent with instructions to reset your password.', 'primary')

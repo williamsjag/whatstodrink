@@ -40,8 +40,6 @@ class ModifyCocktailForm(FlaskForm):
 
     def validate_name(self, name):
         oldName = db.session.scalar(select(Cocktail.name).where(Cocktail.id == self.id.data).where(Cocktail.user_id == current_user.id))
-        print(f"'{name.data}'")
-        print(f"'{oldName}'")
         if name.data != oldName:
             newNameUser = select(Cocktail.name).where(Cocktail.name == name.data).where(Cocktail.user_id == current_user.id)
             newNameCommon = select(CommonCocktail.name).where(CommonCocktail.name == name.data)

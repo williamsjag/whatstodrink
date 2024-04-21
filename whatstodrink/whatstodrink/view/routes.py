@@ -218,7 +218,6 @@ def missingoneall():
                         GROUP BY ci.id
                           """)
     missing_ingredients = db.session.execute(missingquery, {"user_id": current_user.id}).fetchall()
-    print(f"{missing_ingredients}")
       
     amountsquery = text("""
                         SELECT ca.cocktail_id, ca.ingredient_id, ca.amount, ca.ingredient_source, cc.name
@@ -316,7 +315,6 @@ def missingoneuser():
                         WHERE user_id = :user_id
                         """)
     amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
-    print(f"{amounts}")
 
     return render_template(
         "missingoneuser.html", cocktails=cocktails, amounts=amounts, missing_ingredients=missing_ingredients

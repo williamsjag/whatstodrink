@@ -1,7 +1,6 @@
 from flask import flash, redirect, render_template, request, url_for, Blueprint
 from whatstodrink.__init__ import db
 from sqlalchemy import select, union, text, update
-from whatstodrink.helpers import apology
 from whatstodrink.models import Cocktail, Ingredient, CommonCocktail, CommonIngredient, CommonStock
 from whatstodrink.modify.forms import ManageIngredientsForm, ModifyIngredientForm, DeleteForm, ModifyCocktailForm
 from whatstodrink.view.forms import ViewIngredientForm
@@ -97,7 +96,6 @@ def manageingredients():
                     db.session.commit()
                 except Exception as e:
                     db.session.rollback()
-                    print(f"An error occured: {e}")
 
                 
         return redirect(url_for(
@@ -235,10 +233,6 @@ def modify_ingredient():
             if ingredient:
 
                 return render_template("modifyingredient.html", ingredient=ingredient[0], types=types, form=form)
-            
-            else:
-
-                return apology("Common Ingredients cannot be modified yet")
         
         elif "deleteconfirmed" in request.form:
 
@@ -325,7 +319,6 @@ def modifycocktail():
         
         elif "submitbutton" in request.form:
 
-            print(f"{form}")
             if form.validate_on_submit():
 
                 # update cocktail in db
@@ -342,7 +335,7 @@ def modifycocktail():
                 rows = db.session.scalar(rowsquery, {"name": form.name.data, "user_id": current_user.id})
 
                 if rows and rows != form.name.data:
-                    return apology("You already have a cocktail by that name", 403)
+                    return 403
                 
                 else:
 
@@ -424,9 +417,7 @@ def modifycocktail():
                     flash("Cocktail modified", "primary")
                     return redirect(url_for("view.viewcocktails"))    
             else:
-                for field, errors in form.errors.items():
-                    for error in errors:
-                        print(f"Error: {field}: {error}")
+                
                 cocktail = db.session.execute(select(Cocktail).where(Cocktail.id == form.id.data).where(Cocktail.user_id == current_user.id)).fetchone()[0]
 
                 amountsquery = text("SELECT ingredient_id, amount, ingredient_source, sequence FROM amounts WHERE cocktail_id = :cocktail_id ORDER BY sequence ASC")

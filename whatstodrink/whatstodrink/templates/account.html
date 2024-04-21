@@ -5,6 +5,21 @@
 {% endblock %}
 
 {% block main %}
-<h1>{{ current_user.username }}</h1>
-<p>{{ current_user.id }}</p>
+<div class="center-accordion text-center">
+    <h1 class="blue mb-3"><strong>{{ current_user.username }}</strong></h1>
+    <div class="homeitem">
+        <h2>Settings</h2>
+        <form class="list-group">
+            {{ form.csrf_token }}
+            <label class="list-group-item form-switch" for="flexSwitchCheckChecked">Enable default cocktails:
+              {% if defaults %}
+                <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked hx-post="/" hx-trigger="click">
+              {% else %}
+                <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" hx-post="/" hx-trigger="click">
+              {% endif %}
+            </label>
+          </form>
+    </div>
+</div>
+
 {% endblock %}

@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
-from whatstodrink.config import Config
+from whatstodrink.config import DevelopmentConfig, ProductionConfig
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -15,9 +15,9 @@ mail = Mail()
 
 db = SQLAlchemy()
 
-def create_app(config_class=Config):
+def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(DevelopmentConfig)
 
     from whatstodrink.users.routes import users
     from whatstodrink.main.routes import main

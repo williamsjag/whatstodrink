@@ -61,3 +61,5 @@ class ResetPasswordForm(FlaskForm):
     submit = SubmitField('Reset Password')
 
 
+class SettingsForm(FlaskForm):
+    DefaultCocktails = StringField('Enable')
