@@ -282,7 +282,7 @@ def modifycocktail():
                                     """)
             ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "cocktail_id": cocktail.id}).fetchall()
 
-            form.family.choices = [(f, f) for f in db.session.scalars(union((select(CommonCocktail.family.distinct())), (select(Cocktail.family.distinct())))).fetchall()]
+    
             family = cocktail.family
             form.family.data = family
             
