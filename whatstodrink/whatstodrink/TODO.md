@@ -131,6 +131,7 @@ Made ingredient list .9em to save space. Still need to deal with runover.
 ## In Progress
 
 BUG- lots of database rollback errors
+bug: add ingredient returns populated
 Bug- add cocktail-create new ingredient focuses the close button on open
 Bug- edit cocktail redirects to errors page with same name and something else edited.
 bug: After creating a new ingredient in add cocktail cursor focus drops

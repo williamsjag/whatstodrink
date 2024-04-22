@@ -27,8 +27,9 @@ def register():
             hash = generate_password_hash(
                 form.password.data, method="pbkdf2", salt_length=16
             )
-            newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails='on')
-            db.session.add(newuser)
+            with db.session.begin():
+                newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails='on')
+                db.session.add(newuser)
             try:
                 db.session.commit()
             except exc.SQLAlchemyError as e:
@@ -96,7 +97,8 @@ def login():
                     # if not, insert a default
                     if not result:
                         newingredient = CommonStock(ingredient_id=ingredient, user_id = current_user.id, stock='')
-                        db.session.add(newingredient)
+                        with db.session.begin():
+                            db.session.add(newingredient)
                         try:
                             db.session.commit()
                         except exc.SQLAlchemyError as e:
@@ -151,12 +153,12 @@ def account():
     
     elif request.method == "POST":
         cocktails = request.form.get('cocktailswitch')
-        print(f"cocktails: {cocktails}")
-
+        
         if cocktails:
             # Update database defaults for next login
             cocktailupdate = text("UPDATE users SET default_cocktails = 'on' WHERE id = :user_id")
-            db.session.execute(cocktailupdate, {"user_id": current_user.id})
+            with db.session.begin():
+                db.session.execute(cocktailupdate, {"user_id": current_user.id})
             try:
                 db.session.commit()
             except exc.SQLAlchemyError as e:
@@ -171,7 +173,8 @@ def account():
         else:
             # Update database defaults for next login
             cocktailupdate = text("UPDATE users SET default_cocktails = '' WHERE id = :user_id")
-            db.session.execute(cocktailupdate, {"user_id": current_user.id})
+            with db.session.begin():
+                db.session.execute(cocktailupdate, {"user_id": current_user.id})
             try:
                 db.session.commit()
             except exc.SQLAlchemyError as e:
@@ -217,19 +220,21 @@ def reset_token(token):
             hash = generate_password_hash(
                 form.password.data, method="pbkdf2", salt_length=16
             )
-            db.session.execute(
-                update(User).where(User.id == user)
-                .values(hash=hash)
-            )
+            with db.session.begin():
+                db.session.execute(
+                    update(User).where(User.id == user)
+                    .values(hash=hash)
+                )
             try:
                 db.session.commit()
+                flash('Your password has been updated! You are now able to log in', 'primary')
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
             finally:
                 db.session.close()
 
-            flash('Your password has been updated! You are now able to log in', 'primary')
+            
             
             return redirect(url_for('users.login'))
 

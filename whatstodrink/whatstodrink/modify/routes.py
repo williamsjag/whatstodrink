@@ -86,13 +86,11 @@ def manageingredients():
                 table_name = "common_stock" if ingredient_source == "common" else "ingredients"
                 id_column = "ingredient_id" if ingredient_source == "common" else "id"
                 stock = 1 if ingredient_stock == 'on' else 0
-
-                try:
+                with db.session.begin():
                     sql_query = text(f"UPDATE {table_name} SET stock = :stock WHERE {id_column} = :ingredient_id AND user_id = :user_id")
-                
                     # Update the stock value
                     db.session.execute(sql_query, {"stock": stock, "ingredient_id": ingredient_id, "user_id": current_user.id})
-
+                try:
                     db.session.commit()
                 except Exception as e:
                     db.session.rollback()
@@ -130,7 +128,8 @@ def modify_ingredient():
                 shortname = form.short_name.data
             
                 updatequery = text("UPDATE ingredients SET type = :type, notes = :notes, name = :name, short_name = :short_name WHERE id = :id AND user_id = :user_id")
-                db.session.execute(updatequery,  {"id": id, "type": newtype, "notes": newnotes, "name": newname, "short_name": shortname, "user_id": current_user.id})
+                with db.session.begin():
+                    db.session.execute(updatequery,  {"id": id, "type": newtype, "notes": newnotes, "name": newname, "short_name": shortname, "user_id": current_user.id})
                 try:
                     db.session.commit()
                 except exc.SQLAlchemyError as e:
@@ -178,12 +177,12 @@ def modify_ingredient():
                         recipe += f"{amount.amount} {ingredient.name}\n"
                     
                     ingredient_list = ', '.join([row.short_name if row.short_name else row.name for row in ingredients])
-                    
-                    db.session.execute(
-                        update(Cocktail).where(Cocktail.id == cocktail)
-                        .where(Cocktail.user_id == current_user.id)
-                        .values(recipe=recipe, 
-                                ingredient_list=ingredient_list))
+                    with db.session.begin():
+                        db.session.execute(
+                            update(Cocktail).where(Cocktail.id == cocktail)
+                            .where(Cocktail.user_id == current_user.id)
+                            .values(recipe=recipe, 
+                                    ingredient_list=ingredient_list))
                     try:
                         db.session.commit()
                     except exc.SQLAlchemyError as e:
@@ -255,16 +254,18 @@ def modify_ingredient():
             ingredient_delete = form.id.data
 
             deletequery = text("DELETE FROM ingredients WHERE id = :id AND user_id = :user_id")
-            db.session.execute(deletequery, {"id": ingredient_delete, "user_id": current_user.id})
+            with db.session.begin():
+                db.session.execute(deletequery, {"id": ingredient_delete, "user_id": current_user.id})
             try:
                 db.session.commit()
+                flash("Ingredient Deleted", "warning")
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
             finally:
                 db.session.close()
 
-            flash("Ingredient Deleted", "warning")
+            
             return redirect(url_for("modify.manageingredients"))
         
         elif "close" in request.form:
@@ -322,18 +323,20 @@ def modifycocktail():
                        (SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id LIMIT 1) \
                        DELETE FROM amounts \
                        WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)")
-            db.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": current_user.id})
             cocktaildeletequery = text("DELETE FROM cocktails WHERE name = :name AND user_id = :user_id")
-            db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": current_user.id})
+            with db.session.begin():
+                db.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": current_user.id})
+                db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": current_user.id})
             try:
                 db.session.commit()
+                flash('Cocktail Deleted', "warning")
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
             finally:
                 db.session.close()
             
-            flash('Cocktail Deleted', "warning")
+            
             return redirect(url_for("view.viewcocktails"))
 
         elif "cancel" in request.form:
@@ -363,7 +366,8 @@ def modifycocktail():
 
                     # clear amounts for cocktail
                     clearamounts = text("DELETE FROM amounts WHERE cocktail_id = :cocktail_id AND user_id = :user_id")
-                    db.session.execute(clearamounts, {"cocktail_id": form.id.data, "user_id": current_user.id})
+                    with db.session.begin():
+                        db.session.execute(clearamounts, {"cocktail_id": form.id.data, "user_id": current_user.id})
                     try:
                         db.session.commit()
                     except exc.SQLAlchemyError as e:
@@ -392,7 +396,8 @@ def modifycocktail():
                         # write into database
                         insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source, sequence) \
                                 VALUES(:cocktail_id, :ingredient_id, :amount, :user_id, :ingredient_source, :sequence)")
-                        db.session.execute(insertquery, {"cocktail_id": form.id.data, "ingredient_id": ingredient_id, "amount": dbamount, "user_id": current_user.id, "ingredient_source": ingredient_source, "sequence": (i + 1)})
+                        with db.session.begin():
+                            db.session.execute(insertquery, {"cocktail_id": form.id.data, "ingredient_id": ingredient_id, "amount": dbamount, "user_id": current_user.id, "ingredient_source": ingredient_source, "sequence": (i + 1)})
                         try:
                             db.session.commit()
                         except exc.SQLAlchemyError as e:
@@ -435,26 +440,26 @@ def modifycocktail():
                     ingredient_list = ', '.join([row.short_name if row.short_name else row.name for row in reciperesults])
                     
                     # Update cocktail in db
-                    db.session.execute(
-                        update(Cocktail).where(Cocktail.id == form.id.data)
-                        .where(Cocktail.user_id == current_user.id)
-                        .values(name=form.name.data, 
-                                build=form.build.data, 
-                                source=form.source.data, 
-                                family=form.family.data, 
-                                notes=form.notes.data, 
-                                recipe=recipe, 
-                                ingredient_list=ingredient_list))
+                    with db.session.begin():
+                        db.session.execute(
+                            update(Cocktail).where(Cocktail.id == form.id.data)
+                            .where(Cocktail.user_id == current_user.id)
+                            .values(name=form.name.data, 
+                                    build=form.build.data, 
+                                    source=form.source.data, 
+                                    family=form.family.data, 
+                                    notes=form.notes.data, 
+                                    recipe=recipe, 
+                                    ingredient_list=ingredient_list))
                     try:
                         db.session.commit()
+                        flash("Cocktail modified", "primary")
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
                     finally:
                         db.session.close()
-
-                    
-                    flash("Cocktail modified", "primary")
+                   
                     return redirect(url_for("view.viewcocktails"))    
             else:
                 
