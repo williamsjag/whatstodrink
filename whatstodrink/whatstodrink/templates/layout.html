@@ -63,7 +63,7 @@
                 </div>
             </div>
         </nav>
-
+        <div class="center-accordion">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -73,7 +73,7 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
+        </div>
         <main class="container py-5">
             {% block main %}{% endblock %}
         </main>
