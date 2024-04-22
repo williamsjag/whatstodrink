@@ -93,8 +93,8 @@ def manageingredients():
                     db.session.commit()
                 except Exception as e:
                     db.session.rollback()
-                finally:
-                    db.session.close()
+                
+            
 
                 
         return redirect(url_for(
@@ -133,9 +133,7 @@ def modify_ingredient():
                 except exc.SQLAlchemyError as e:
                     db.session.rollback()
                     print("Transaction rolled back due to error:", e)
-                finally:
-                    db.session.close()   
-
+               
                 # Check for cocktails using this ingredient
                 query = text("""
                             SELECT cocktail_id
@@ -185,8 +183,7 @@ def modify_ingredient():
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
-                    finally:
-                        db.session.close()
+                    
 
                 flash("Ingredient Modified", "primary")
                 return redirect(url_for('modify.manageingredients'))
@@ -258,8 +255,7 @@ def modify_ingredient():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()
+            
 
             
             return redirect(url_for("modify.manageingredients"))
@@ -328,8 +324,7 @@ def modifycocktail():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()
+          
             
             
             return redirect(url_for("view.viewcocktails"))
@@ -368,9 +363,7 @@ def modifycocktail():
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
-                    finally:
-                        db.session.close()
-
+                 
                     # for each li...
                     for i in range(len(amounts)):
                         # get values for amounts and ingredients
@@ -397,8 +390,7 @@ def modifycocktail():
                         except exc.SQLAlchemyError as e:
                             db.session.rollback()
                             print("Transaction rolled back due to error:", e)
-                        finally:
-                            db.session.close()
+                       
 
                     # Generate text for ingredients and ingredient_list
                 
@@ -450,8 +442,7 @@ def modifycocktail():
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
-                    finally:
-                        db.session.close()
+                 
                    
                     return redirect(url_for("view.viewcocktails"))    
             else:
