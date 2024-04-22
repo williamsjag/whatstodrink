@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, request, url_for, Blueprint
 from whatstodrink.__init__ import db
-from sqlalchemy import select, text, update
+from sqlalchemy import select, text, update, exc
 from whatstodrink.models import Cocktail, Ingredient
 from whatstodrink.create.forms import AddIngredientForm, AddCocktailForm
 from flask_login import current_user, login_required
@@ -29,7 +29,13 @@ def addingredientmodal2():
                 notes=form.notes.data,
             )
             db.session.add(new_ingredient)
-            db.session.commit()    
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()    
                 
             flash("Ingredient Added", "primary")
             return redirect(url_for("modify.manageingredients"))
@@ -60,7 +66,13 @@ def addingredient():
             # insert new ingredient into db
             newingredient = Ingredient(name=form.name.data, short_name=form.short_name.data, type=form.type.data, notes=form.notes.data, stock=form.stock.data, user_id=current_user.id)
             db.session.add(newingredient)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()
             
             flash('Ingredient Added', 'primary')
 
@@ -115,7 +127,13 @@ def addcocktail():
                                     recipe=recipe
                                     )
             db.session.add(newcocktail)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()
 
             # Find id for new cocktail
             cocktail_id = db.session.scalar(select(Cocktail.id).where(Cocktail.name == form.name.data).where(Cocktail.user_id == current_user.id))
@@ -133,7 +151,13 @@ def addcocktail():
                 id_source = db.session.execute(sourcequery, {"name": ingredient, "user_id": current_user.id}).fetchone()
                 insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id, sequence) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id, :counter)")
                 db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount":amount, "ingredient_source":id_source.source, "user_id": current_user.id, "counter": counter})
-                db.session.commit()
+                try:
+                    db.session.commit()
+                except exc.SQLAlchemyError as e:
+                    db.session.rollback()
+                    print("Transaction rolled back due to error:", e)
+                finally:
+                    db.session.close()
                 counter += 1
 
             recipequery = text("""
@@ -160,7 +184,13 @@ def addcocktail():
                 .where(Cocktail.user_id == current_user.id)
                 .values(ingredient_list=ingredient_list)
             )
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()
 
 
             flash("Cocktail Added", 'primary')
@@ -196,7 +226,13 @@ def addingredientmodal():
                 notes=form.notes.data,
             )
             db.session.add(new_ingredient)
-            db.session.commit()    
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()    
 
             return form.name.data
         # if not validated
