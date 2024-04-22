@@ -1,4 +1,4 @@
-from flask import current_app, url_for
+from flask import current_app, url_for, render_template
 from whatstodrink.__init__ import mail
 from flask_mail import Message
 from threading import Thread
@@ -14,5 +14,7 @@ def send_reset_email(user):
 {url_for('users.reset_token', token=token, _external=True)}
 
 If you did not make this request then simply ignore this email and no changes will occur.
-Cheers!"""
+Cheers,
+WhatsToDrink.com"""
+    msg.html = render_template('email/request_reset.html', user=user, token=token)
     Thread(target=send_async_email, args=(current_app._get_current_object(), msg)).start()
