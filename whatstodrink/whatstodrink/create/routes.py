@@ -28,8 +28,7 @@ def addingredientmodal2():
                 short_name=form.short_name.data,
                 notes=form.notes.data,
             )
-            with db.session.begin():
-                db.session.add(new_ingredient)
+            db.session.add(new_ingredient)
             try:
                 db.session.commit()
                 flash("Ingredient Added", "primary")
@@ -66,8 +65,7 @@ def addingredient():
                 return redirect(url_for("modify.manageingredients"))
             # insert new ingredient into db
             newingredient = Ingredient(name=form.name.data, short_name=form.short_name.data, type=form.type.data, notes=form.notes.data, stock=form.stock.data, user_id=current_user.id)
-            with db.session.begin():
-                db.session.add(newingredient)
+            db.session.add(newingredient)
             try:
                 db.session.commit()
                 flash('Ingredient Added', 'primary')
@@ -127,8 +125,7 @@ def addcocktail():
                                     notes=form.notes.data,
                                     recipe=recipe
                                     )
-            with db.session.begin():
-                db.session.add(newcocktail)
+            db.session.add(newcocktail)
             try:
                 db.session.commit()
             except exc.SQLAlchemyError as e:
@@ -143,56 +140,57 @@ def addcocktail():
             # Add amounts to db
             # get source for ingredients
             counter = 1
-            with db.session.begin():
-                for amount, ingredient in zip(amounts, ingredients):
-                    sourcequery = text("SELECT 'common' AS source, id, short_name, name FROM common_ingredients \
-                        WHERE name = :name \
-                        UNION SELECT \
-                        'user' AS source, id, short_name, name \
-                        FROM ingredients \
-                        WHERE name = :name AND user_id = :user_id")
-                    id_source = db.session.execute(sourcequery, {"name": ingredient, "user_id": current_user.id}).fetchone()
-                    insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id, sequence) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id, :counter)")
-                    db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount":amount, "ingredient_source":id_source.source, "user_id": current_user.id, "counter": counter})
-                    try:
-                        db.session.commit()
-                        counter += 1
-                    except exc.SQLAlchemyError as e:
-                        db.session.rollback()
-                        print("Transaction rolled back due to error:", e)
-
-                recipequery = text("""
-                                    SELECT * FROM (
-                                        SELECT i.name, i.short_name, a.sequence
-                                        FROM ingredients i
-                                        LEFT JOIN amounts a ON i.id = a.ingredient_id
-                                        WHERE a.cocktail_id = :cocktail AND a.user_id = :user_id
-                                        
-                                        UNION
-                                        
-                                        SELECT ci.name, ci.short_name, aa.sequence
-                                        FROM common_ingredients ci
-                                        LEFT JOIN amounts aa ON ci.id = aa.ingredient_id
-                                        WHERE aa.cocktail_id = :cocktail AND aa.user_id = :user_id
-                                    ) AS combined_ingredients
-                                    ORDER BY sequence ASC; 
-                                    """)
-                reciperesults = db.session.execute(recipequery, {"user_id": current_user.id, "cocktail": cocktail_id}).fetchall()
-                ingredient_list = ', '.join([row.short_name if row.short_name else row.name for row in reciperesults])
-                
-                db.session.execute(
-                    update(Cocktail).where(Cocktail.id == cocktail_id)
-                    .where(Cocktail.user_id == current_user.id)
-                    .values(ingredient_list=ingredient_list)
-                )
+            for amount, ingredient in zip(amounts, ingredients):
+                sourcequery = text("SELECT 'common' AS source, id, short_name, name FROM common_ingredients \
+                    WHERE name = :name \
+                    UNION SELECT \
+                    'user' AS source, id, short_name, name \
+                    FROM ingredients \
+                    WHERE name = :name AND user_id = :user_id")
+                id_source = db.session.execute(sourcequery, {"name": ingredient, "user_id": current_user.id}).fetchone()
+                insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, ingredient_source, user_id, sequence) VALUES(:cocktail_id, :ingredient_id, :amount, :ingredient_source, :user_id, :counter)")
+                db.session.execute(insertquery, {"cocktail_id": cocktail_id, "ingredient_id": id_source.id, "amount":amount, "ingredient_source":id_source.source, "user_id": current_user.id, "counter": counter})
                 try:
                     db.session.commit()
+                    counter += 1
                 except exc.SQLAlchemyError as e:
                     db.session.rollback()
                     print("Transaction rolled back due to error:", e)
-            
                 finally:
                     db.session.close()
+
+            recipequery = text("""
+                                SELECT * FROM (
+                                    SELECT i.name, i.short_name, a.sequence
+                                    FROM ingredients i
+                                    LEFT JOIN amounts a ON i.id = a.ingredient_id
+                                    WHERE a.cocktail_id = :cocktail AND a.user_id = :user_id
+                                    
+                                    UNION
+                                    
+                                    SELECT ci.name, ci.short_name, aa.sequence
+                                    FROM common_ingredients ci
+                                    LEFT JOIN amounts aa ON ci.id = aa.ingredient_id
+                                    WHERE aa.cocktail_id = :cocktail AND aa.user_id = :user_id
+                                ) AS combined_ingredients
+                                ORDER BY sequence ASC; 
+                                """)
+            reciperesults = db.session.execute(recipequery, {"user_id": current_user.id, "cocktail": cocktail_id}).fetchall()
+            ingredient_list = ', '.join([row.short_name if row.short_name else row.name for row in reciperesults])
+            
+            db.session.execute(
+                update(Cocktail).where(Cocktail.id == cocktail_id)
+                .where(Cocktail.user_id == current_user.id)
+                .values(ingredient_list=ingredient_list)
+            )
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+        
+            finally:
+                db.session.close()
 
 
             flash("Cocktail Added", 'primary')
@@ -227,8 +225,7 @@ def addingredientmodal():
                 short_name=form.short_name.data,
                 notes=form.notes.data,
             )
-            with db.session.begin():
-                db.session.add(new_ingredient)
+            db.session.add(new_ingredient)
             try:
                 db.session.commit()
             except exc.SQLAlchemyError as e:

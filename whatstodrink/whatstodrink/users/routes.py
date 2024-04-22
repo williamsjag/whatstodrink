@@ -27,9 +27,8 @@ def register():
             hash = generate_password_hash(
                 form.password.data, method="pbkdf2", salt_length=16
             )
-            with db.session.begin():
-                newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails='on')
-                db.session.add(newuser)
+            newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails='on')
+            db.session.add(newuser)
             try:
                 db.session.commit()
             except exc.SQLAlchemyError as e:
@@ -97,8 +96,7 @@ def login():
                     # if not, insert a default
                     if not result:
                         newingredient = CommonStock(ingredient_id=ingredient, user_id = current_user.id, stock='')
-                        with db.session.begin():
-                            db.session.add(newingredient)
+                        db.session.add(newingredient)
                         try:
                             db.session.commit()
                         except exc.SQLAlchemyError as e:
@@ -157,8 +155,7 @@ def account():
         if cocktails:
             # Update database defaults for next login
             cocktailupdate = text("UPDATE users SET default_cocktails = 'on' WHERE id = :user_id")
-            with db.session.begin():
-                db.session.execute(cocktailupdate, {"user_id": current_user.id})
+            db.session.execute(cocktailupdate, {"user_id": current_user.id})
             try:
                 db.session.commit()
             except exc.SQLAlchemyError as e:
@@ -173,8 +170,7 @@ def account():
         else:
             # Update database defaults for next login
             cocktailupdate = text("UPDATE users SET default_cocktails = '' WHERE id = :user_id")
-            with db.session.begin():
-                db.session.execute(cocktailupdate, {"user_id": current_user.id})
+            db.session.execute(cocktailupdate, {"user_id": current_user.id})
             try:
                 db.session.commit()
             except exc.SQLAlchemyError as e:
@@ -220,11 +216,10 @@ def reset_token(token):
             hash = generate_password_hash(
                 form.password.data, method="pbkdf2", salt_length=16
             )
-            with db.session.begin():
-                db.session.execute(
-                    update(User).where(User.id == user)
-                    .values(hash=hash)
-                )
+            db.session.execute(
+                update(User).where(User.id == user)
+                .values(hash=hash)
+            )
             try:
                 db.session.commit()
                 flash('Your password has been updated! You are now able to log in', 'primary')
