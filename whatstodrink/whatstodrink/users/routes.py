@@ -34,9 +34,7 @@ def register():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()
-
+           
             flash("Your account has been created! You are now able to log in", 'primary')
 
             return redirect(url_for('users.login'))
@@ -102,8 +100,7 @@ def login():
                         except exc.SQLAlchemyError as e:
                             db.session.rollback()
                             print("Transaction rolled back due to error:", e)
-                        finally:
-                            db.session.close()
+                        
 
                 # Redirect user to home page
                 flash("Successfully logged in, welcome {}!".format(user.username), 'primary')
@@ -161,8 +158,7 @@ def account():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()
+           
 
             # Update current session defaults
             session["defaults"] = 'on'
@@ -176,9 +172,7 @@ def account():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()
-
+           
             # Update current session defaults
             session["defaults"] = ''
 
@@ -226,8 +220,7 @@ def reset_token(token):
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()
+           
 
             
             

@@ -35,8 +35,7 @@ def addingredientmodal2():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()    
+        
                 
             return redirect(url_for("modify.manageingredients"))
         else:
@@ -72,8 +71,7 @@ def addingredient():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()
+          
             
             return redirect(url_for(
                 "create.addingredient"
@@ -131,8 +129,7 @@ def addcocktail():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()
+          
 
             # Find id for new cocktail
             cocktail_id = db.session.scalar(select(Cocktail.id).where(Cocktail.name == form.name.data).where(Cocktail.user_id == current_user.id))
@@ -156,8 +153,7 @@ def addcocktail():
                 except exc.SQLAlchemyError as e:
                     db.session.rollback()
                     print("Transaction rolled back due to error:", e)
-                finally:
-                    db.session.close()
+           
 
             recipequery = text("""
                                 SELECT * FROM (
@@ -189,9 +185,7 @@ def addcocktail():
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
         
-            finally:
-                db.session.close()
-
+       
 
             flash("Cocktail Added", 'primary')
             return redirect(url_for(
@@ -231,9 +225,7 @@ def addingredientmodal():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            finally:
-                db.session.close()    
-
+          
             return form.name.data
         # if not validated
         else:
