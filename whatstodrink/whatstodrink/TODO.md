@@ -124,11 +124,13 @@ Fixed cancel button in areyousurecocktail to close modal to keep modifycocktailf
 Posted v 1.0 online!
 Fixed another bug in whatsmissing where extra ingredients were being shown.
 Fixed bug in settings not working due to moved route and hx-post
+Added no cocktails indicator when a view is empty
 
 
 ## In Progress
 
-No cocktails indicator if nothing
+Bug- edit cocktail (maybe error too?) fam list doesn't include flips- applies to flip out
+Bug- edit cocktail redirects to errors page with same name and something else edited.
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
 ## Todo 
