@@ -125,13 +125,17 @@ Posted v 1.0 online!
 Fixed another bug in whatsmissing where extra ingredients were being shown.
 Fixed bug in settings not working due to moved route and hx-post
 Added no cocktails indicator when a view is empty
+Made ingredient list .9em to save space. Still need to deal with runover.
 
 
 ## In Progress
 
-Bug- edit cocktail (maybe error too?) fam list doesn't include flips- applies to flip out
+BUG- lots of database rollback errors
+Bug- add cocktail-create new ingredient focuses the close button on open
 Bug- edit cocktail redirects to errors page with same name and something else edited.
 bug: After creating a new ingredient in add cocktail cursor focus drops
+
+have amounts on new cocktail trim white space at the end
 
 ## Todo 
 
@@ -149,3 +153,5 @@ recipe share page that opens a url like /cocktails-userid-cocktailid.html that c
 make navbar active class work
 
 Search Field for cocktail views
+
+Reports view- number of cocktails per ingredient, searchable using cocktail searches

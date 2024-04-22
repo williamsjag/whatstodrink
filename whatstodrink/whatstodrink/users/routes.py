@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, request, session, url_for, Blueprint, current_app
 from whatstodrink.__init__ import db
-from sqlalchemy import select, or_, update, text
+from sqlalchemy import select, or_, update, text, exc
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.models import User, CommonIngredient, CommonStock
 from whatstodrink.users.forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm, SettingsForm
@@ -29,7 +29,13 @@ def register():
             )
             newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails='on')
             db.session.add(newuser)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()
 
             flash("Your account has been created! You are now able to log in", 'primary')
 
@@ -91,7 +97,13 @@ def login():
                     if not result:
                         newingredient = CommonStock(ingredient_id=ingredient, user_id = current_user.id, stock='')
                         db.session.add(newingredient)
-                        db.session.commit()
+                        try:
+                            db.session.commit()
+                        except exc.SQLAlchemyError as e:
+                            db.session.rollback()
+                            print("Transaction rolled back due to error:", e)
+                        finally:
+                            db.session.close()
 
                 # Redirect user to home page
                 flash("Successfully logged in, welcome {}!".format(user.username), 'primary')
@@ -145,7 +157,13 @@ def account():
             # Update database defaults for next login
             cocktailupdate = text("UPDATE users SET default_cocktails = 'on' WHERE id = :user_id")
             db.session.execute(cocktailupdate, {"user_id": current_user.id})
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()
 
             # Update current session defaults
             session["defaults"] = 'on'
@@ -154,7 +172,13 @@ def account():
             # Update database defaults for next login
             cocktailupdate = text("UPDATE users SET default_cocktails = '' WHERE id = :user_id")
             db.session.execute(cocktailupdate, {"user_id": current_user.id})
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()
 
             # Update current session defaults
             session["defaults"] = ''
@@ -197,7 +221,13 @@ def reset_token(token):
                 update(User).where(User.id == user)
                 .values(hash=hash)
             )
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.SQLAlchemyError as e:
+                db.session.rollback()
+                print("Transaction rolled back due to error:", e)
+            finally:
+                db.session.close()
 
             flash('Your password has been updated! You are now able to log in', 'primary')
             
