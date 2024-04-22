@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from sqlalchemy.exc import OperationalError
 
 errors = Blueprint('errors', __name__)
 
@@ -14,3 +15,7 @@ def error_403(error):
 @errors.app_errorhandler(500)
 def error_500(error):
     return render_template('errors/500.html'), 500
+
+@errors.app_errorhandler(OperationalError)
+def error_500(error):
+    return render_template('errors/database_error.html'), 500
