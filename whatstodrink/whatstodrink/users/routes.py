@@ -2,7 +2,7 @@ from flask import flash, redirect, render_template, request, session, url_for, B
 from whatstodrink.__init__ import db
 from sqlalchemy import select, or_, update, text, exc
 from werkzeug.security import check_password_hash, generate_password_hash
-from whatstodrink.models import User, CommonIngredient, CommonStock
+from whatstodrink.models import User, Ingredient, Stock
 from whatstodrink.users.forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm, SettingsForm
 from flask_login import login_user, current_user, logout_user, login_required
 from whatstodrink.helpers import send_reset_email
@@ -27,16 +27,15 @@ def register():
             hash = generate_password_hash(
                 form.password.data, method="pbkdf2", salt_length=16
             )
-            newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails='on')
+            newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails=1)
             db.session.add(newuser)
             try:
                 db.session.commit()
+                flash("Your account has been created! You are now able to log in", 'primary')
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
            
-            flash("Your account has been created! You are now able to log in", 'primary')
-
             return redirect(url_for('users.login'))
             
         else:
@@ -83,17 +82,17 @@ def login():
                 session["defaults"] = user.default_cocktails
 
                 # make sure user has stock values for all common ingredients on login
-                query = select(CommonIngredient.id)
+                query = select(Ingredient.id).where(Ingredient.shared == 1)
                 common_ingredients = db.session.scalars(query).all()
 
                 # get all ids in common_ingredients
                 for ingredient in common_ingredients:
                     # check if user has ingredient in common_stock
-                    result = db.session.scalars(select(CommonStock.ingredient_id).where(CommonStock.user_id == current_user.id).where(CommonStock.ingredient_id == ingredient)).first()
+                    result = db.session.scalars(select(Stock.ingredient_id).where(Stock.user_id == current_user.id).where(Stock.ingredient_id == ingredient)).first()
 
                     # if not, insert a default
                     if not result:
-                        newingredient = CommonStock(ingredient_id=ingredient, user_id = current_user.id, stock='')
+                        newingredient = Stock(ingredient_id=ingredient, user_id = current_user.id, stock=0)
                         db.session.add(newingredient)
                         try:
                             db.session.commit()

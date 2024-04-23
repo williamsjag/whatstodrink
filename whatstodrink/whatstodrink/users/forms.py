@@ -62,4 +62,4 @@ class ResetPasswordForm(FlaskForm):
 
 
 class SettingsForm(FlaskForm):
-    DefaultCocktails = StringField('Enable')
+    DefaultCocktails = BooleanField('Enable')

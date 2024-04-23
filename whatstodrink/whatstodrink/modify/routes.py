@@ -1,7 +1,7 @@
 from flask import flash, redirect, render_template, request, url_for, Blueprint
 from whatstodrink.__init__ import db
 from sqlalchemy import select, union, text, update, exc
-from whatstodrink.models import Cocktail, Ingredient, CommonCocktail, CommonIngredient, CommonStock
+from whatstodrink.models import Cocktail, Ingredient
 from whatstodrink.modify.forms import ManageIngredientsForm, ModifyIngredientForm, DeleteForm, ModifyCocktailForm
 from whatstodrink.view.forms import ViewIngredientForm
 from flask_login import current_user, login_required

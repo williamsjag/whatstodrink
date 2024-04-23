@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
-from whatstodrink.models import Ingredient, CommonIngredient, Cocktail, CommonCocktail
+from whatstodrink.models import Ingredient, Cocktail
 from whatstodrink.__init__ import db
 from sqlalchemy import select
 from flask_login import current_user

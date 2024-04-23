@@ -130,7 +130,7 @@ Made ingredient list .9em to save space. Still need to deal with runover.
 
 ## In Progress
 
-BUG- lots of database rollback errors
+BUG- lots of database rollback errors- solved?
 bug: add ingredient returns populated
 Bug- add cocktail-create new ingredient focuses the close button on open
 Bug- edit cocktail redirects to errors page with same name and something else edited.
@@ -146,6 +146,7 @@ Color/Theme/Prettify
 
 implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
     - Add grouping options for cocktail views
+    - blended
 
 recipe share page that opens a url like /cocktails-userid-cocktailid.html that can be created dynamically from the url
     -button to login to save to your cocktails
