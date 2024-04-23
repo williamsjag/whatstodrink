@@ -1,7 +1,8 @@
 from flask import flash, redirect, render_template, request, url_for, Blueprint
 from whatstodrink.__init__ import db
-from sqlalchemy import select, union, text, update, exc
-from whatstodrink.models import Cocktail, Ingredient
+from sqlalchemy import select, union, text, update, exc, or_, delete, outerjoin
+from sqlalchemy.orm import outerjoin
+from whatstodrink.models import Cocktail, Ingredient, Stock, Amount
 from whatstodrink.modify.forms import ManageIngredientsForm, ModifyIngredientForm, DeleteForm, ModifyCocktailForm
 from whatstodrink.view.forms import ViewIngredientForm
 from flask_login import current_user, login_required
@@ -22,49 +23,41 @@ def manageingredients():
         # if filter bar is entered
         if q is not None:
             # Get Types included in search for headers
-            common_query = (
-                select(CommonIngredient.type.distinct())
-                .select_from(CommonIngredient)
-                .outerjoin(CommonStock, (CommonIngredient.id == CommonStock.ingredient_id) & (CommonStock.user_id == current_user.id))
-                .where(CommonIngredient.name.like('%' + q + '%'))
-            )
-            user_query = (
+            query = (
                 select(Ingredient.type.distinct())
                 .select_from(Ingredient)
-                .where((Ingredient.user_id == current_user.id) & (Ingredient.name.like('%' + q + '%')))
-                )
-            query = union(common_query, user_query)
+                .outerjoin(Stock, (Ingredient.id == Stock.ingredient_id) & (Stock.user_id == current_user.id))
+                .where(Ingredient.name.like('%' + q + '%'))
+            )
 
-            types = db.session.execute(query).all()
+            types = db.session.scalars(query).all()
 
             # Get ingredients that match
-            ingredientsquery = text("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
-                                    FROM common_ingredients ci \
-                                    LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = :user_id \
-                                    WHERE ci.name LIKE :q\
-                                    UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock, i.notes \
-                                    FROM ingredients i \
-                                    WHERE i.user_id = :user_id AND i.name LIKE :q\
-                                    ORDER BY name ASC")
-            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "q": '%'+q+'%'}).fetchall()
+            ingredientsquery = (select(Ingredient.id, Ingredient.name, Ingredient.type, Ingredient.short_name, Ingredient.notes, Stock.stock, Ingredient.shared)
+                                .join(Ingredient.stock)
+                                .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
+                                .where(Ingredient.name.like('%' + q + '%'))
+            )
+            
+            ingredients = db.session.execute(ingredientsquery).fetchall()
 
             if request.headers.get('HX-Trigger') == 'search':
                 return render_template("/ingredientstable.html", ingredients=ingredients, types=types, form=form)
             else:
                 return render_template("/manageingredients.html", ingredients=ingredients, types=types, form=form)
             
-        
+        # no search bar, normal page load
         else:
-            typesquery = text("SELECT DISTINCT type FROM common_ingredients")
-            types = db.session.execute(typesquery).fetchall()
-            ingredientsquery = text("SELECT 'common' AS source, ci.id AS ingredient_id, ci.name, ci.type, ci.short_name, cs.stock, ci.notes \
-                                     FROM common_ingredients ci \
-                                     LEFT JOIN common_stock cs ON ci.id = cs.ingredient_id AND cs.user_id = :user_id \
-                                     UNION SELECT 'user' AS source, i.id AS ingredient_id, i.name, i.type, i.short_name, i.stock, i.notes \
-                                     FROM ingredients i \
-                                     WHERE i.user_id = :user_id \
-                                     ORDER BY name ASC")
-            ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id}).fetchall()
+            typesquery = (select(Ingredient.type.distinct())
+                                .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1)))
+            types = db.session.scalars(typesquery).fetchall()
+            on_clause = Ingredient.id == Stock.ingredient_id
+            ingredientsquery = (select(Ingredient.shared, Ingredient.id, Ingredient.name, Ingredient.type, Ingredient.short_name, Ingredient.notes, Stock.stock)
+                                .join(Ingredient.stock)
+                                .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
+                                )
+            ingredients = db.session.execute(ingredientsquery).fetchall()
+
             return render_template(
                 "manageingredients.html", ingredients=ingredients, types=types, form=form
             )
@@ -73,30 +66,26 @@ def manageingredients():
             if key.startswith('stock_'):
                 ingredient_name = key.replace('stock_', '')
                 ingredient_id = request.form.get(f'id_{ingredient_name}')
-                ingredient_source = request.form.get(f'src_{ingredient_name}')
                 ingredient_stock = value
             elif key.startswith('id_'):
                 ingredient_name = key.replace('id_', '')
                 ingredient_id = value
-                ingredient_source = request.form.get(f'src_{ingredient_name}')
                 ingredient_stock = request.form.get(f'stock_{ingredient_name}')
 
-                # set stock for user ingredients
-                # Determine the correct table and column for the update
-                table_name = "common_stock" if ingredient_source == "common" else "ingredients"
-                id_column = "ingredient_id" if ingredient_source == "common" else "id"
+                # set stock for ingredients
                 stock = 1 if ingredient_stock == 'on' else 0
-                sql_query = text(f"UPDATE {table_name} SET stock = :stock WHERE {id_column} = :ingredient_id AND user_id = :user_id")
+                sql_query = (update(Stock)
+                             .where(Stock.ingredient_id == ingredient_id)
+                             .where(Stock.user_id == current_user.id)
+                             .values(stock=stock))
                 # Update the stock value
-                db.session.execute(sql_query, {"stock": stock, "ingredient_id": ingredient_id, "user_id": current_user.id})
+                db.session.execute(sql_query)
                 try:
                     db.session.commit()
                 except Exception as e:
                     db.session.rollback()
                 
             
-
-                
         return redirect(url_for(
             "modify.manageingredients", form=form
         ))
@@ -118,8 +107,6 @@ def modify_ingredient():
 
             if form.validate_on_submit():
             
-                
-
                 id = form.id.data
                 newtype = form.type.data
                 newnotes = form.notes.data
@@ -135,38 +122,25 @@ def modify_ingredient():
                     print("Transaction rolled back due to error:", e)
                
                 # Check for cocktails using this ingredient
-                query = text("""
-                            SELECT cocktail_id
-                            FROM amounts
-                            WHERE ingredient_id = :id AND ingredient_source = 'user'
-                            """)
-                cocktails = db.session.scalars(query, {"id": id}).fetchall()
+                cocktails = db.session.scalars(select(Amount.cocktail_id).where(Amount.ingredient_id == id)).fetchall()
 
                 for cocktail in cocktails:
                     ingredientsq = text("""
                                     SELECT * FROM (
-                                            SELECT i.id, i.name, i.short_name, 'user' AS source, a.sequence
+                                            SELECT i.id, i.name, i.short_name, a.sequence
                                             FROM ingredients i
                                             LEFT JOIN amounts a ON i.id = a.ingredient_id
-                                            WHERE a.ingredient_source = 'user' AND a.cocktail_id = :cocktail AND a.user_id = :user_id
-                                            
-                                            UNION
-                                            
-                                            SELECT ci.id, ci.name, ci.short_name, 'common' AS source, aa.sequence
-                                            FROM common_ingredients ci
-                                            LEFT JOIN amounts aa ON ci.id = aa.ingredient_id
-                                            WHERE aa.ingredient_source = 'common' AND aa.cocktail_id = :cocktail AND aa.user_id = :user_id
-                                        ) AS combined_ingredients
+                                            WHERE a.cocktail_id = :cocktail AND a.user_id = :user_id
+                                            ) AS subquery
                                         ORDER BY sequence ASC;
                                         """)
                     ingredients = db.session.execute(ingredientsq, {"user_id": current_user.id, "cocktail": cocktail}).fetchall()
-                    amountsq = text("""
-                                    SELECT ingredient_id, amount, cocktail_id, sequence
-                                    FROM amounts
-                                    WHERE cocktail_id = :cocktail AND user_id = :user_id
-                                    ORDER BY sequence ASC
-                                    """)
-                    amounts = db.session.execute(amountsq, {"cocktail": cocktail, "user_id": current_user.id}).fetchall()
+                   
+                    amounts = db.session.execute(select(Amount.ingredient_id, Amount.cocktail_id, Amount.amount, Amount.sequence)
+                                                 .where(Amount.cocktail_id == cocktail)
+                                                 .where(Amount.user_id == current_user.id)
+                                                 .order_by(Amount.sequence)
+                    ).fetchall()
 
                     recipe = ""
                     for amount, ingredient in zip(amounts, ingredients):
@@ -180,20 +154,18 @@ def modify_ingredient():
                                 ingredient_list=ingredient_list))
                     try:
                         db.session.commit()
+                        flash("Ingredient Modified", "primary")
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
-                    
-
-                flash("Ingredient Modified", "primary")
+                
                 return redirect(url_for('modify.manageingredients'))
-            
+            # If form not valid
             else:
                 ingredient_id = form.id.data
                 ingredient = db.session.execute(select(Ingredient).where(Ingredient.id == ingredient_id).where(Ingredient.user_id == current_user.id)).fetchone()
                 ingredient = ingredient[0]
-                typesquery = text("SELECT DISTINCT type FROM common_ingredients")
-                types = db.session.execute(typesquery).fetchall()
+                types = db.session.scalars(select(Ingredient.type.distinct())).fetchall()
                 return render_template ("modifyingredientformerrors.html", form=form, types=types, ingredient=ingredient)
 
         elif "deletebutton" in request.form:
@@ -202,13 +174,7 @@ def modify_ingredient():
 
             ingredientId = db.session.scalar(select(Ingredient.id).where(Ingredient.name == ingredient).where(Ingredient.user_id == current_user.id))
 
-            query = text("""
-                         SELECT cocktail_id
-                         FROM amounts
-                         WHERE ingredient_id = :id AND ingredient_source = 'user'
-                         """)
-
-            cocktails = db.session.scalars(query, {"id": ingredientId}).fetchall()
+            cocktails = db.session.scalars(select(Amount.cocktail_id).where(Amount.ingredient_id == ingredientId)).fetchall()
 
             if not cocktails:
 
@@ -229,11 +195,11 @@ def modify_ingredient():
             form = ViewIngredientForm()
 
             name = form.name.data
-            ingredientquery = text("SELECT id, name, type, short_name, notes FROM ingredients WHERE name = :name AND user_id = :user_id")
-            ingredient = db.session.execute(ingredientquery, {"name": name, "user_id": current_user.id}).fetchall()
+            ingredient = db.session.execute(select(Ingredient.id, Ingredient.name, Ingredient.type, Ingredient.short_name, Ingredient.notes)
+                                            .where(Ingredient.name == name)
+                                            .where(Ingredient.user_id == current_user.id)).fetchall()
 
-            typesquery = text("SELECT DISTINCT type FROM common_ingredients")
-            types = db.session.execute(typesquery).fetchall()
+            types = db.session.scalars(select(Ingredient.type.distinct())).fetchall()
 
             form = ModifyIngredientForm()
 
@@ -246,17 +212,18 @@ def modify_ingredient():
             form = DeleteForm()
 
             ingredient_delete = form.id.data
-
-            deletequery = text("DELETE FROM ingredients WHERE id = :id AND user_id = :user_id")
-            db.session.execute(deletequery, {"id": ingredient_delete, "user_id": current_user.id})
+            db.session.execute(delete(Stock)
+                               .where(Stock.ingredient_id == ingredient_delete)
+                               .where(Stock.user_id == current_user.id))
+            db.session.execute(delete(Ingredient)
+                               .where(Ingredient.id == ingredient_delete)
+                               .where(Ingredient.user_id == current_user.id))
             try:
                 db.session.commit()
                 flash("Ingredient Deleted", "warning")
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-            
-
             
             return redirect(url_for("modify.manageingredients"))
         
@@ -274,20 +241,18 @@ def modifycocktail():
     if request.method == "POST":
 
         if "modify" in request.form:
-            cocktailquery = text("SELECT id, name, build, source, family, notes FROM cocktails WHERE name = :name AND user_id = :user_id")
-            cocktail = db.session.execute(cocktailquery, {"name": name, "user_id": current_user.id}).fetchone()
-
-            amountsquery = text("SELECT ingredient_id, amount, ingredient_source, sequence FROM amounts WHERE cocktail_id = :cocktail_id ORDER BY sequence ASC")
-            amounts = db.session.execute(amountsquery, {"cocktail_id": cocktail.id}).fetchall()
-
+            cocktail = db.session.execute(select(Cocktail.id, Cocktail.name, Cocktail.build, Cocktail.source, Cocktail.family, Cocktail.notes)
+                                          .where(Cocktail.name == name)
+                                          .where(Cocktail.user_id == current_user.id)).fetchone()
+            print(f"{cocktail}")
+            amounts = db.session.execute(select(Amount.ingredient_id, Amount.amount, Amount.sequence)
+                                         .where(Amount.cocktail_id == cocktail.id)
+                                         .order_by(Amount.sequence.asc())).fetchall()
+            print(f"{amounts}")
             ingredientsquery = text("""
-                                    SELECT ci.id, ci.name FROM common_ingredients ci
-                                    LEFT JOIN amounts a ON ci.id = a.ingredient_id
-                                    WHERE a.cocktail_id = :cocktail_id AND a.ingredient_source = 'common'
-                                    UNION 
-                                    SELECT i.id, i.name FROM ingredients i 
-                                    LEFT JOIN amounts a ON i.id = a.ingredient_id
-                                    WHERE a.user_id = :user_id AND a.cocktail_id = :cocktail_id AND a.ingredient_source = 'user'
+                                    SELECT id, name FROM ingredients
+                                    LEFT JOIN amounts a ON ingredients.id = a.ingredient_id
+                                    WHERE a.user_id = :user_id AND a.cocktail_id = :cocktail_id
                                     """)
             ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "cocktail_id": cocktail.id}).fetchall()
 
@@ -295,7 +260,7 @@ def modifycocktail():
             family = cocktail.family
             form.family.data = family
             
-            types = db.session.scalars(select(CommonIngredient.type.distinct())).fetchall()
+            types = db.session.scalars(select(Ingredient.type.distinct())).fetchall()
 
             return render_template(
                 "modifycocktail.html", cocktail=cocktail, amounts=amounts, ingredients=ingredients, types=types, form=form
@@ -324,9 +289,7 @@ def modifycocktail():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-          
-            
-            
+
             return redirect(url_for("view.viewcocktails"))
 
         elif "cancel" in request.form:
@@ -365,65 +328,29 @@ def modifycocktail():
                         print("Transaction rolled back due to error:", e)
                  
                     # for each li...
-                    for i in range(len(amounts)):
-                        # get values for amounts and ingredients
-                        dbamount = amounts[i]
-                        dbingredient = ingredients[i]
-                        # get ingredient source
-                        id_sourcequery = text("SELECT 'common' AS source, id FROM common_ingredients \
-                            WHERE name = :name \
-                            UNION SELECT \
-                            'user' AS source, id \
-                            FROM ingredients \
-                            WHERE name = :name AND user_id = :user_id")
-                        id_source = db.session.execute(id_sourcequery, {"name": dbingredient, "user_id": current_user.id}).fetchone()
-                        
-                        ingredient_source = id_source.source
-                        ingredient_id = id_source.id   
-
-                        # write into database
-                        insertquery = text("INSERT INTO amounts (cocktail_id, ingredient_id, amount, user_id, ingredient_source, sequence) \
-                                VALUES(:cocktail_id, :ingredient_id, :amount, :user_id, :ingredient_source, :sequence)")
-                        db.session.execute(insertquery, {"cocktail_id": form.id.data, "ingredient_id": ingredient_id, "amount": dbamount, "user_id": current_user.id, "ingredient_source": ingredient_source, "sequence": (i + 1)})
-                        try:
-                            db.session.commit()
-                        except exc.SQLAlchemyError as e:
-                            db.session.rollback()
-                            print("Transaction rolled back due to error:", e)
-                       
-
-                    # Generate text for ingredients and ingredient_list
-                
-                    recipequery = text("""
-                                    SELECT * FROM (
-                                            SELECT i.id, i.name, i.short_name, 'user' AS source, a.sequence
-                                            FROM ingredients i
-                                            LEFT JOIN amounts a ON i.id = a.ingredient_id
-                                            WHERE a.ingredient_source = 'user' AND a.cocktail_id = :cocktail AND a.user_id = :user_id
-                                            
-                                            UNION
-                                            
-                                            SELECT ci.id, ci.name, ci.short_name, 'common' AS source, aa.sequence
-                                            FROM common_ingredients ci
-                                            LEFT JOIN amounts aa ON ci.id = aa.ingredient_id
-                                            WHERE aa.ingredient_source = 'common' AND aa.cocktail_id = :cocktail AND aa.user_id = :user_id
-                                        ) AS combined_ingredients
-                                        ORDER BY sequence ASC; 
-                                    """)
-                    reciperesults = db.session.execute(recipequery, {"user_id": current_user.id, "cocktail": form.id.data}).fetchall()
-                    amountsq = text("""
-                                    SELECT ingredient_id, amount, cocktail_id, sequence
-                                    FROM amounts
-                                    WHERE cocktail_id = :cocktail AND user_id = :user_id
-                                    ORDER BY sequence ASC
-                                    """)
-                    amountresults = db.session.execute(amountsq, {"cocktail": form.id.data, "user_id": current_user.id}).fetchall()
-
                     recipe = ""
-                    for amount, ingredient in zip(amountresults, reciperesults):
-                        recipe += f"{amount.amount} {ingredient.name}\n"
-                    
-                    ingredient_list = ', '.join([row.short_name if row.short_name else row.name for row in reciperesults])
+                    list_names = []
+                    counter = 1
+                    for amount, ingredient in zip(amounts, ingredients):
+                        info = db.session.execute(
+                            select(Ingredient.id, Ingredient.short_name, Ingredient.name)
+                            .where(Ingredient.name == ingredient)
+                            .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
+                            ).first()
+                        new_amount = Amount(cocktail_id=form.id.data,
+                                            ingredient_id=info.id,
+                                            amount=amount,
+                                            sequence=counter,
+                                            user_id=current_user.id)
+                        db.session.add(new_amount)
+                        # Get short name and add to names list
+                        name = info.short_name if info.short_name else info.name
+                        list_names.append(name)
+                        recipe += f"{amount} {ingredient}\n"
+                        counter += 1
+
+                    # generate ingredientlist
+                    ingredient_list = ', '.join(list_names)
                     
                     # Update cocktail in db
                     db.session.execute(
@@ -438,33 +365,29 @@ def modifycocktail():
                                 ingredient_list=ingredient_list))
                     try:
                         db.session.commit()
-                        flash("Cocktail modified", "primary")
+                        flash("Cocktail modified!", "primary")
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
                  
-                   
-                    return redirect(url_for("view.viewcocktails"))    
+                    return redirect(url_for("view.viewcocktails")) 
+                
+            # If form not validated   
             else:
                 
                 cocktail = db.session.execute(select(Cocktail).where(Cocktail.id == form.id.data).where(Cocktail.user_id == current_user.id)).fetchone()[0]
 
-                amountsquery = text("SELECT ingredient_id, amount, ingredient_source, sequence FROM amounts WHERE cocktail_id = :cocktail_id ORDER BY sequence ASC")
+                amountsquery = text("SELECT ingredient_id, amount, sequence FROM amounts WHERE cocktail_id = :cocktail_id ORDER BY sequence ASC")
                 amounts = db.session.execute(amountsquery, {"cocktail_id": cocktail.id}).fetchall()
 
                 ingredientsquery = text("""
-                                    SELECT ci.id, ci.name FROM common_ingredients ci
-                                    LEFT JOIN amounts a ON ci.id = a.ingredient_id
-                                    WHERE a.cocktail_id = :cocktail_id AND a.ingredient_source = 'common'
-                                    UNION 
                                     SELECT i.id, i.name FROM ingredients i 
                                     LEFT JOIN amounts a ON i.id = a.ingredient_id
-                                    WHERE a.user_id = :user_id AND a.cocktail_id = :cocktail_id AND a.ingredient_source = 'user'
+                                    WHERE a.user_id = :user_id AND a.cocktail_id = :cocktail_id
                                     """)
                 ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "cocktail_id": cocktail.id}).fetchall()
 
                 family = cocktail.family
-
 
                 return render_template("modifycocktailformerrors.html", form=form, cocktail=cocktail, ingredients=ingredients, family=family, amounts=amounts)    
         

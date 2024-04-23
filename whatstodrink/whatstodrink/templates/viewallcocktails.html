@@ -31,7 +31,7 @@
                                         {% endfor %}
                                     {% endif %}
                                 </div>
-                                {% if cocktail.csource == "user" %}
+                                {% if cocktail.shared != 1 %}
                                 <form>
                                     {{ form.csrf_token }}
                                     <!-- button to call modal -->

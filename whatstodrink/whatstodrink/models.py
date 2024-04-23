@@ -69,12 +69,16 @@ class Ingredient(db.Model):
     notes = db.Column(db.String(1000))
     shared = db.Column(db.Boolean)
 
+    stock = db.relationship("Stock", back_populates="ingredient")
+
 class Stock(db.Model):
     __tablename__ = 'stock'
 
     ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.id'), primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
     stock = db.Column(db.Boolean)
+
+    ingredient = db.relationship("Ingredient", back_populates="stock")
 
 class Tag(db.Model):
     __tablename__ = 'tags'

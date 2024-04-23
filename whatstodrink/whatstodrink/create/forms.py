@@ -16,7 +16,9 @@ class AddIngredientForm(FlaskForm):
 
     def validate_name(self, name):
         # query = text("SELECT name FROM ingredients WHERE name = :name AND user_id = :user_id UNION SELECT name FROM common_ingredients WHERE name = :name")
-        ingredient = db.session.execute(select(Ingredient.name).where(Ingredient.name == name.data).where(Ingredient.user_id == current_user.id)).fetchall()
+        ingredient = db.session.execute(select(Ingredient.name)
+                                        .where(Ingredient.name == name.data)
+                                        .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))).fetchall()
 
         # ingredient = db.session.execute(query, {"name": name, "user_id": current_user.id}).fetchall()
         if ingredient:
@@ -33,7 +35,9 @@ class AddCocktailForm(FlaskForm):
     submit = SubmitField('Add Cocktail')
 
     def validate_name(self, name):
-        cocktail = db.session.execute(select(Cocktail.name).where(Cocktail.name == name.data).where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))).fetchall()
+        cocktail = db.session.execute(select(Cocktail.name)
+                                      .where(Cocktail.name == name.data)
+                                      .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))).fetchall()
 
         if cocktail:
             raise ValidationError("You already have a cocktail by that name")

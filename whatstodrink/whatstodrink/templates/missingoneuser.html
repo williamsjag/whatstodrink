@@ -7,7 +7,7 @@
         {% for cocktail in cocktails %}
             {% for amount in amounts %}
                 {% if amount.cocktail_id == cocktail.id %}
-                    {% if amount.ingredient_id == mi.id and amount.ingredient_source == mi.source %}
+                    {% if amount.ingredient_id == mi.id %}
                         <div class="accordion-item center-accordion cocktail-group"> 
                             <h2 class="accordion-header" id="id_{{ loop.index0 }}">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">

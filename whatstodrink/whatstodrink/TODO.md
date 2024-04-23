@@ -130,6 +130,7 @@ Made ingredient list .9em to save space. Still need to deal with runover.
 
 ## In Progress
 
+bug: on modifyingredient errors: if submitted again with wrong name type switches to syrup
 BUG- lots of database rollback errors- solved?
 bug: add ingredient returns populated
 Bug- add cocktail-create new ingredient focuses the close button on open

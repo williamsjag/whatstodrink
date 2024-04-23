@@ -173,7 +173,8 @@ def addcocktail():
                 new_amount = Amount(cocktail_id=newcocktail.id,
                                     ingredient_id=info.id,
                                     amount=amount,
-                                    sequence=counter)
+                                    sequence=counter,
+                                    user_id=current_user.id)
                 db.session.add(new_amount)
                 # Get short name and add to names list
                 name = info.short_name if info.short_name else info.name

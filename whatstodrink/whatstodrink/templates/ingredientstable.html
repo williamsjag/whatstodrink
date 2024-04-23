@@ -1,7 +1,7 @@
 <div class="table-group text-center mb-3">    
     {% for type in types %}
         <div class="no-break">
-            <h4>{{ type.type }}</h4>
+            <h4>{{ type }}</h4>
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -12,22 +12,22 @@
                 </thead>
                 <tbody>
                     {% for ingredient in ingredients %}
-                    {% if ingredient.type == type.type %}
+                    {% if ingredient.type == type %}
                         <tr>
                             <td class="left-text">{{ ingredient.name }}</td>
                             <td class="button-cell">
-                                {% if ingredient.source == 'user' %}
+                                {% if ingredient.shared != 1 %}
                                 <!-- button for calling modal -->
                                     <button class="btn btn-outline-primary viewbtn" hx-get="/viewingredientmodal" hx-target="#viewModal" hx-trigger="click" type="button" hx-include="next form" data-bs-toggle="modal" data-bs-target="#viewModal" onclick="populateModal('{{ ingredient.name }}', '{{ingredient.source}}', '{{ingredient.type}}', '{{ingredient.short_name}}', '{{ingredient.notes}}')">View</button>
                                 {% endif %}
                             </td>
                             <!-- Checkbox checked -->
-                            {% if ingredient.stock == "1" %}
+                            {% if ingredient.stock == 1 %}
                             <td class="right-text">
                                 <form>
                                     {{ form.csrf_token }}
                                     <input type="checkbox" hx-post="/manageingredients" hx-trigger="click" hx-swap="none" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" checked>
-                                    <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
+                                    <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient.id }}">
                                     <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">
                                 </form>
                             </td>
@@ -37,7 +37,7 @@
                                 <form>
                                     {{ form.csrf_token }}
                                     <input type="checkbox" hx-post="/manageingredients" hx-trigger="click" hx-swap="none" id="stock_{{ ingredient.name }}" name="stock_{{ ingredient.name }}" unchecked>
-                                    <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient['ingredient_id'] }}">
+                                    <input type="hidden" id="id_{{ ingredient.name }}" name="id_{{ ingredient.name }}" value="{{ ingredient.id }}">
                                     <input type="hidden" id="src_{{ ingredient.name }}" name="src_{{ ingredient.name }}" value="{{ ingredient.source }}">    
                                 </form>
                             </td>

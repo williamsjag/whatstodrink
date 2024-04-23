@@ -15,10 +15,10 @@
             {{ form.type.label(class="form-control-label") }}
             <select name="type" id="type" class="form-select" required>
                 {% for type in types %}
-                    {% if type.type == ingredient.type %}
-                        <option value="{{ type.type }}" selected>{{ type.type }}</option>
+                    {% if type == ingredient.type %}
+                        <option value="{{ type }}" selected>{{ type }}</option>
                     {% else %}
-                        <option value="{{ type.type }}">{{ type.type }}</option>
+                        <option value="{{ type }}">{{ type }}</option>
                     {% endif %}
                 {% endfor %}
             </select>

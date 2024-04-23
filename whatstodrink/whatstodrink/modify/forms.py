@@ -3,7 +3,7 @@ from wtforms import StringField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 from whatstodrink.models import Ingredient, Cocktail
 from whatstodrink.__init__ import db
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from flask_login import current_user
 
 class ManageIngredientsForm(FlaskForm):
@@ -19,13 +19,17 @@ class ModifyIngredientForm(FlaskForm):
     id = IntegerField('Id')
 
     def validate_name(self, name):
-        oldName = db.session.scalar(select(Ingredient.name).where(Ingredient.id == self.id.data).where(Ingredient.user_id == current_user.id))
+        oldName = db.session.scalar(select(Ingredient.name)
+                                    .where(Ingredient.id == self.id.data)
+                                    .where(Ingredient.user_id == current_user.id))
         if name.data != oldName:
-            newNameUser = select(Ingredient.name).where(Ingredient.name == name.data).where(Ingredient.user_id == current_user.id)
-            newNameCommon = select(CommonIngredient.name).where(CommonIngredient.name == name.data)
-            newName = db.session.execute(newNameUser.union(newNameCommon)).fetchall()
+            newName = db.session.scalar(select(Ingredient.name).where(Ingredient.name == name.data)
+                                        .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
+                                        )
             if newName:
                 raise ValidationError('An ingredient with that name already exists')
+        else:
+            pass
 
 class DeleteForm(FlaskForm):
     id = IntegerField('Id')
@@ -39,10 +43,15 @@ class ModifyCocktailForm(FlaskForm):
     id = IntegerField('Id')
 
     def validate_name(self, name):
-        oldName = db.session.scalar(select(Cocktail.name).where(Cocktail.id == self.id.data).where(Cocktail.user_id == current_user.id))
+        oldName = db.session.scalar(select(Cocktail.name)
+                                    .where(Cocktail.id == self.id.data)
+                                    .where(Cocktail.user_id == current_user.id))
         if name.data != oldName:
-            newNameUser = select(Cocktail.name).where(Cocktail.name == name.data).where(Cocktail.user_id == current_user.id)
-            newNameCommon = select(CommonCocktail.name).where(CommonCocktail.name == name.data)
-            newName = db.session.execute(newNameUser.union(newNameCommon)).fetchall()
+            newName = db.session.scalar(select(Cocktail.name)
+                                        .where(Cocktail.name == name.data)
+                                        .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1)))
+                                        
             if newName:
                 raise ValidationError('There is already a Cocktail with that name')
+        else:
+            pass
