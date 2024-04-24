@@ -43,7 +43,6 @@
                                                     </div>
                                                     <div class="col ms-auto">
                                                         <button name="modify" class="btn btn-outline-primary" type="button" hx-post="/modifycocktail" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" hx-vals="{{ cocktail.name }}">Modify</button>
-                                                        <!-- onclick="populateModal('{{ cocktail.name }}')" -->
                                                     </div>
                                                 </form>
                                                     
@@ -93,3 +92,10 @@
         </div>
 </div>
 {% endfor %}
+
+<!-- Modal for modify cocktail -->
+<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="modalform"></div>
+    </div>
+</div>
