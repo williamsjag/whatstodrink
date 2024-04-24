@@ -5,7 +5,7 @@ class Config:
     SESSION_PERMANENT = False
     SESSION_TYPE = 'filesystem'
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
-    SQLALCHEMY_POOL_RECYCLE = 299
+    SQLALCHEMY_ENGINE_OPTIONS = {'pool_recycle': 280}
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAIL_SERVER = 'smtp.mail.me.com'
     MAIL_PORT = 587
