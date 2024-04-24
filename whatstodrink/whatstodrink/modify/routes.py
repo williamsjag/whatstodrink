@@ -51,7 +51,6 @@ def manageingredients():
             typesquery = (select(Ingredient.type.distinct())
                                 .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1)))
             types = db.session.scalars(typesquery).fetchall()
-            on_clause = Ingredient.id == Stock.ingredient_id
             ingredientsquery = (select(Ingredient.shared, Ingredient.id, Ingredient.name, Ingredient.type, Ingredient.short_name, Ingredient.notes, Stock.stock)
                                 .join(Ingredient.stock)
                                 .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
