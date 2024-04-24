@@ -65,12 +65,12 @@ def viewallcocktails():
                     WHERE (user_id = :user_id OR shared = 1)
                     """)
 
-    allcocktails = db.session.execute(userquery, {"user_id": current_user.id}).fetchall()
+    cocktails = db.session.execute(userquery, {"user_id": current_user.id}).fetchall()
     
-    allfamilies = db.session.scalars(select(Cocktail.family.distinct())).fetchall()
+    sorts = db.session.scalars(select(Cocktail.family.distinct())).fetchall()
 
     return render_template(
-        "viewallcocktails.html",  allfamilies=allfamilies, allcocktails=allcocktails, defaults=session["defaults"], form=form
+        "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form
     )
 
 @view.route("/viewuser")
@@ -79,38 +79,38 @@ def viewuser():
 
     form = ModifyCocktailForm()
 
-    cocktailquery = text("SELECT name, id, family, build, source, notes, recipe, ingredient_list \
+    cocktailquery = text("SELECT name, id, family, build, source, notes, recipe, ingredient_list, shared \
                         FROM cocktails \
                         WHERE user_id = :user_id \
                         ")
    
-    usercocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
+    cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
 
-    if not usercocktails:
+    if not cocktails:
         return render_template("errors/no_cocktails.html")
    
-    userfamilies = set(Cocktail.family for Cocktail in usercocktails)
+    sorts = set(Cocktail.family for Cocktail in cocktails)
 
     return render_template(
-        "viewuser.html", usercocktails=usercocktails, userfamilies=userfamilies, form=form
+        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
     )
 
 @view.route("/viewcommon")
 @login_required
 def viewcommon():
-
-    commoncocktailsquery = text("""
-                                SELECT name, build, source, recipe, family, ingredient_list
+    form = ModifyCocktailForm()
+    cocktailsquery = text("""
+                                SELECT name, build, source, recipe, family, ingredient_list, shared
                                 FROM cocktails
                                 WHERE shared = 1
                                 """)
-    commoncocktails = db.session.execute(commoncocktailsquery).fetchall()
+    cocktails = db.session.execute(cocktailsquery).fetchall()
 
     familyquery = text("SELECT DISTINCT family FROM cocktails WHERE shared = 1")
-    allfamilies = db.session.scalars(familyquery).fetchall()
+    sorts = db.session.scalars(familyquery).fetchall()
     
     return render_template(
-        "viewcommon.html", commoncocktails=commoncocktails, allfamilies=allfamilies
+        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
     )
 
 @view.route("/missingone")
@@ -267,6 +267,7 @@ def whatstodrink():
 @login_required
 def whatstodrinkuser():
 
+    form = ModifyCocktailForm()
     cocktailsquery = text("""
                         SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list
                         FROM cocktails c
@@ -288,10 +289,10 @@ def whatstodrinkuser():
     if not cocktails:
         return render_template("errors/no_cocktails.html")
 
-    families = set(Cocktail.family for Cocktail in cocktails)
+    sorts = set(Cocktail.family for Cocktail in cocktails)
 
     return render_template(
-        "whatstodrinkuser.html", cocktails=cocktails, families=families
+        "whatstodrinkuser.html", cocktails=cocktails, sorts=sorts, form=form
     )
 
 
@@ -299,6 +300,7 @@ def whatstodrinkuser():
 @login_required
 def whatstodrinkall():
 
+    form = ModifyCocktailForm()
     cocktailsquery = text("""
                         SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list
                         FROM cocktails c
@@ -321,9 +323,9 @@ def whatstodrinkall():
     if not cocktails:
         return render_template("errors/no_cocktails.html")
 
-    families = set(Cocktail.family for Cocktail in cocktails)
+    sorts = set(Cocktail.family for Cocktail in cocktails)
 
     return render_template(
-        "whatstodrinkall.html", cocktails=cocktails, families=families
+        "whatstodrinkall.html", cocktails=cocktails, sorts=sorts, form=form
         )
 
