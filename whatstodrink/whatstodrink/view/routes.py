@@ -327,7 +327,7 @@ def missingoneuser():
                             HAVING COUNT(*) = 1
                         ),
                         sad_ingredients AS (
-                            SELECT a.ingredient_id, a.ingredient_source 
+                            SELECT a.ingredient_id
                             FROM amounts a
                             LEFT JOIN cocktails c ON c.id = a.cocktail_id 
                             WHERE (c.name IN (SELECT name FROM sad_cocktails) AND a.user_id = :user_id)
