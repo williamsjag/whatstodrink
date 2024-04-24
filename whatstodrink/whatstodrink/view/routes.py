@@ -208,20 +208,20 @@ def missingoneuser():
         return render_template("errors/no_cocktails.html")
     missingquery = text("""
                         WITH sad_cocktails AS (
-                            SELECT c.name 
+                            SELECT c.id 
                             FROM cocktails c 
                             JOIN amounts a ON c.id = a.cocktail_id 
                             LEFT JOIN ingredients i ON a.ingredient_id = i.id 
                             LEFT JOIN stock s ON a.ingredient_id = s.ingredient_id
                             WHERE (s.stock != 1 AND s.user_id = :user_id AND c.user_id = :user_id) 
-                            GROUP BY c.name 
+                            GROUP BY c.id 
                             HAVING COUNT(*) = 1
                         ),
                         sad_ingredients AS (
                             SELECT a.ingredient_id
                             FROM amounts a
                             LEFT JOIN cocktails c ON c.id = a.cocktail_id 
-                            WHERE (c.name IN (SELECT name FROM sad_cocktails) AND a.user_id = :user_id)
+                            WHERE (c.id IN (SELECT id FROM sad_cocktails) AND a.user_id = :user_id)
                         )
                         SELECT i.id, i.name
                         FROM ingredients i
