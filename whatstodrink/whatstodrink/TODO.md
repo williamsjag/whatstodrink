@@ -132,6 +132,8 @@ Made ingredient list .9em to save space. Still need to deal with runover.
 
 bug: on modifyingredient errors: if submitted again with wrong name type switches to syrup
 BUG- lots of database rollback errors- solved?
+bug: 2024-04-24 11:05:59,285: Error running WSGI application
+2024-04-24 11:05:59,301: sqlalchemy.exc.OperationalError: (mysql.connector.errors.OperationalError) MySQL Connection not available. all the time
 bug: add ingredient returns populated
 Bug- add cocktail-create new ingredient focuses the close button on open
 Bug- edit cocktail redirects to errors page with same name and something else edited.

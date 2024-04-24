@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, request, session, url_for, Blueprint, current_app
 from whatstodrink.__init__ import db
-from sqlalchemy import select, or_, update, text, exc
+from sqlalchemy import select, or_, update, text, exc, or_
 from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.models import User, Ingredient, Stock
 from whatstodrink.users.forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm, SettingsForm
@@ -81,8 +81,8 @@ def login():
                 # Check default cocktail setting
                 session["defaults"] = user.default_cocktails
 
-                # make sure user has stock values for all common ingredients on login
-                query = select(Ingredient.id).where(Ingredient.shared == 1)
+                # make sure user has stock values for all necessary ingredients on login
+                query = select(Ingredient.id).where(or_(Ingredient.shared == 1, Ingredient.user_id == current_user.id))
                 common_ingredients = db.session.scalars(query).all()
 
                 # get all ids in common_ingredients
