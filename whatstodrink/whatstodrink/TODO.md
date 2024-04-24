@@ -127,12 +127,18 @@ Fixed bug in settings not working due to moved route and hx-post
 Added no cocktails indicator when a view is empty
 Made ingredient list .9em to save space. Still need to deal with runover.
 Made cocktail name verification only check user_id, not common, made sure cocktails are only ever accessed by id
-
+Made cocktail views 2 column when screen wide enough
 
 ## In Progress
+todo: make max-width of buttons in home page
+Look into having all cocktail views return the same template: view.html, which receives sort instead of family or missing_ingredient
+    - todo: formatting to make single column if only one family/sort
+    - bug: tiki cocktails in some views have wonky notes, this may fix itself
+    - Look into more backend work to improve rendering time for whatsmissing
+
+bug?: clicking accordions may cause columns to shift
 
 bug: modifycocktail errors: added ingredients don't carry over
-todo: make views 2 column when wide enough
 bug: addcocktail drops focus after autoload.
 bug: on modifyingredient errors: if submitted again with wrong name type switches to syrup
 BUG- lots of database rollback errors- solved?

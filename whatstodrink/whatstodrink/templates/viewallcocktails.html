@@ -72,7 +72,7 @@
                                             {% if cocktail.notes %}
                                                 <div class="row row-cols-auto mb-3">
                                                     <div class="category col-3">Notes: </div>
-                                                    <div class="col">
+                                                    <div class="col-8">
                                                         {% set list = cocktail.notes.split('\n') %}
                                                         {% for item in list %}
                                                             {{ item }}
