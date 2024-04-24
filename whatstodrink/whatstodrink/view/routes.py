@@ -269,7 +269,7 @@ def whatstodrinkuser():
 
     form = ModifyCocktailForm()
     cocktailsquery = text("""
-                        SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list
+                        SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list, c.shared
                         FROM cocktails c
                         JOIN amounts a ON c.id = a.cocktail_id
                         LEFT JOIN ingredients i ON a.ingredient_id = i.id
@@ -302,7 +302,7 @@ def whatstodrinkall():
 
     form = ModifyCocktailForm()
     cocktailsquery = text("""
-                        SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list
+                        SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list, c.shared
                         FROM cocktails c
                         JOIN amounts a ON c.id = a.cocktail_id
                         LEFT JOIN ingredients i ON a.ingredient_id = i.id
