@@ -49,7 +49,7 @@ class ModifyCocktailForm(FlaskForm):
         if name.data != oldName:
             newName = db.session.scalar(select(Cocktail.name)
                                         .where(Cocktail.name == name.data)
-                                        .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1)))
+                                        .where(Cocktail.user_id == current_user.id))
                                         
             if newName:
                 raise ValidationError('There is already a Cocktail with that name')

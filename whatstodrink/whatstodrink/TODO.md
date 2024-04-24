@@ -130,6 +130,8 @@ Made ingredient list .9em to save space. Still need to deal with runover.
 
 ## In Progress
 
+bug: modifycocktail errors: added ingredients don't carry over
+todo: make cocktail name verification only check user_id, not common, make sure cocktails are only ever accessed by id
 bug: on modifyingredient errors: if submitted again with wrong name type switches to syrup
 BUG- lots of database rollback errors- solved?
 bug: 2024-04-24 11:05:59,285: Error running WSGI application
