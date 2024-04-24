@@ -286,13 +286,14 @@ def whatstodrinkuser():
                         HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts aa WHERE aa.cocktail_id = c.id)
                         """)
     cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
+
     if not cocktails:
         return render_template("errors/no_cocktails.html")
 
     sorts = set(Cocktail.family for Cocktail in cocktails)
 
     return render_template(
-        "whatstodrinkuser.html", cocktails=cocktails, sorts=sorts, form=form
+        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
     )
 
 
@@ -326,6 +327,6 @@ def whatstodrinkall():
     sorts = set(Cocktail.family for Cocktail in cocktails)
 
     return render_template(
-        "whatstodrinkall.html", cocktails=cocktails, sorts=sorts, form=form
+        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
         )
 
