@@ -63,22 +63,14 @@
                     {% endif %}
                 </div>
             </fieldset>
-            <div class="form-group text-center mt-4 mb-4">
+            <div class="form-group mt-4 mb-4">
                 {{ form.submit(class="btn btn-primary") }}
             </div>
-            <!-- <label for="username" class="form-label">Username</label>
-            <input autocomplete="off" autofocus class="form-control mb-3" id="username" name="username" placeholder="Username" type="text">
-            <label for="password" class="form-label">Password</label>
-            <input class="form-control mb-3" id="password" name="password" placeholder="Password" type="password">
-            <label for="confirmation" class="form-label">Confirm Password</label>
-            <input class="form-control mb-3" id="confirmation" name="confirmation" placeholder="Confirmation" type="password"> -->
+           
         </div>
-        <!-- <div class="mb-3 text-center">  
-            <button class="btn btn-primary" type="submit">Register</button>
-        </div> -->
-        <div class="text-center border-top pt-3">
+       
+        <div class="border-top pt-3">
             <small class="text-muted">Already have an account? <a class="ml-2" href="{{ url_for('users.login') }}">Log In</a></small>
-            <!-- <a href="/login" class="btn btn-info" role="button" style="margin-top:10px;">Login</a> -->
         </div>
     </form>
 {% endblock %}

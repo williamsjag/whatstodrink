@@ -41,7 +41,7 @@
                     {{ form.remember.label(class="form-check-label") }}
                 </div>
             </fieldset>
-            <div class="form-group text-center mb-4">
+            <div class="form-group mb-4">
                 {{ form.submit(class="btn btn-primary") }}
             </div>
             <div class="form-group" type="hidden">
@@ -54,8 +54,8 @@
             </small>
         </div>
         <br>
-        <div class="text-center border-top pt-3">
-            <small class="text-muted">No account? <a class="ml-2" href="{{ url_for('users.register') }}">Register</a></small>
+        <div class="border-top pt-3">
+            <small class="text-muted">No account? <a class="ml-2" href="{{ url_for('users.register') }}">Register Here</a></small>
         </div>
     </form>
 {% endblock %}
