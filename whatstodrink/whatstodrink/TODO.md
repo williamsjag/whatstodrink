@@ -136,6 +136,7 @@ Look into having all cocktail views return the same template: view.html, which r
     - bug: tiki cocktails in some views have wonky notes, this may fix itself
     - Look into more backend work to improve rendering time for whatsmissing
 
+bug: view ingredient notes is 3 rows regardless of content size
 bug?: clicking accordions may cause columns to shift
 bug: capitalizing an ingredient letter in modify ingredient results in same name error, can't cancel
 bug: modifycocktail errors: added ingredients don't carry over

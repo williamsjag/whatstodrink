@@ -150,7 +150,7 @@ def account():
         
         if cocktails:
             # Update database defaults for next login
-            cocktailupdate = text("UPDATE users SET default_cocktails = 'on' WHERE id = :user_id")
+            cocktailupdate = text("UPDATE users SET default_cocktails = 1 WHERE id = :user_id")
             db.session.execute(cocktailupdate, {"user_id": current_user.id})
             try:
                 db.session.commit()
@@ -164,7 +164,7 @@ def account():
 
         else:
             # Update database defaults for next login
-            cocktailupdate = text("UPDATE users SET default_cocktails = '' WHERE id = :user_id")
+            cocktailupdate = text("UPDATE users SET default_cocktails = 0 WHERE id = :user_id")
             db.session.execute(cocktailupdate, {"user_id": current_user.id})
             try:
                 db.session.commit()
