@@ -35,7 +35,7 @@ def register():
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
-           
+            
             return redirect(url_for('users.login'))
             
         else:

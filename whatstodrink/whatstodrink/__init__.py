@@ -40,8 +40,8 @@ def create_app():
     db.init_app(app)
     mail.init_app(app)
 
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
 
     @app.after_request
     def after_request(response):
