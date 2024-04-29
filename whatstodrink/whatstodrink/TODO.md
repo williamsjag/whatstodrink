@@ -137,7 +137,7 @@ Look into having all cocktail views return the same template: view.html, which r
     - Look into more backend work to improve rendering time for whatsmissing
 
 bug?: clicking accordions may cause columns to shift
-
+bug: capitalizing an ingredient letter in modify ingredient results in same name error, can't cancel
 bug: modifycocktail errors: added ingredients don't carry over
 bug: addcocktail drops focus after autoload.
 bug: on modifyingredient errors: if submitted again with wrong name type switches to syrup
