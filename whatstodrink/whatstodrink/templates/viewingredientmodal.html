@@ -26,7 +26,7 @@
                 {% if ingredient.notes %}
                 <div class="me-3 mb-5">
                     {{ form.notes.label(class="form-control-label") }}
-                    <textarea class="form-control" id="notes" name="notes" rows="3" readonly="true">{{ ingredient.notes }}</textarea>
+                    <textarea class="form-control" id="notes" name="notes" readonly="true" onload="adjustHeight()">{{ ingredient.notes }}</textarea>
                 </div>
                 {% endif %}
 
@@ -37,3 +37,10 @@
         </div>
     </div>
 </div>
+<script>
+    function adjustHeight() {
+        var textarea = document.getElementById("notes");
+        textarea.style.height = ""; // Reset height to allow shrinking
+        textarea.style.height = textarea.scrollHeight + "px"; // Set height to scroll height
+    }
+</script>
