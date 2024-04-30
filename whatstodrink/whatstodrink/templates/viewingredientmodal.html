@@ -42,8 +42,5 @@ document.body.addEventListener('htmx:afterOnLoad', function(evt) {
     adjustHeight();
 });
 function adjustHeight() {
-    var textarea = document.getElementById("modalnotes");
-    textarea.style.height = ""; // Reset height to allow shrinking
-    textarea.style.height = textarea.scrollHeight + "px"; // Set height to scroll height
-}
+    document.getElementById(modalnotes).style.height = document.getElementById(modalnotes).scrollHeight+'px';}
 </script>
