@@ -133,7 +133,6 @@ Made cocktail views 2 column when screen wide enough
 todo: make max-width of buttons in home page
 Look into having all cocktail views return the same template: view.html, which receives sort instead of family or missing_ingredient
     - todo: formatting to make single column if only one family/sort
-    - bug: tiki cocktails in some views have wonky notes, this may fix itself
     - Look into more backend work to improve rendering time for whatsmissing
 
 bug: view ingredient notes is 3 rows regardless of content size
@@ -150,6 +149,7 @@ Bug- edit cocktail redirects to errors page with same name and something else ed
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
 have amounts on new cocktail trim white space at the end
+make ingredient_list ignore duplicates
 
 ## Todo 
 
