@@ -243,11 +243,9 @@ def modifycocktail():
             cocktail = db.session.execute(select(Cocktail.id, Cocktail.name, Cocktail.build, Cocktail.source, Cocktail.family, Cocktail.notes)
                                           .where(Cocktail.name == name)
                                           .where(Cocktail.user_id == current_user.id)).fetchone()
-            print(f"{cocktail}")
             amounts = db.session.execute(select(Amount.ingredient_id, Amount.amount, Amount.sequence)
                                          .where(Amount.cocktail_id == cocktail.id)
                                          .order_by(Amount.sequence.asc())).fetchall()
-            print(f"{amounts}")
             ingredientsquery = text("""
                                     SELECT id, name FROM ingredients
                                     LEFT JOIN amounts a ON ingredients.id = a.ingredient_id
@@ -344,7 +342,8 @@ def modifycocktail():
                         db.session.add(new_amount)
                         # Get short name and add to names list
                         name = info.short_name if info.short_name else info.name
-                        list_names.append(name)
+                        if name not in list_names:
+                            list_names.append(name)
                         recipe += f"{amount} {ingredient}\n"
                         counter += 1
 
