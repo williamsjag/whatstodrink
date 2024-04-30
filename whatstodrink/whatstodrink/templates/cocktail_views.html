@@ -28,8 +28,8 @@
                                 </h2>
                                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
                                     <div class="accordion-body">
-                                        <div class="container-fluid mb-3">
-                                            <div class="row row-cols-auto mb-3">
+                                        <div class="container mb-3">
+                                            <div class="row mb-3">
                                                 <div class="category col-3">Ingredients: </div>
                                                 <div class="col-7">
                                                     {% if cocktail.recipe %}
@@ -57,7 +57,7 @@
                                                 {% endif %}
                                             </div>
                                             {% if cocktail.build %}
-                                            <div class="row row-cols-auto mb-3">
+                                            <div class="row mb-3">
                                                 <div class="category col-3">Build: </div>
                                                 <div class="col-md-auto">
                                                         {% set list = cocktail.build.split('\n') %}
@@ -71,13 +71,13 @@
                                             </div>
                                             {% endif %}
                                             {% if cocktail.source %}
-                                            <div class="row row-cols-auto mb-3">
+                                            <div class="row mb-3">
                                                 <div class="category col-3">Source: </div>
                                                 <div class="col">{{ cocktail.source }}</div>
                                             </div>
                                             {% endif %}
                                             {% if cocktail.notes %}
-                                                <div class="row row-cols-auto mb-3">
+                                                <div class="row mb-3">
                                                     <div class="category col-3">Notes: </div>
                                                     <div class="col-md-auto">
                                                         {% set list = cocktail.notes.split('\n') %}
