@@ -178,10 +178,12 @@ def addcocktail():
                 db.session.add(new_amount)
                 # Get short name and add to names list
                 name = info.short_name if info.short_name else info.name
-                list_names.append(name)
+                if name not in list_names:
+                    list_names.append(name)
                 counter += 1
 
              # generate ingredientlist
+            
             ingredient_list = ', '.join(list_names)
             
             db.session.execute(
