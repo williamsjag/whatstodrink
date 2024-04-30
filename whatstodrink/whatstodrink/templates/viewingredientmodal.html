@@ -26,7 +26,7 @@
                 {% if ingredient.notes %}
                 <div class="me-3 mb-5">
                     {{ form.notes.label(class="form-control-label") }}
-                    <textarea class="form-control" id="modalnotes" name="notes" readonly="true">{{ ingredient.notes }}</textarea>
+                    <span class="textarea form-control" role="textbox" id="modalnotes" name="notes" readonly="true">{{ ingredient.notes }}</textarea>
                 </div>
                 {% endif %}
 
@@ -37,10 +37,3 @@
         </div>
     </div>
 </div>
-<script>
-document.body.addEventListener('htmx:afterSwap', function(evt) {
-    adjustHeight();
-});
-function adjustHeight() {
-    document.getElementById(modalnotes).style.height = document.getElementById(modalnotes).scrollHeight+'px';}
-</script>
