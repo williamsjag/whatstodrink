@@ -24,7 +24,6 @@
                                                 {{ cocktail.ingredient_list }}
                                             </span>
                                         </div>
-                                        
                                     </button>
                                 </h2>
                                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
@@ -80,7 +79,7 @@
                                             {% if cocktail.notes %}
                                                 <div class="row row-cols-auto mb-3">
                                                     <div class="category col-3">Notes: </div>
-                                                    <div class="col-8">
+                                                    <div class="col-lg-auto">
                                                         {% set list = cocktail.notes.split('\n') %}
                                                         {% for item in list %}
                                                             {{ item }}

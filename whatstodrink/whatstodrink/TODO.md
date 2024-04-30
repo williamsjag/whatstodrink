@@ -130,6 +130,7 @@ Made cocktail name verification only check user_id, not common, made sure cockta
 Made cocktail views 2 column when screen wide enough
 Made formatting change to make single column if only one family/sort in cocktail views
 Fixed accordion headers to not overflow or cause name to split lines
+Made ingredient_list ignore duplicates
 
 
 ## In Progress
@@ -138,7 +139,6 @@ Look into having all cocktail views return the same template: view.html, which r
     - Look into more backend work to improve rendering time for whatsmissing
 todo: make view ingredient -> notes field fit content instead of always 3 rows
 todo: have amounts on new cocktail trim white space at the end
-todo: make ingredient_list ignore duplicates
 
 bug?: clicking accordions may cause columns to shift
 bug: capitalizing an ingredient letter in modify ingredient results in same name error, can't cancel
