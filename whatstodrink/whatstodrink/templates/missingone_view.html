@@ -48,7 +48,7 @@
                                             {% if cocktail.build %}
                                             <div class="row row-cols-auto mb-3">
                                                 <div class="category col-3">Build: </div>
-                                                <div class="col-lg-auto">
+                                                <div class="col">
                                                         {% set list = cocktail.build.split('\n') %}
                                                         {% for item in list %}
                                                         {{ item }}
