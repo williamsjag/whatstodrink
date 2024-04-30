@@ -129,9 +129,14 @@ Made ingredient list .9em to save space. Still need to deal with runover.
 Made cocktail name verification only check user_id, not common, made sure cocktails are only ever accessed by id
 Made cocktail views 2 column when screen wide enough
 Made formatting change to make single column if only one family/sort in cocktail views
+<<<<<<< HEAD
 Fixed accordion headers to not overflow or cause name to split lines
 Made ingredient_list ignore duplicates
 Fixed notes and build in cocktail views to stay in column
+=======
+Combined missingoneuser and missingoneall into missingone_view.html
+Deleted unused templates
+>>>>>>> 672d359 (Delete more unused templates)
 
 
 ## In Progress

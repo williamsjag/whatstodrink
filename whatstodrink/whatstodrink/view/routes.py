@@ -138,7 +138,6 @@ def missingoneall():
                         HAVING COUNT(*) = 1
                           """) 
     cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
-    print(f"{cocktails}")
     if not cocktails:
         return render_template("errors/no_cocktails.html")
 
@@ -174,7 +173,6 @@ def missingoneall():
                         GROUP BY i.id
                           """)
     missing_ingredients = db.session.execute(missingquery, {"user_id": current_user.id}).fetchall()
-    print(f"missing: {missing_ingredients}")
 
     amountsquery = text("""
                         SELECT a.cocktail_id, a.ingredient_id, a.amount
