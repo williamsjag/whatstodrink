@@ -26,7 +26,7 @@
                 {% if ingredient.notes %}
                 <div class="me-3 mb-5">
                     {{ form.notes.label(class="form-control-label") }}
-                    <span class="textarea form-control" role="textbox" id="modalnotes" name="notes" readonly="true">{{ ingredient.notes }}</textarea>
+                    <span class="textarea form-control" role="textbox" style="white-space:pre-wrap;" id="modalnotes" name="notes" readonly="true">{{ ingredient.notes }}</textarea>
                 </div>
                 {% endif %}
 
