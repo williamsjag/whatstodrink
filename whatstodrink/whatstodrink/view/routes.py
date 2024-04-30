@@ -187,7 +187,7 @@ def missingoneall():
 
     
     return render_template(
-        "missingoneall.html", cocktails=cocktails, amounts=amounts, missing_ingredients=missing_ingredients, defaults=session["defaults"]
+        "missingone_view.html", cocktails=cocktails, amounts=amounts, missing_ingredients=missing_ingredients, defaults=session["defaults"]
     )
 
 @view.route("/missingoneuser")
@@ -248,7 +248,7 @@ def missingoneuser():
     amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     return render_template(
-        "missingoneuser.html", cocktails=cocktails, amounts=amounts, missing_ingredients=missing_ingredients
+        "missiongon_view.html", cocktails=cocktails, amounts=amounts, missing_ingredients=missing_ingredients
     )
     
 

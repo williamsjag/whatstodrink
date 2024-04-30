@@ -128,28 +128,28 @@ Added no cocktails indicator when a view is empty
 Made ingredient list .9em to save space. Still need to deal with runover.
 Made cocktail name verification only check user_id, not common, made sure cocktails are only ever accessed by id
 Made cocktail views 2 column when screen wide enough
+Made formatting change to make single column if only one family/sort in cocktail views
+
 
 ## In Progress
 todo: make max-width of buttons in home page
 Look into having all cocktail views return the same template: view.html, which receives sort instead of family or missing_ingredient
-    - todo: formatting to make single column if only one family/sort
     - Look into more backend work to improve rendering time for whatsmissing
+todo: make view ingredient -> notes field fit content instead of always 3 rows
+todo: have amounts on new cocktail trim white space at the end
+todo: make ingredient_list ignore duplicates
 
-bug: view ingredient notes is 3 rows regardless of content size
 bug?: clicking accordions may cause columns to shift
 bug: capitalizing an ingredient letter in modify ingredient results in same name error, can't cancel
 bug: modifycocktail errors: added ingredients don't carry over
 bug: addcocktail drops focus after autoload.
 bug: on modifyingredient errors: if submitted again with wrong name type switches to syrup
-BUG- lots of database rollback errors- solved?
-bug: 2024-04-24 11:05:59,285: Error running WSGI application
-2024-04-24 11:05:59,301: sqlalchemy.exc.OperationalError: (mysql.connector.errors.OperationalError) MySQL Connection not available. all the time Solved?
 Bug- add cocktail-create new ingredient focuses the close button on open
 Bug- edit cocktail redirects to errors page with same name and something else edited.
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
-have amounts on new cocktail trim white space at the end
-make ingredient_list ignore duplicates
+bug: 2024-04-24 11:05:59,285: Error running WSGI application
+2024-04-24 11:05:59,301: sqlalchemy.exc.OperationalError: (mysql.connector.errors.OperationalError) MySQL Connection not available. all the time Solved?
 
 ## Todo 
 
