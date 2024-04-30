@@ -248,7 +248,7 @@ def missingoneuser():
     amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     return render_template(
-        "missiongon_view.html", cocktails=cocktails, amounts=amounts, missing_ingredients=missing_ingredients
+        "missingone_view.html", cocktails=cocktails, amounts=amounts, missing_ingredients=missing_ingredients
     )
     
 
