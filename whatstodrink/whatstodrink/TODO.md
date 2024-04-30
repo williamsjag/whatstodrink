@@ -131,6 +131,7 @@ Made cocktail views 2 column when screen wide enough
 Made formatting change to make single column if only one family/sort in cocktail views
 Fixed accordion headers to not overflow or cause name to split lines
 Made ingredient_list ignore duplicates
+Fixed notes and build in cocktail views to stay in column
 
 
 ## In Progress
