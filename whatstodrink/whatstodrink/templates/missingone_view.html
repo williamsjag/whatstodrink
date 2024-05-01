@@ -7,12 +7,11 @@
     <div class="accordion-group" style="column-count: 1">
 {% endif %}
     <!-- unique names to not repeat missing_ingredients -->
-    {% for group in ingredient_group %}
+    {% for ingredient in missing_ingredients %}
         <div class="no-break">
             <h3 class="mb-3 center text-center"><span class="blue">{{ group.name }}</span></h3>
             {% for cocktail in cocktails %}
-                {% for ingredient in missing_ingredients %}
-                    {% if ingredient.name == group.name and ingredient.cocktail_id == cocktail.id %}
+                {% if cocktail.ingredient_name == ingredient.name %}
                         <div class="accordion mb-3" id="makeabledrinks">
                             <div class="accordion-item center-accordion cocktail-group">
                                 <h2 class="accordion-header" id="id_{{ loop.index0 }}">
@@ -86,8 +85,7 @@
                         {% endif %}
                     {% endfor %}
 
-        {% endfor %}
         </div>
         
     {% endfor %}
-</div>
+    </div>
