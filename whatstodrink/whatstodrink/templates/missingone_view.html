@@ -9,7 +9,7 @@
     <!-- unique names to not repeat missing_ingredients -->
     {% for ingredient in missing_ingredients %}
         <div class="no-break">
-            <h3 class="mb-3 center text-center"><span class="blue">{{ group.name }}</span></h3>
+            <h3 class="mb-3 center text-center"><span class="blue">{{ ingredient.name }}</span></h3>
             {% for cocktail in cocktails %}
                 {% if cocktail.ingredient_name == ingredient.name %}
                         <div class="accordion mb-3" id="makeabledrinks">
