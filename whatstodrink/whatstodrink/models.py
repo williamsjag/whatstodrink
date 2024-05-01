@@ -57,6 +57,7 @@ class Cocktail(db.Model):
     recipe = db.Column(db.String(500))
     ingredient_list = db.Column(db.String(200))
     shared = db.Column(db.Boolean)
+
     
 class Ingredient(db.Model):
     __tablename__ = 'ingredients'
@@ -70,6 +71,7 @@ class Ingredient(db.Model):
     shared = db.Column(db.Boolean)
 
     stock = db.relationship("Stock", back_populates="ingredient")
+    cocktail = db.relationship("Cocktail", secondary="amounts", backref="ingredients")
 
 class Stock(db.Model):
     __tablename__ = 'stock'
