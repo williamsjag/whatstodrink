@@ -10,9 +10,9 @@
     {% for ingredient in missing_ingredients %}
         <div class="no-break">
             <h3 class="mb-3 center text-center"><span class="blue">{{ ingredient.name }}</span></h3>
-            {% for cocktail in cocktails %}
-                {% if cocktail.ingredient_name == ingredient.name %}
-                        <div class="accordion mb-3" id="makeabledrinks">
+                <div class="accordion mb-3" id="makeabledrinks">
+                    {% for cocktail in cocktails %}
+                        {% if cocktail.ingredient_name == ingredient.name %}
                             <div class="accordion-item center-accordion cocktail-group">
                                 <h2 class="accordion-header" id="id_{{ loop.index0 }}">
                                     <button class="accordion-button collapsed container-fluid" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
@@ -80,11 +80,11 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>       
-                        </div>
+                            </div>   
                         {% endif %}
                     {% endfor %}
-
+                </div>
+                     
         </div>
         
     {% endfor %}
