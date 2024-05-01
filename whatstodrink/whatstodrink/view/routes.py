@@ -1,6 +1,6 @@
 from flask import render_template, request, session, Blueprint
 from whatstodrink.__init__ import db
-from sqlalchemy import select, text, or_, func, and_
+from sqlalchemy import select, text, or_, func, and_, literal_column
 from sqlalchemy.orm import joinedload, selectinload
 from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
 from whatstodrink.view.forms import ViewIngredientForm
@@ -206,14 +206,21 @@ def missingoneuser():
     cocktails = db.session.scalars(cocktailquery).fetchall()
     print(f"{cocktails}")
     missing_ingredients = []
+    
     for cocktail in cocktails:
         # cocktail = cocktail_tuple[0]
-        ingredient = db.session.scalars(select(Ingredient, Amount.cocktail_id)
-                                         .join(Amount, Ingredient.id == Amount.ingredient_id)
-                                         .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
-                                         .where(Amount.cocktail_id == cocktail.id)
-                                         ).fetchall()
-    missing_ingredients.append(ingredient)
+        ingredient = db.session.scalar(select(Ingredient)
+                                        .join(Amount, Ingredient.id == Amount.ingredient_id)
+                                        .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
+                                        .where(Amount.cocktail_id == cocktail.id)
+                                        )
+        setattr(ingredient, 'cocktail_id', cocktail.id)
+        missing_ingredients.append(ingredient)
+    
+    
+
+    for ingredient in missing_ingredients:
+        print(ingredient.name, ingredient.cocktail_id)
     
 
 
