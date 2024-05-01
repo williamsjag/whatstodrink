@@ -136,6 +136,9 @@ Fixed notes and build in cocktail views to stay in column
 
 
 ## In Progress
+
+Cleaning up missingone-user route. Works but need to figure out how to group by ingredient.name
+
 todo: make max-width of buttons in home page
 Look into having all cocktail views return the same template: view.html, which receives sort instead of family or missing_ingredient
     - Look into more backend work to improve rendering time for whatsmissing

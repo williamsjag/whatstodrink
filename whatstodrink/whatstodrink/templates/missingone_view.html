@@ -7,7 +7,7 @@
     <div class="accordion-group" style="column-count: 1">
 {% endif %}
     <!-- unique names to not repeat missing_ingredients -->
-    {% for ingredient in missing_ingredients|unique %}
+    {% for ingredient in missing_ingredients %}
         <div class="no-break">
             <h3 class="mb-3 center text-center"><span class="blue">{{ ingredient.name }}</span></h3>
             {% for cocktail in cocktails %}
