@@ -10,10 +10,9 @@
     {% for group in ingredient_group %}
         <div class="no-break">
             <h3 class="mb-3 center text-center"><span class="blue">{{ group.name }}</span></h3>
-            {% for ingredient in missing_ingredients %}
-                {% if ingredient.name == group.name %}
-                    {% for cocktail in cocktails %}
-                        {% if cocktail.id == ingredient.cocktail_id %}
+            {% for cocktail in cocktails %}
+                {% for ingredient in missing_ingredients %}
+                    {% if ingredient.name == group.name and ingredient.cocktail_id == cocktail.id %}
                         <div class="accordion mb-3" id="makeabledrinks">
                             <div class="accordion-item center-accordion cocktail-group">
                                 <h2 class="accordion-header" id="id_{{ loop.index0 }}">
@@ -86,7 +85,7 @@
                         </div>
                         {% endif %}
                     {% endfor %}
-                    {% endif %}
+
         {% endfor %}
         </div>
         
