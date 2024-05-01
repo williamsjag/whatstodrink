@@ -205,7 +205,9 @@ def missingoneuser():
     )
     cocktails = db.session.scalars(cocktailquery).fetchall()
     print(f"{cocktails}")
+
     missing_ingredients = []
+    ingredient_group = []
     
     for cocktail in cocktails:
         # cocktail = cocktail_tuple[0]
@@ -214,8 +216,11 @@ def missingoneuser():
                                         .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
                                         .where(Amount.cocktail_id == cocktail.id)
                                         )
+        if ingredient not in ingredient_group:
+            ingredient_group.append(ingredient)
         setattr(ingredient, 'cocktail_id', cocktail.id)
         missing_ingredients.append(ingredient)
+        
     
     
 
@@ -278,7 +283,7 @@ def missingoneuser():
     # amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
 
     return render_template(
-        "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients
+        "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, ingredient_group=ingredient_group
     )
     
 

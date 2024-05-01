@@ -7,83 +7,88 @@
     <div class="accordion-group" style="column-count: 1">
 {% endif %}
     <!-- unique names to not repeat missing_ingredients -->
-    {% for ingredient in missing_ingredients %}
+    {% for group in ingredient_group %}
         <div class="no-break">
-            <h3 class="mb-3 center text-center"><span class="blue">{{ ingredient.name }}</span></h3>
-            {% for cocktail in cocktails %}
-                {% if cocktail.id == ingredient.cocktail_id %}
-                <div class="accordion mb-3" id="makeabledrinks">
-                    <div class="accordion-item center-accordion cocktail-group">
-                        <h2 class="accordion-header" id="id_{{ loop.index0 }}">
-                            <button class="accordion-button collapsed container-fluid" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
-                                <div class="row">
-                                    <span class="left-text col-lg-auto">
-                                        <strong>{{ cocktail.name }}</strong>
-                                    </span>
-                                    <span class="right-text d-none d-sm-block list-text col">
-                                        {{ cocktail.ingredient_list }}
-                                    </span>
-                                </div>
-                            </button>
-                        </h2>
-                        <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
-                            <div class="accordion-body">
-                                <div class="container mb-3">
-                                    <div class="row row-cols-auto mb-3">
-                                        <div class="category col-3">Ingredients: </div>
-                                        <div class="col-7">
-                                            {% if cocktail.recipe %}
-                                                {% set list = cocktail.recipe.split('\n') %}
-                                                {% for item in list %}
-                                                {{ item }}
-                                                {% if not loop.last %}
-                                                <br/>
-                                                {% endif %}
-                                                {% endfor %}
-                                            {% endif %}
+            <h3 class="mb-3 center text-center"><span class="blue">{{ group.name }}</span></h3>
+            {% for ingredient in missing_ingredients %}
+                {% if ingredient.name == group.name %}
+                    {% for cocktail in cocktails %}
+                        {% if cocktail.id == ingredient.cocktail_id %}
+                        <div class="accordion mb-3" id="makeabledrinks">
+                            <div class="accordion-item center-accordion cocktail-group">
+                                <h2 class="accordion-header" id="id_{{ loop.index0 }}">
+                                    <button class="accordion-button collapsed container-fluid" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
+                                        <div class="row">
+                                            <span class="left-text col-lg-auto">
+                                                <strong>{{ cocktail.name }}</strong>
+                                            </span>
+                                            <span class="right-text d-none d-sm-block list-text col">
+                                                {{ cocktail.ingredient_list }}
+                                            </span>
                                         </div>
-                                    </div>    
-                                    {% if cocktail.build %}
-                                    <div class="row row-cols-auto mb-3">
-                                        <div class="category col-3">Build: </div>
-                                        <div class="col-9">
-                                                {% set list = cocktail.build.split('\n') %}
-                                                {% for item in list %}
-                                                {{ item }}
-                                                {% if not loop.last %}
-                                                <br/>
-                                                {% endif %}
-                                                {% endfor %}
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                    {% if cocktail.source %}
-                                    <div class="row row-cols-auto mb-3">
-                                        <div class="category col-3">Source: </div>
-                                        <div class="col">{{ cocktail.source }}</div>
-                                    </div>
-                                    {% endif %}
-                                    {% if cocktail.notes %}
-                                        <div class="row row-cols-auto mb-3">
-                                            <div class="category col-3">Notes: </div>
-                                            <div class="col-9">
-                                                {% set list = cocktail.notes.split('\n') %}
-                                                {% for item in list %}
-                                                    {{ item }}
-                                                    {% if not loop.last %}
-                                                    <br/>
+                                    </button>
+                                </h2>
+                                <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
+                                    <div class="accordion-body">
+                                        <div class="container mb-3">
+                                            <div class="row row-cols-auto mb-3">
+                                                <div class="category col-3">Ingredients: </div>
+                                                <div class="col-7">
+                                                    {% if cocktail.recipe %}
+                                                        {% set list = cocktail.recipe.split('\n') %}
+                                                        {% for item in list %}
+                                                        {{ item }}
+                                                        {% if not loop.last %}
+                                                        <br/>
+                                                        {% endif %}
+                                                        {% endfor %}
                                                     {% endif %}
-                                                {% endfor %}
+                                                </div>
+                                            </div>    
+                                            {% if cocktail.build %}
+                                            <div class="row row-cols-auto mb-3">
+                                                <div class="category col-3">Build: </div>
+                                                <div class="col-9">
+                                                        {% set list = cocktail.build.split('\n') %}
+                                                        {% for item in list %}
+                                                        {{ item }}
+                                                        {% if not loop.last %}
+                                                        <br/>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                </div>
                                             </div>
+                                            {% endif %}
+                                            {% if cocktail.source %}
+                                            <div class="row row-cols-auto mb-3">
+                                                <div class="category col-3">Source: </div>
+                                                <div class="col">{{ cocktail.source }}</div>
+                                            </div>
+                                            {% endif %}
+                                            {% if cocktail.notes %}
+                                                <div class="row row-cols-auto mb-3">
+                                                    <div class="category col-3">Notes: </div>
+                                                    <div class="col-9">
+                                                        {% set list = cocktail.notes.split('\n') %}
+                                                        {% for item in list %}
+                                                            {{ item }}
+                                                            {% if not loop.last %}
+                                                            <br/>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %} 
                                         </div>
-                                    {% endif %} 
+                                    </div>
                                 </div>
-                            </div>
+                            </div>       
                         </div>
-                    </div>       
-                </div>
-                {% endif %}
-            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    {% endif %}
+        {% endfor %}
         </div>
+        
     {% endfor %}
 </div>
