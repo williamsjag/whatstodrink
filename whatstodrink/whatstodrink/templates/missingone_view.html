@@ -10,7 +10,9 @@
         {% set cocktail = cocktails[index] %}
         {% set ingredient = missing_ingredients[index] %}
         <div class="no-break">
+            {% if ingredient.name is defined %}
             <h3 class="mb-3 center text-center"><span class="blue">{{ ingredient.name }}</span></h3>
+            {% endif %}
             <div class="accordion mb-3" id="makeabledrinks">
                 <div class="accordion-item center-accordion cocktail-group">
                     <h2 class="accordion-header" id="id_{{ loop.index0 }}">
