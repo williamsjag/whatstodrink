@@ -146,7 +146,7 @@ Made altered ingredient selection carry over to modifycocktailerrors.
 ## In Progress
 
 
-bug: After creating a new ingredient in add cocktail cursor focus drops
+bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
 
 bug: 2024-04-24 11:05:59,285: Error running WSGI application
 2024-04-24 11:05:59,301: sqlalchemy.exc.OperationalError: (mysql.connector.errors.OperationalError) MySQL Connection not available. all the time Solved?
