@@ -23,7 +23,7 @@
                     {% endif %}    
         </div>
         <!-- Short Name Field -->
-        <div class="me-3 mb-3">
+        <div class="mb-3">
             {{ form.short_name.label(class="form-control-label") }} 
             {{ form.short_name(class="form-control", value=form.short_name.data)}}
         </div>
@@ -44,7 +44,7 @@
             {{ form.id(type="hidden", value=form.id.data) }}
         </div>
         <!-- Notes Field -->
-        <div class="me-3 mb-5">
+        <div class="mb-5">
             {{ form.notes.label(class="form-control-label") }}
             <textarea class="form-control" id="notes" name="notes" rows="3">{{ form.notes.data }}</textarea>
         </div>
@@ -60,6 +60,7 @@
         <div class="mb-3 text-center">
             <a href="/manageingredients" id="close" name="close" class="btn btn-secondary">Cancel</a>
         </div>
+    </div>
 </form>
 
 <!-- Modal for delete -->
