@@ -48,7 +48,7 @@ class Cocktail(db.Model):
     __tablename__ = 'cocktails'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(50, collation='utf8-bin'), nullable=False)
     build = db.Column(db.String(1000))
     source = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -63,7 +63,7 @@ class Ingredient(db.Model):
     __tablename__ = 'ingredients'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(50, collation='utf8-bin'), nullable=False)
     type = db.Column(db.String(50))
     user_id = db.Column(db.Integer)
     short_name = db.Column(db.String(50))
