@@ -58,7 +58,7 @@
         </div>
         <!-- Create new ingredient button -->
         <div class="mb-3 text-center">
-            <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">Create New Ingredient</button>
+            <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal" onclick="focusFirstInput()">Create New Ingredient</button>
         </div>
         <!-- Build instructions field -->
         <div class="form-group mb-3">
@@ -144,6 +144,12 @@
 {% endblock %}
 {% block javascript %}
 <script>
+    // Focus input in modal
+    function focusFirstInput() {
+        var form = document.getElementById("addItemForm");
+        var inputFields = form.getElementsByTagName("input");
+        inputFields[0].focus();
+    }
 
     // Configure drag bars
     var el = document.getElementById('dynamicSelects');
