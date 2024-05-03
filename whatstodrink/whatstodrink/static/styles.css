@@ -37,9 +37,9 @@ nav .navbar-brand .blue
   border: solid;
   border-color: #537fbe;
   border-width: 2px;
-  margin: 30px;
   padding: 20px;
-  width: calc(100% - 60px);
+  margin: 30px;
+  max-width: 500px;
 }
 .explainer {
   box-sizing: border-box;
