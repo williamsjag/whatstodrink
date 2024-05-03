@@ -111,7 +111,7 @@ def modify_ingredient():
                 newnotes = form.notes.data
                 newname = form.name.data
                 shortname = form.short_name.data
-            
+                print(f"{id}")
                 updatequery = text("UPDATE ingredients SET type = :type, notes = :notes, name = :name, short_name = :short_name WHERE id = :id AND user_id = :user_id")
                 db.session.execute(updatequery,  {"id": id, "type": newtype, "notes": newnotes, "name": newname, "short_name": shortname, "user_id": current_user.id})
                 try:

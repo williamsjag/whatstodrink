@@ -28,14 +28,15 @@
             {{ form.short_name(class="form-control", value=form.short_name.data)}}
         </div>
         <!-- Type Field -->
+        
         <div class="form-group mb-3">
             {{ form.type.label(class="form-control-label") }}
             <select name="type" id="type" class="form-select" required>
                 {% for type in types %}
                     {% if type == form.type.data %}
-                        <option value="{{ type.type }}" selected>{{ type }}</option>
+                        <option value="{{ type }}" selected>{{ type }}</option>
                     {% else %}
-                        <option value="{{ type.type }}">{{ type }}</option>
+                        <option value="{{ type }}">{{ type }}</option>
                     {% endif %}
                 {% endfor %}
             </select>
