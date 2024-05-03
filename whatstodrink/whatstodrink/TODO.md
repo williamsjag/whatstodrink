@@ -158,8 +158,6 @@ Verify:
 
 ## Todo 
 
-user modifiability to all ingredients (incl. hide)
-
 Color/Theme/Prettify
 
 implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
@@ -170,8 +168,9 @@ recipe share page that opens a url like /cocktails-userid-cocktailid.html that c
     -button to login to save to your cocktails
     -once logged in replace with save to your cocktails
 
-make navbar active class work
-
 Search Field for cocktail views
 
 Reports view- number of cocktails per ingredient, searchable using cocktail searches
+
+make navbar active class work
+user modifiability to all ingredients (incl. hide)

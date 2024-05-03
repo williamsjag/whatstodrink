@@ -18,12 +18,10 @@ def manageingredients():
     if request.method =="GET":
 
         # check for search queries 
-        qs = request.args.get('q')
-        if qs:
-            q = qs.lower()
-
+        q = request.args.get('q')
+      
         # if filter bar is entered
-        if qs is not None:
+        if q is not None:
             # Get Types included in search for headers
             query = (
                 select(Ingredient.type.distinct())

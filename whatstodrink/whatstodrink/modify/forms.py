@@ -3,7 +3,7 @@ from wtforms import StringField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 from whatstodrink.models import Ingredient, Cocktail
 from whatstodrink.__init__ import db
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, func
 from flask_login import current_user
 
 class ManageIngredientsForm(FlaskForm):
@@ -21,9 +21,10 @@ class ModifyIngredientForm(FlaskForm):
     def validate_name(self, name):
         oldName = db.session.scalar(select(Ingredient.name)
                                     .where(Ingredient.id == self.id.data)
-                                    .where(Ingredient.user_id == current_user.id))
+                                    .where(Ingredient.user_id == current_user.id)
+                                    )
         if name.data != oldName:
-            newName = db.session.scalar(select(Ingredient.name).where(Ingredient.name == name.data)
+            newName = db.session.scalar(select(Ingredient.name).where(Ingredient.name == func.binary(name.data))
                                         .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
                                         )
             if newName:
@@ -48,7 +49,7 @@ class ModifyCocktailForm(FlaskForm):
                                     .where(Cocktail.user_id == current_user.id))
         if name.data != oldName:
             newName = db.session.scalar(select(Cocktail.name)
-                                        .where(Cocktail.name == name.data)
+                                        .where(Cocktail.name == func.binary(name.data))
                                         .where(Cocktail.user_id == current_user.id))
                                         
             if newName:
