@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, request, url_for, Blueprint
 from whatstodrink.__init__ import db
-from sqlalchemy import select, union, text, update, exc, or_, delete, outerjoin
+from sqlalchemy import select, union, text, update, exc, or_, delete, outerjoin, func
 from sqlalchemy.orm import outerjoin
 from whatstodrink.models import Cocktail, Ingredient, Stock, Amount
 from whatstodrink.modify.forms import ManageIngredientsForm, ModifyIngredientForm, DeleteForm, ModifyCocktailForm
@@ -18,16 +18,18 @@ def manageingredients():
     if request.method =="GET":
 
         # check for search queries 
-        q = request.args.get('q')
+        qs = request.args.get('q')
+        if qs:
+            q = qs.lower()
 
         # if filter bar is entered
-        if q is not None:
+        if qs is not None:
             # Get Types included in search for headers
             query = (
                 select(Ingredient.type.distinct())
                 .select_from(Ingredient)
                 .outerjoin(Stock, (Ingredient.id == Stock.ingredient_id) & (Stock.user_id == current_user.id))
-                .where(Ingredient.name.like('%' + q + '%'))
+                .where(func.lower(Ingredient.name).like('%' + q + '%'))
             )
 
             types = db.session.scalars(query).all()
@@ -36,7 +38,7 @@ def manageingredients():
             ingredientsquery = (select(Ingredient.id, Ingredient.name, Ingredient.type, Ingredient.short_name, Ingredient.notes, Stock.stock, Ingredient.shared)
                                 .join(Ingredient.stock)
                                 .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
-                                .where(Ingredient.name.like('%' + q + '%'))
+                                .where(func.lower(Ingredient.name).like('%' + q + '%'))
             )
             
             ingredients = db.session.execute(ingredientsquery).fetchall()

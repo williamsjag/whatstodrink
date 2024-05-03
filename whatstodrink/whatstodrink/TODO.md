@@ -138,13 +138,13 @@ Made notes field in modifyingredient fit the size of the field when rendered.
 Made amounts fields in add and modify cocktail trim whitespace
 Made addingredientmodal focus the first input on opening.
 Shorten buttons on home screen and reduce margin when mobile screen.
+Made it so capitalizing a letter in modify cocktail and ingredient doesn't trigger an error
+Fixed problem with type in ingredienterrors form
 
 ## In Progress
+need to change ingredient search to case-insensitive now
 
-bug: capitalizing an ingredient letter in modify ingredient results in same name error, can't cancel
 bug: modifycocktail errors: added ingredients don't carry over
-
-bug: on modifyingredient errors: if submitted again with wrong name type switches to syrup
 
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
