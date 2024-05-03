@@ -133,29 +133,28 @@ Combined viewcocktails and whatstodrink both user and common into cocktail_views
 Fixed accordion headers to not overflow or cause name to split lines
 Made ingredient_list ignore duplicates
 Fixed notes and build in cocktail views to stay in column
-
+Made missingone much more efficient in rendering.
+Made notes field in modifyingredient fit the size of the field when rendered.
+Made amounts fields in add and modify cocktail trim whitespace
+Made addingredientmodal focus the first input on opening.
+Shorten buttons on home screen and reduce margin when mobile screen.
 
 ## In Progress
 
-Cleaning up missingone-user route. Works but need to figure out how to group by ingredient.name
-
-todo: make max-width of buttons in home page
-Look into having all cocktail views return the same template: view.html, which receives sort instead of family or missing_ingredient
-    - Look into more backend work to improve rendering time for whatsmissing
-todo: make view ingredient -> notes field fit content instead of always 3 rows
-todo: have amounts on new cocktail trim white space at the end
-
-bug?: clicking accordions may cause columns to shift
 bug: capitalizing an ingredient letter in modify ingredient results in same name error, can't cancel
 bug: modifycocktail errors: added ingredients don't carry over
-bug: addcocktail drops focus after autoload.
+
 bug: on modifyingredient errors: if submitted again with wrong name type switches to syrup
-Bug- add cocktail-create new ingredient focuses the close button on open
-Bug- edit cocktail redirects to errors page with same name and something else edited.
+
 bug: After creating a new ingredient in add cocktail cursor focus drops
 
 bug: 2024-04-24 11:05:59,285: Error running WSGI application
 2024-04-24 11:05:59,301: sqlalchemy.exc.OperationalError: (mysql.connector.errors.OperationalError) MySQL Connection not available. all the time Solved?
+
+bug?: clicking accordions may cause columns to shift
+
+Verify:
+    -bug: addcocktail drops focus after autoload.
 
 ## Todo 
 
