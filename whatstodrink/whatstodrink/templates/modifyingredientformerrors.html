@@ -6,7 +6,7 @@
 
 {% block main %}
 
-<form action="/modify_ingredient" method="POST" class="center-form" id="modifyForm">
+<form action="/modify_ingredient" method="POST" class="center-form" id="modifyForm" novalidate>
     {{ form.csrf_token }}
     <div class="modal-body">
         <div class="mb-3">

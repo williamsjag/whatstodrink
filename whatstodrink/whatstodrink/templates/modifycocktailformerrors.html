@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-<form action="/modifycocktail" class="center-form" method="POST" id="modifyForm">
+<form action="/modifycocktail" class="center-form" method="POST" id="modifyForm" novalidate>
     {{ form.csrf_token }}
     
     <div class="modal-body">
