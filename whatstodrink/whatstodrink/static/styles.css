@@ -39,7 +39,14 @@ nav .navbar-brand .blue
   border-width: 2px;
   padding: 20px;
   margin: 30px;
-  max-width: 500px;
+  max-width: 400px;
+  min-width: 400px;
+  height: 150px;
+}
+@media screen and (max-width: 895px) {
+  .homeitem {
+    margin:20px;
+  }
 }
 .explainer {
   box-sizing: border-box;
