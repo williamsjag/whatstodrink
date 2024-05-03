@@ -132,7 +132,8 @@ def addcocktail():
         if form.validate_on_submit():
             
             # Get list of amounts
-            rawamounts = request.form.getlist('amount')
+            rawamounts = [amount.strip() for amount in request.form.getlist('amount')]
+            
             amounts = list(filter(None, rawamounts))
             # Get list of ingredients
             rawingredients = request.form.getlist('q')
