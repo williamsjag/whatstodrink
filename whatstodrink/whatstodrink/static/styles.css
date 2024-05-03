@@ -43,6 +43,15 @@ nav .navbar-brand .blue
   min-width: 400px;
   height: 150px;
 }
+.settingspane {
+  box-sizing: border-box;
+  border: solid;
+  border-color: #537fbe;
+  border-width: 2px;
+  padding: 20px;
+  margin: 30px;
+  margin-top: 50px;
+}
 @media screen and (max-width: 895px) {
   .homeitem {
     margin:20px;

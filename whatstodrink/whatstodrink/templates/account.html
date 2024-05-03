@@ -6,8 +6,8 @@
 
 {% block main %}
 <div class="center-accordion text-center">
-    <h1 class="mb-3">Account: <span class="blue"><strong>{{ current_user.username }}</strong></span></h1>
-    <div class="homeitem">
+    <h1 class="mb-5">Account: <span class="blue"><strong>{{ current_user.username }}</strong></span></h1>
+    <div class="settingspane m-5">
         <h2>Settings</h2>
         <form class="list-group">
             {{ form.csrf_token }}
