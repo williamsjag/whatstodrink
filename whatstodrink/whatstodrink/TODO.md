@@ -140,11 +140,11 @@ Made addingredientmodal focus the first input on opening.
 Shorten buttons on home screen and reduce margin when mobile screen.
 Made it so capitalizing a letter in modify cocktail and ingredient doesn't trigger an error
 Fixed problem with type in ingredienterrors form
+Changed manageingredients to be case insensitive
+Made altered ingredient selection carry over to modifycocktailerrors.
 
 ## In Progress
-need to change ingredient search to case-insensitive now
 
-bug: modifycocktail errors: added ingredients don't carry over
 
 bug: After creating a new ingredient in add cocktail cursor focus drops
 

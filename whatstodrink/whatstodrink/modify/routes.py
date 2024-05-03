@@ -308,8 +308,8 @@ def modifycocktail():
                 ingredients = list(filter(None, rawingredients))
                 
                 # Check for existing cocktail
-                rowsquery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
-                rows = db.session.scalar(rowsquery, {"name": form.name.data, "user_id": current_user.id})
+                namequery = text("SELECT name FROM cocktails WHERE name = :name AND user_id = :user_id")
+                rows = db.session.scalar(namequery, {"name": form.name.data, "user_id": current_user.id})
 
                 if rows and rows != form.name.data:
                     return 403
@@ -377,17 +377,20 @@ def modifycocktail():
                 
                 cocktail = db.session.execute(select(Cocktail).where(Cocktail.id == form.id.data).where(Cocktail.user_id == current_user.id)).fetchone()[0]
 
-                amountsquery = text("SELECT ingredient_id, amount, sequence FROM amounts WHERE cocktail_id = :cocktail_id ORDER BY sequence ASC")
-                amounts = db.session.execute(amountsquery, {"cocktail_id": cocktail.id}).fetchall()
-
-                ingredientsquery = text("""
-                                    SELECT i.id, i.name FROM ingredients i 
-                                    LEFT JOIN amounts a ON i.id = a.ingredient_id
-                                    WHERE a.user_id = :user_id AND a.cocktail_id = :cocktail_id
-                                    """)
-                ingredients = db.session.execute(ingredientsquery, {"user_id": current_user.id, "cocktail_id": cocktail.id}).fetchall()
-
+                # Get list of amounts
+                rawamounts = [amount.strip() for amount in request.form.getlist('amount')]
+                amounts = list(filter(None, rawamounts))
+                # Get list of ingredients
+                rawingredients = request.form.getlist('q')
+                ingredients = list(filter(None, rawingredients))
+                for amount, ingredient in zip(amounts, ingredients):
+                        ingredient = db.session.scalar(
+                            select(Ingredient.name)
+                            .where(Ingredient.name == ingredient)
+                            .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
+                            )
                 family = cocktail.family
+                zipped_a_i = zip(amounts, ingredients)
 
-                return render_template("modifycocktailformerrors.html", form=form, cocktail=cocktail, ingredients=ingredients, family=family, amounts=amounts)    
+                return render_template("modifycocktailformerrors.html", form=form, cocktail=cocktail, family=family, zipped_a_i=zipped_a_i)    
         
