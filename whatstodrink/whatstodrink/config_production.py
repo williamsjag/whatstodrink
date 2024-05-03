@@ -1,6 +1,6 @@
 import os
 
-class Config:
+class Config_Production:
     
     SESSION_PERMANENT = False
     SESSION_TYPE = 'filesystem'

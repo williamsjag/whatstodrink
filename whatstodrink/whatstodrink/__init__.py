@@ -2,9 +2,11 @@ from flask import Flask
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from whatstodrink.config import Config
+from whatstodrink.config_production import Config_Production
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
 from flask_mail import Mail
+from socket import gethostname
 
 # Configure application
 csrf = CSRFProtect()
@@ -17,8 +19,11 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
-    app.config.from_envvar('CONFIG')
+    
+    if 'liveconsole' not in gethostname():
+        app.config.from_object(Config)
+    else:
+        app.config.from_object(Config_Production)
 
     from whatstodrink.users.routes import users
     from whatstodrink.main.routes import main
