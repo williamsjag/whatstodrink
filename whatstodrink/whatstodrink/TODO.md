@@ -145,6 +145,8 @@ Made altered ingredient selection carry over to modifycocktailerrors.
 
 ## In Progress
 
+What's Missing sort by number of cocktails
+Add ability to view ingredients from cocktail views
 
 bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
 
