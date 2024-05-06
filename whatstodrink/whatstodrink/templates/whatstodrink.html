@@ -38,7 +38,7 @@
                     <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view"  value="{{ request.args.get('q') or '' }}" hx-trigger="search, keyup changed delay:500ms" hx-include="#filter, #current">
                     <!-- Clear search button when a search has been entered -->
                     {% if request.args.get('q') %}
-                    <a href="/{{ view }}" type="button" class="btn btn-outline-primary">Clear Search</a>
+                    <a href="/whatstodrink" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
                     {% endif %}
                 </div>
             </form>
@@ -55,8 +55,6 @@
         <script hx-trigger="load" hx-get="/whatstodrinkall" hx-target="#view" hx-indicator="#spinner">
             var qElement = document.getElementById('q');
             var scriptElement = document.querySelector('script[hx-trigger="load"]');
-            console.log('Q element:', qElement); // Debugging output
-            console.log('Script element:', scriptElement); // Debugging output
             if (qElement && scriptElement) {
                 var hxGet = scriptElement.getAttribute('hx-get');
                 console.log('hx-get value:', hxGet);
@@ -67,7 +65,27 @@
     {% else %}
     <!-- Filter Bar -->
     <div>
-        
+        <form class="item-center center-form form-group mb-3">
+        {{ form2.csrf_token }}
+            <label for="search" class="form-label">Filter:</label>
+            <div class="input-group mb-3">
+                <button class="btn btn-outline-primary dropdown-toggle" id="filterbutton" type="button" data-bs-toggle="dropdown" aria-expanded="false">Search</button>
+                <input type="hidden" name="filter" id="filter" value="Search">
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Search All</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Name</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Ingredient</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Family</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li>
+                </ul>
+                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view"  value="{{ request.args.get('q') or '' }}" hx-trigger="search, keyup changed delay:500ms" hx-include="#filter, #current">
+                <!-- Clear search button when a search has been entered -->
+                {% if request.args.get('q') %}
+                <a href="/whatstodrink" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
+                {% endif %}
+            </div>
+        </form>
     </div>
 
     <!-- Request user page with spinner and no buttons -->
@@ -100,6 +118,10 @@
             var current = document.getElementsByClassName("active");
             current[0].className = current[0].className.replace(" active", "");
             this.className += " active";
+            // update htmx route
+            var qElement = document.getElementById('q');
+            var hxGet = this.getAttribute('hx-get');
+            qElement.setAttribute('hx-post', hxGet);
         });
     };
     // Update filter button text

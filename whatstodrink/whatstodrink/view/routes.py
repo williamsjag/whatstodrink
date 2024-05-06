@@ -223,31 +223,79 @@ def whatstodrink():
     )
 
 
-@view.route("/whatstodrinkuser")
+@view.route("/whatstodrinkuser", methods=["GET", "POST"])
 @login_required
 def whatstodrinkuser():
 
-    form = ModifyCocktailForm()
-    subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
-    cocktails = db.session.scalars(select(Cocktail)
-                                           .join(Amount, Cocktail.id == Amount.cocktail_id)
-                                           .join(Ingredient, Amount.ingredient_id == Ingredient.id)
-                                           .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
-                                           .where(Cocktail.user_id == current_user.id)
-                                           .group_by(Cocktail.id)
-                                           .having(func.count() == subquery)
-    ).fetchall()
+    if request.method == "POST":
 
-    if not cocktails:
-        return render_template("errors/no_cocktails.html")
+        subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
+        cocktails = db.session.scalars(select(Cocktail)
+                                        .join(Amount, Cocktail.id == Amount.cocktail_id)
+                                        .join(Ingredient, Amount.ingredient_id == Ingredient.id)
+                                        .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
+                                        .where(Cocktail.user_id == current_user.id)
+                                        .group_by(Cocktail.id)
+                                        .having(func.count() == subquery)
+        ).fetchall()
 
-    sorts = set(Cocktail.family for Cocktail in cocktails)
+        filter = filter.lower()
+        if filter == 'search' or filter == 'search all':
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+            ]
+        elif filter == 'ingredient':
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+            ]
+        else:
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+            ]
 
-    session["view"] = "whatstodrinkuser" 
+        cocktails = filtered_cocktails
 
-    return render_template(
-        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
-    )
+        if not cocktails:
+            return render_template("errors/no_cocktails.html")
+        
+        
+        sorts = set(Cocktail.family for Cocktail in cocktails)
+
+        session["view"] = "whatstodrinkall"
+
+        form = ModifyCocktailForm()
+        form2 = CocktailSearchForm()
+        return render_template(
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            )
+
+    else:
+
+        subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
+        cocktails = db.session.scalars(select(Cocktail)
+                                            .join(Amount, Cocktail.id == Amount.cocktail_id)
+                                            .join(Ingredient, Amount.ingredient_id == Ingredient.id)
+                                            .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
+                                            .where(Cocktail.user_id == current_user.id)
+                                            .group_by(Cocktail.id)
+                                            .having(func.count() == subquery)
+        ).fetchall()
+
+        if not cocktails:
+            return render_template("errors/no_cocktails.html")
+
+        sorts = set(Cocktail.family for Cocktail in cocktails)
+
+        session["view"] = "whatstodrinkuser" 
+
+        form = ModifyCocktailForm()
+        form2 = CocktailSearchForm()
+        return render_template(
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"], form2=form2
+        )
 
 
 @view.route("/whatstodrinkall", methods=["GET", "POST"])
