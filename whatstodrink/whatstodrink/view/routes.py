@@ -1,8 +1,8 @@
-from flask import render_template, request, session, Blueprint
+from flask import render_template, request, session, Blueprint, redirect, url_for
 from whatstodrink.__init__ import db
 from sqlalchemy import select, text, or_, func, and_
 from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
-from whatstodrink.view.forms import ViewIngredientForm
+from whatstodrink.view.forms import ViewIngredientForm, CocktailSearchForm
 from whatstodrink.modify.forms import ModifyCocktailForm
 from flask_login import current_user, login_required
 from operator import itemgetter
@@ -70,7 +70,7 @@ def viewallcocktails():
     
     sorts = db.session.scalars(select(Cocktail.family.distinct())).fetchall()
 
-    session["view"] = "view_all" 
+    session["view"] = "viewallcocktails" 
 
     return render_template(
         "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form, view=session["view"]
@@ -94,7 +94,7 @@ def viewuser():
    
     sorts = set(Cocktail.family for Cocktail in cocktails)
 
-    session["view"] = "view_user" 
+    session["view"] = "viewuser" 
 
     return render_template(
         "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
@@ -114,7 +114,7 @@ def viewcommon():
     familyquery = text("SELECT DISTINCT family FROM cocktails WHERE shared = 1")
     sorts = db.session.scalars(familyquery).fetchall()
 
-    session["view"] = "view_common" 
+    session["view"] = "viewcommon" 
     
     return render_template(
         "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
@@ -252,7 +252,7 @@ def whatstodrinkuser():
 
     sorts = set(Cocktail.family for Cocktail in cocktails)
 
-    session["view"] = "wtd_user" 
+    session["view"] = "whatstodrinkuser" 
 
     return render_template(
         "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
@@ -264,33 +264,77 @@ def whatstodrinkuser():
 def whatstodrinkall():
 
     form = ModifyCocktailForm()
-    cocktailsquery = text("""
-                        SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list, c.shared
-                        FROM cocktails c
-                        JOIN amounts a ON c.id = a.cocktail_id
-                        LEFT JOIN ingredients i ON a.ingredient_id = i.id
-                        LEFT JOIN stock s ON a.ingredient_id = s.ingredient_id
-                        WHERE (
-                          s.stock = 1 AND s.user_id = :user_id
-                          AND (
-                            (i.user_id = :user_id AND (c.user_id = :user_id OR c.shared = 1))
-                            OR
-                            (i.shared = 1 AND (c.user_id = :user_id OR c.shared = 1))
+    searchform = CocktailSearchForm()
+
+    if request.method =="POST":
+
+        # check for search queries 
+        q = form.q.data
+        view = form.view.data
+        filter = form.filter.data
+       
+
+        if q is not None:
+            cocktailsquery = text("""
+                            SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list, c.shared
+                            FROM cocktails c
+                            JOIN amounts a ON c.id = a.cocktail_id
+                            LEFT JOIN ingredients i ON a.ingredient_id = i.id
+                            LEFT JOIN stock s ON a.ingredient_id = s.ingredient_id
+                            WHERE (
+                            s.stock = 1 AND s.user_id = :user_id
+                            AND (
+                                (i.user_id = :user_id AND (c.user_id = :user_id OR c.shared = 1))
+                                OR
+                                (i.shared = 1 AND (c.user_id = :user_id OR c.shared = 1))
+                                )
                             )
-                        )
-                        GROUP BY c.id
-                        HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts aa WHERE aa.cocktail_id = c.id)
-                        """)
-   
-    cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
-    if not cocktails:
-        return render_template("errors/no_cocktails.html")
+                            AND :q IS NULL OR c.:filter LIKE '%' || :q || '%'
+                            GROUP BY c.id
+                            HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts aa WHERE aa.cocktail_id = c.id)
+                            """)
+            cocktails = db.session.scalars(select(Cocktail)
+                                           .join(Amount, Cocktail.id == Amount.cocktail_id)
+                                           .join(Ingredient, Amount.ingredient_id == Ingredient.id)
+                                           .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
+                                           .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))
+                                           .group_by(Cocktail.id)
+                                           .having(func.count(Cocktail.id) == func.count(Amount))
+            ).fetchall()
+                                           
+            cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
+            if not cocktails:
+                return render_template("errors/no_cocktails.html")
 
-    sorts = set(Cocktail.family for Cocktail in cocktails)
+            sorts = set(Cocktail.family for Cocktail in cocktails)
 
-    session["view"] = "wtd_all" 
+            session["view"] = "whatstodrinkall" 
 
-    return render_template(
-        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
-        )
+            return render_template(
+                "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
+                )
 
+        else:
+            return redirect(url_for("view.whatstodrinkall)"))
+                            
+    if request.method == "GET":
+
+        subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
+        cocktails = db.session.scalars(select(Cocktail)
+                                           .join(Amount, Cocktail.id == Amount.cocktail_id)
+                                           .join(Ingredient, Amount.ingredient_id == Ingredient.id)
+                                           .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
+                                           .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))
+                                           .group_by(Cocktail.id)
+                                           .having(func.count() == subquery)
+        ).fetchall()
+        if not cocktails:
+            return render_template("errors/no_cocktails.html")
+
+        sorts = set(Cocktail.family for Cocktail in cocktails)
+
+        session["view"] = "whatstodrinkall" 
+
+        return render_template(
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
+            )
