@@ -154,7 +154,9 @@ def missingoneall():
 
     for ingredient, count in counts.items():
         setattr(ingredient, "count", count)
-        missing_ingredients.append(ingredient)   
+        missing_ingredients.append(ingredient)  
+
+    missing_ingredients.sort(key=lambda x: x.count, reverse=True) 
     
     return render_template(
         "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, defaults=session["defaults"]
