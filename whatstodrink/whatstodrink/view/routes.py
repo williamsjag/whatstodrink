@@ -49,76 +49,177 @@ def ingredientsearch():
 @view.route("/viewcocktails", methods=["GET", "POST"])
 @login_required
 def viewcocktails():
-
+    form2 = CocktailSearchForm()
     return render_template(
-        "viewcocktails.html", defaults=session["defaults"]
+        "viewcocktails.html", defaults=session["defaults"], form2=form2
     )
 
-@view.route("/viewallcocktails")
+@view.route("/viewallcocktails",  methods=["GET", "POST"])
 @login_required
 def viewallcocktails():
 
-    form = ModifyCocktailForm()
+    form = CocktailSearchForm()
+    cocktails = db.session.scalars(select(Cocktail).where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))).fetchall()
+    # check for querires
+    q = form.q.data
+    filter = form.filter.data
 
-    userquery = text("""       
-                    SELECT name, id, family, build, source, recipe, ingredient_list, notes, shared \
-                    FROM cocktails
-                    WHERE (user_id = :user_id OR shared = 1)
-                    """)
+    if request.method == "POST":
+        filter = filter.lower()
+        if filter == 'search' or filter == 'search all':
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+            ]
+        elif filter == 'ingredient':
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+            ]
+        else:
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+            ]
 
-    cocktails = db.session.execute(userquery, {"user_id": current_user.id}).fetchall()
-    
-    sorts = db.session.scalars(select(Cocktail.family.distinct())).fetchall()
+        cocktails = filtered_cocktails
 
-    session["view"] = "viewallcocktails" 
+        if not cocktails:
+            return render_template("errors/no_cocktails.html")
+        
+        
+        sorts = set(Cocktail.family for Cocktail in cocktails)
 
-    return render_template(
-        "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form, view=session["view"]
-    )
+        session["view"] = "viewallcocktails"
 
-@view.route("/viewuser")
+        form = ModifyCocktailForm()
+        form2 = CocktailSearchForm()
+        return render_template(
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            )
+
+    # no search bar
+    else:
+        form = ModifyCocktailForm()
+        
+        sorts = db.session.scalars(select(Cocktail.family.distinct())).fetchall()
+
+        session["view"] = "viewallcocktails" 
+
+        form = ModifyCocktailForm()
+        form2 = CocktailSearchForm()
+        return render_template(
+            "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form, view=session["view"], form2=form2
+        )
+
+@view.route("/viewuser", methods=["GET", "POST"])
 @login_required
 def viewuser():
 
-    form = ModifyCocktailForm()
-
-    cocktailquery = text("SELECT name, id, family, build, source, notes, recipe, ingredient_list, shared \
-                        FROM cocktails \
-                        WHERE user_id = :user_id \
-                        ")
+    form = CocktailSearchForm()
+    q = form.q.data
+    filter = form.filter.data
    
-    cocktails = db.session.execute(cocktailquery, {"user_id": current_user.id}).fetchall()
+    cocktails = db.session.scalars(select(Cocktail).where(Cocktail.user_id == current_user.id)).fetchall()
 
     if not cocktails:
         return render_template("errors/no_cocktails.html")
-   
-    sorts = set(Cocktail.family for Cocktail in cocktails)
+    
+    if request.method == "POST":
+        filter = filter.lower()
+        if filter == 'search' or filter == 'search all':
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+            ]
+        elif filter == 'ingredient':
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+            ]
+        else:
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+            ]
 
-    session["view"] = "viewuser" 
+        cocktails = filtered_cocktails
 
-    return render_template(
-        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
-    )
+        if not cocktails:
+            return render_template("errors/no_cocktails.html")
+        
+        
+        sorts = set(Cocktail.family for Cocktail in cocktails)
 
-@view.route("/viewcommon")
+        session["view"] = "viewuser"
+
+        form = ModifyCocktailForm()
+        form2 = CocktailSearchForm()
+        return render_template(
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            )
+    
+    # no filter bar
+    else:
+
+        sorts = set(Cocktail.family for Cocktail in cocktails)
+
+        session["view"] = "viewuser" 
+        form = ModifyCocktailForm()
+        form2 = CocktailSearchForm()
+        return render_template(
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
+        )
+
+@view.route("/viewcommon", methods=["GET", "POST"])
 @login_required
 def viewcommon():
-    form = ModifyCocktailForm()
-    cocktailsquery = text("""
-                                SELECT name, build, source, recipe, family, ingredient_list, shared
-                                FROM cocktails
-                                WHERE shared = 1
-                                """)
-    cocktails = db.session.execute(cocktailsquery).fetchall()
+    form = CocktailSearchForm()
+    q = form.q.data
+    filter = form.filter.data
+    cocktails = db.session.scalars(select(Cocktail).where(Cocktail.shared == 1)).fetchall()
 
-    familyquery = text("SELECT DISTINCT family FROM cocktails WHERE shared = 1")
-    sorts = db.session.scalars(familyquery).fetchall()
+    if request.method == "POST":
+        filter = filter.lower()
+        if filter == 'search' or filter == 'search all':
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+            ]
+        elif filter == 'ingredient':
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+            ]
+        else:
+            filtered_cocktails = [
+                cocktail for cocktail in cocktails
+                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+            ]
 
-    session["view"] = "viewcommon" 
-    
-    return render_template(
-        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
-    )
+        cocktails = filtered_cocktails
+
+        if not cocktails:
+            return render_template("errors/no_cocktails.html")
+        
+        sorts = set(Cocktail.family for Cocktail in cocktails)
+
+        session["view"] = "viewcommon"
+
+        form = ModifyCocktailForm()
+        form2 = CocktailSearchForm()
+        return render_template(
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            )
+    else:
+        familyquery = text("SELECT DISTINCT family FROM cocktails WHERE shared = 1")
+        sorts = db.session.scalars(familyquery).fetchall()
+
+        session["view"] = "viewcommon" 
+        
+        return render_template(
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
+        )
 
 @view.route("/missingone")
 @login_required
@@ -227,17 +328,26 @@ def whatstodrink():
 @login_required
 def whatstodrinkuser():
 
-    if request.method == "POST":
+    form = CocktailSearchForm()
+    # check for search queries 
+    q = form.q.data
+    filter = form.filter.data
 
-        subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
-        cocktails = db.session.scalars(select(Cocktail)
+    subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
+    cocktails = db.session.scalars(select(Cocktail)
                                         .join(Amount, Cocktail.id == Amount.cocktail_id)
                                         .join(Ingredient, Amount.ingredient_id == Ingredient.id)
                                         .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
                                         .where(Cocktail.user_id == current_user.id)
                                         .group_by(Cocktail.id)
                                         .having(func.count() == subquery)
-        ).fetchall()
+    ).fetchall()
+
+    if not cocktails:
+        return render_template("errors/no_cocktails.html")
+
+
+    if request.method == "POST":
 
         filter = filter.lower()
         if filter == 'search' or filter == 'search all':
@@ -274,19 +384,6 @@ def whatstodrinkuser():
 
     else:
 
-        subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
-        cocktails = db.session.scalars(select(Cocktail)
-                                            .join(Amount, Cocktail.id == Amount.cocktail_id)
-                                            .join(Ingredient, Amount.ingredient_id == Ingredient.id)
-                                            .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
-                                            .where(Cocktail.user_id == current_user.id)
-                                            .group_by(Cocktail.id)
-                                            .having(func.count() == subquery)
-        ).fetchall()
-
-        if not cocktails:
-            return render_template("errors/no_cocktails.html")
-
         sorts = set(Cocktail.family for Cocktail in cocktails)
 
         session["view"] = "whatstodrinkuser" 
@@ -307,17 +404,20 @@ def whatstodrinkall():
     q = form.q.data
     filter = form.filter.data
 
+    subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
+    cocktails = db.session.scalars(select(Cocktail)
+                                    .join(Amount, Cocktail.id == Amount.cocktail_id)
+                                    .join(Ingredient, Amount.ingredient_id == Ingredient.id)
+                                    .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
+                                    .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))
+                                    .group_by(Cocktail.id)
+                                    .having(func.count() == subquery)
+    ).fetchall()
+
+    if not cocktails:
+        return render_template("errors/no_cocktails.html")
+
     if request.method == "POST":
-        
-        subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
-        cocktails = db.session.scalars(select(Cocktail)
-                                        .join(Amount, Cocktail.id == Amount.cocktail_id)
-                                        .join(Ingredient, Amount.ingredient_id == Ingredient.id)
-                                        .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
-                                        .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))
-                                        .group_by(Cocktail.id)
-                                        .having(func.count() == subquery)
-        ).fetchall()
 
         filter = filter.lower()
         if filter == 'search' or filter == 'search all':
@@ -355,18 +455,6 @@ def whatstodrinkall():
         
     # If no search bar
     else:
-
-        subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
-        cocktails = db.session.scalars(select(Cocktail)
-                                        .join(Amount, Cocktail.id == Amount.cocktail_id)
-                                        .join(Ingredient, Amount.ingredient_id == Ingredient.id)
-                                        .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
-                                        .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))
-                                        .group_by(Cocktail.id)
-                                        .having(func.count() == subquery)
-        ).fetchall()
-        if not cocktails:
-            return render_template("errors/no_cocktails.html")
 
         sorts = set(Cocktail.family for Cocktail in cocktails)
 

@@ -17,23 +17,88 @@
                 <button hx-get="/viewcommon" hx-target="#view" hx-indicator="#spinner" type="button" role="group" class="btn btn-outline-primary">Common Cocktails</button>
             </div>
         </div>
+
+        <!-- Filter Bar -->
+        <div>
+            <form class="item-center center-form form-group mb-3">
+            {{ form2.csrf_token }}
+                <label for="search" class="form-label">Filter:</label>
+                <div class="input-group mb-3">
+                    <button class="btn btn-outline-primary dropdown-toggle" id="filterbutton" type="button" data-bs-toggle="dropdown" aria-expanded="false">Search</button>
+                    <input type="hidden" name="filter" id="filter" value="Search">
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Search All</button></li>
+                        <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Name</button></li>
+                        <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Ingredient</button></li>
+                        <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Family</button></li>
+                        <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
+                        <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li>
+                    </ul>
+                    <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view"  value="{{ request.args.get('q') or '' }}" hx-trigger="search, keyup changed delay:500ms" hx-include="#filter, #current">
+                    <!-- Clear search button when a search has been entered -->
+                    {% if request.args.get('q') %}
+                    <a href="/viewcocktails" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
         <div id="view">
             <div class="center-text">
                 <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
             </div>
         </div>
         <!-- Load view all by default -->
-        <script hx-trigger="load" hx-get="/viewallcocktails" hx-indicator="#spinner" hx-target="#view"></script>
-
+        <script hx-trigger="load" hx-get="/viewallcocktails" hx-target="#view" hx-indicator="#spinner">
+            var qElement = document.getElementById('q');
+            var scriptElement = document.querySelector('script[hx-trigger="load"]');
+            if (qElement && scriptElement) {
+                var hxGet = scriptElement.getAttribute('hx-get');
+                console.log('hx-get value:', hxGet);
+                qElement.setAttribute('hx-post', hxGet);
+                htmx.process(qElement);
+            }
+        </script>
     {% else %}
+    <!-- Filter Bar -->
+    <div>
+        <form class="item-center center-form form-group mb-3">
+        {{ form2.csrf_token }}
+            <label for="search" class="form-label">Filter:</label>
+            <div class="input-group mb-3">
+                <button class="btn btn-outline-primary dropdown-toggle" id="filterbutton" type="button" data-bs-toggle="dropdown" aria-expanded="false">Search</button>
+                <input type="hidden" name="filter" id="filter" value="Search">
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Search All</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Name</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Ingredient</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Family</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
+                    <!-- <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li> -->
+                </ul>
+                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view"  value="{{ request.args.get('q') or '' }}" hx-trigger="search, keyup changed delay:500ms" hx-include="#filter, #current">
+                <!-- Clear search button when a search has been entered -->
+                {% if request.args.get('q') %}
+                <a href="/viewcocktails" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
     <!-- request user page with no buttons -->
     <div id="view">
         <div class="center-text">
             <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
         </div>
     </div>
-    <script hx-trigger="load" hx-get="/viewuser" hx-indicator="#spinner" hx-target="#view"></script>
-
+    <script hx-trigger="load" hx-get="/viewuser" hx-target="#view" hx-indicator="#spinner">
+        var qElement = document.getElementById('q');
+        var sriptElement = document.querySelector('script[hx-trigger="load"]');
+        if (qElement && scriptElement) {
+            var hxGet = scriptElement.getAttribute('hx-get');
+            qElement.setAttribute('hx-post', hxGet);
+            htmx.process(qElement);
+        }
+    </script>
     {% endif %}
 
     <!-- Modal -->
@@ -57,9 +122,19 @@
             var current = document.getElementsByClassName("active");
             current[0].className = current[0].className.replace(" active", "");
             this.className += " active";
+            // update htmx route
+            var qElement = document.getElementById('q');
+            var hxGet = this.getAttribute('hx-get');
+            qElement.setAttribute('hx-post', hxGet);
+            htmx.process(qElement);
         });
     }
-    
+    // Update filter button text
+    function showFilter(item) {
+        document.getElementById("filterbutton").innerHTML = item.innerHTML;
+        document.getElementById("filter").value = item.innerHTML;
+        document.getElementById('q').focus();
+    }
     function populateModal(cocktailName) {
             document.addEventListener('htmx:afterRequest', function(evt) {
                 document.getElementById('modifiedCocktailName').value = cocktailName;

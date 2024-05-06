@@ -59,6 +59,7 @@
                 var hxGet = scriptElement.getAttribute('hx-get');
                 console.log('hx-get value:', hxGet);
                 qElement.setAttribute('hx-post', hxGet);
+                htmx.process(qElement);
             }
         </script>
 
@@ -101,6 +102,7 @@
         if (qElement && scriptElement) {
             var hxGet = scriptElement.getAttribute('hx-get');
             qElement.setAttribute('hx-post', hxGet);
+            htmx.process(qElement);
         }
     </script>
 
@@ -122,6 +124,7 @@
             var qElement = document.getElementById('q');
             var hxGet = this.getAttribute('hx-get');
             qElement.setAttribute('hx-post', hxGet);
+            htmx.process(qElement);
         });
     };
     // Update filter button text
