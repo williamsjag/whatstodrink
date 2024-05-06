@@ -143,6 +143,7 @@ Fixed problem with type in ingredienterrors form
 Changed manageingredients to be case insensitive
 Made altered ingredient selection carry over to modifycocktailerrors.
 Made what's missing sort by number of cocktails in each ingredient.
+Added search bar to whatstodrink and viewcocktails
 
 ## In Progress
 
@@ -151,6 +152,7 @@ Show cocktails that use an ingredient- option to replace one ingredient with ano
 cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
 
 bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
+bug: after pressing enter in cocktail search it doesn't remember searches and shows all.
 
 bug: 2024-04-24 11:05:59,285: Error running WSGI application
 2024-04-24 11:05:59,301: sqlalchemy.exc.OperationalError: (mysql.connector.errors.OperationalError) MySQL Connection not available. all the time Solved?

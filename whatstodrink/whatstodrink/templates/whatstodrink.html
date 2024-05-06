@@ -35,7 +35,7 @@
                         <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
                         <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li>
                     </ul>
-                    <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view"  value="{{ request.args.get('q') or '' }}" hx-trigger="search, keyup changed delay:500ms" hx-include="#filter, #current">
+                    <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view"  value="{{ request.args.get('q') or '' }}" hx-trigger="filterChange from:body, search, keyup changed delay:500ms" hx-include="#filter, #current">
                     <!-- Clear search button when a search has been entered -->
                     {% if request.args.get('q') %}
                     <a href="/whatstodrink" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
@@ -80,7 +80,7 @@
                     <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
                     <!-- <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li> -->
                 </ul>
-                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view"  value="{{ request.args.get('q') or '' }}" hx-trigger="search, keyup changed delay:500ms" hx-include="#filter, #current">
+                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view"  value="{{ request.args.get('q') or '' }}" hx-trigger="filterChange from:body, search, keyup changed delay:500ms" hx-include="#filter, #current">
                 <!-- Clear search button when a search has been entered -->
                 {% if request.args.get('q') %}
                 <a href="/whatstodrink" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
@@ -111,6 +111,7 @@
 
 {% block javascript %}
 <script>
+
     // change active class on click
     var button_group = document.getElementById("buttons");
     var btns = button_group.getElementsByClassName("btn");
@@ -124,7 +125,6 @@
             var qElement = document.getElementById('q');
             var hxGet = this.getAttribute('hx-get');
             qElement.setAttribute('hx-post', hxGet);
-            htmx.process(qElement);
         });
     };
     // Update filter button text
@@ -132,6 +132,8 @@
         document.getElementById("filterbutton").innerHTML = item.innerHTML;
         document.getElementById("filter").value = item.innerHTML;
         document.getElementById('q').focus();
+        const filterChange = new Event('filterChange', { 'bubbles': true });
+        htmx.trigger(htmx.find('body'),'filterChange');
     }
 </script>
 
