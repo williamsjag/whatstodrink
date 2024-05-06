@@ -142,12 +142,13 @@ Made it so capitalizing a letter in modify cocktail and ingredient doesn't trigg
 Fixed problem with type in ingredienterrors form
 Changed manageingredients to be case insensitive
 Made altered ingredient selection carry over to modifycocktailerrors.
+Made what's missing sort by number of cocktails in each ingredient.
 
 ## In Progress
 
-What's Missing sort by number of cocktails
 Add ability to view ingredients from cocktail views
 Show cocktails that use an ingredient- option to replace one ingredient with another in one or all
+cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
 
 bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
 

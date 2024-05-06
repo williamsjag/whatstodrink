@@ -1,3 +1,20 @@
+<!-- Filter Bar -->
+<div>
+    <form class="item-center center-form form-group mb-3">
+        <label for="search" class="form-label">Filter:</label>
+        <div class="input-group mb-3">
+            <input id="search" class="form-control" type="search" name="q" placeholder="Type to search" hx-get="/manageingredients" hx-target="#ingredientstable" hx-trigger="search, keyup changed delay:300ms" value="{{ request.args.get('q') or '' }}"/>
+            <!-- Clear search button when a search has been entered -->
+            {% if request.args.get('q') %}
+            <a href="/manageingredients" type="button" class="btn btn-outline-primary">Clear Search</a>
+            {% endif %}
+        </div>
+    </form>
+    <div class="text-center">
+        <button class="btn btn-primary mb-5" hx-get="/addingredientmodal2" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">Add Ingredient</button>
+    </div>
+</div>
+
 <div class="center-text">
     <svg id="spinner" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_0XTQ{transform-origin:center;animation:spinner_y6GP .75s linear infinite}@keyframes spinner_y6GP{100%{transform:rotate(360deg)}}</style><path class="htmx-indicator spinner_0XTQ" d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"/></svg>
 </div>

@@ -70,8 +70,10 @@ def viewallcocktails():
     
     sorts = db.session.scalars(select(Cocktail.family.distinct())).fetchall()
 
+    session["view"] = "view_all" 
+
     return render_template(
-        "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form
+        "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form, view=session["view"]
     )
 
 @view.route("/viewuser")
@@ -92,8 +94,10 @@ def viewuser():
    
     sorts = set(Cocktail.family for Cocktail in cocktails)
 
+    session["view"] = "view_user" 
+
     return render_template(
-        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
+        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
     )
 
 @view.route("/viewcommon")
@@ -109,9 +113,11 @@ def viewcommon():
 
     familyquery = text("SELECT DISTINCT family FROM cocktails WHERE shared = 1")
     sorts = db.session.scalars(familyquery).fetchall()
+
+    session["view"] = "view_common" 
     
     return render_template(
-        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
+        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
     )
 
 @view.route("/missingone")
@@ -156,7 +162,9 @@ def missingoneall():
         setattr(ingredient, "count", count)
         missing_ingredients.append(ingredient)
 
-    missing_ingredients.sort(key=lambda x: x.count, reverse=True)    
+    missing_ingredients.sort(key=lambda x: x.count, reverse=True)
+
+    
     
     return render_template(
         "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, defaults=session["defaults"]
@@ -244,8 +252,10 @@ def whatstodrinkuser():
 
     sorts = set(Cocktail.family for Cocktail in cocktails)
 
+    session["view"] = "wtd_user" 
+
     return render_template(
-        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
+        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
     )
 
 
@@ -278,7 +288,9 @@ def whatstodrinkall():
 
     sorts = set(Cocktail.family for Cocktail in cocktails)
 
+    session["view"] = "wtd_all" 
+
     return render_template(
-        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
+        "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
         )
 
