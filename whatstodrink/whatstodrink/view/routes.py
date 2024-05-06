@@ -5,6 +5,7 @@ from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
 from whatstodrink.view.forms import ViewIngredientForm
 from whatstodrink.modify.forms import ModifyCocktailForm
 from flask_login import current_user, login_required
+from operator import itemgetter
 
 view = Blueprint('view', __name__)
 
@@ -144,68 +145,14 @@ def missingoneall():
                                         .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
                                         .where(Amount.cocktail_id == cocktail.id)
                                         )
+        setattr(ingredient, "count", 1)
         if ingredient not in missing_ingredients:
             missing_ingredients.append(ingredient)
+        else:
+            ingredient.count += 1
         setattr(cocktail, 'ingredient_name', ingredient.name)
 
-    # cocktailsquery = text("""
-    #                     SELECT c.id, c.name, c.family, c.build, c.source, c.recipe, c.ingredient_list, c.notes, c.shared 
-    #                     FROM cocktails c 
-    #                     JOIN amounts a ON c.id = a.cocktail_id 
-    #                     LEFT JOIN ingredients i ON a.ingredient_id = i.id
-    #                     LEFT JOIN stock s ON a.ingredient_id = s.ingredient_id
-    #                     WHERE (
-    #                       s.stock != 1 AND s.user_id = :user_id AND (c.user_id = :user_id OR c.shared = 1) 
-    #                       )
-    #                     GROUP BY c.id 
-    #                     HAVING COUNT(*) = 1
-    #                       """) 
-    # cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
-    # if not cocktails:
-    #     return render_template("errors/no_cocktails.html")
-
-    # missingquery = text("""WITH sad_cocktails AS (
-    #                         SELECT c.id 
-    #                         FROM cocktails c 
-    #                         JOIN amounts a ON c.id = a.cocktail_id 
-    #                         LEFT JOIN ingredients i ON a.ingredient_id = i.id
-    #                         LEFT JOIN stock s ON a.ingredient_id = s.ingredient_id
-    #                         WHERE (
-    #                         s.stock != 1 AND s.user_id = :user_id AND (c.user_id = :user_id OR c.shared = 1) 
-    #                         )
-    #                         GROUP BY c.id 
-    #                         HAVING COUNT(*) = 1
-    #                     ), 
-    #                     sad_ingredients AS (
-    #                         SELECT ingredient_id 
-    #                         FROM amounts
-    #                         WHERE (cocktail_id IN (SELECT id FROM sad_cocktails))
-    #                     )
-    #                     SELECT i.id, i.name
-    #                     FROM ingredients i
-    #                     JOIN stock s ON i.id = s.ingredient_id
-    #                     WHERE 
-    #                         (s.stock != 1 AND
-    #                         (s.ingredient_id IN 
-    #                             (
-    #                             SELECT ingredient_id 
-    #                             FROM sad_ingredients 
-    #                             )
-    #                         )
-    #                         ) 
-    #                     GROUP BY i.id
-    #                       """)
-    # missing_ingredients = db.session.execute(missingquery, {"user_id": current_user.id}).fetchall()
-
-    # amountsquery = text("""
-    #                     SELECT a.cocktail_id, a.ingredient_id, a.amount
-    #                     FROM amounts a
-    #                     LEFT JOIN cocktails c ON a.cocktail_id = c.id
-    #                     WHERE a.user_id = :user_id
-    #                     OR c.shared = 1
-    #                     """)
-    # amounts = db.session.execute(amountsquery, {"user_id": current_user.id}).fetchall()
-
+    missing_ingredients = sorted(missing_ingredients, key=lambda x: x.count, reverse=True)    
     
     return render_template(
         "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, defaults=session["defaults"]
@@ -235,9 +182,14 @@ def missingoneuser():
                                         .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
                                         .where(Amount.cocktail_id == cocktail.id)
                                         )
+        setattr(ingredient, "count", 1)
         if ingredient not in missing_ingredients:
             missing_ingredients.append(ingredient)
-        setattr(cocktail, 'ingredient_name', ingredient.name)    
+        else:
+            ingredient.count += 1
+        setattr(cocktail, 'ingredient_name', ingredient.name)
+
+    missing_ingredients = sorted(missing_ingredients, key=lambda x: x.count, reverse=True)    
 
     return render_template(
         "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients
