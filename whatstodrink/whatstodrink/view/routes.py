@@ -146,17 +146,17 @@ def missingoneall():
                                         .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
                                         .where(Amount.cocktail_id == cocktail.id)
                                         )
+        setattr(cocktail, 'ingredient_name', ingredient.name)
         if ingredient not in counts:
             counts[ingredient] = 1
         else:
             counts[ingredient] += 1
-        setattr(cocktail, 'ingredient_name', ingredient.name)
 
     for ingredient, count in counts.items():
         setattr(ingredient, "count", count)
-        missing_ingredients.append(ingredient)  
+        missing_ingredients.append(ingredient)
 
-    missing_ingredients.sort(key=lambda x: x.count, reverse=True) 
+    missing_ingredients.sort(key=lambda x: x.count, reverse=True)    
     
     return render_template(
         "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, defaults=session["defaults"]
