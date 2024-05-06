@@ -6,11 +6,12 @@
         <div class="input-group mb-3">
             <button class="btn btn-outline-primary dropdown-toggle" name="filter" id="filter" type="button" data-bs-toggle="dropdown" aria-expanded="false">Search</button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Name</a></li>
-                <li><a class="dropdown-item" href="#">Ingredients</a></li>
-                <li><a class="dropdown-item" href="#">Family</a></li>
-                <li><a class="dropdown-item" href="#">Source</a></li>
-                <li><a class="dropdown-item" href="#">Tags</a></li>
+                <li><a class="dropdown-item" onclick="showFilter(this)" href="#">Search All</a></li>
+                <li><a class="dropdown-item" onclick="showFilter(this)" href="#">Name</a></li>
+                <li><a class="dropdown-item" onclick="showFilter(this)" href="#">Ingredients</a></li>
+                <li><a class="dropdown-item" onclick="showFilter(this)" href="#">Family</a></li>
+                <li><a class="dropdown-item" onclick="showFilter(this)" href="#">Source</a></li>
+                <li><a class="dropdown-item" onclick="showFilter(this)" href="#">Tags</a></li>
             </ul>
             <input id="search" class="form-control" type="search" name="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#cocktail_list" hx-trigger="search, keyup changed delay:500ms" value="{{ request.args.get('q') or '' }}"/>
             <!-- Clear search button when a search has been entered -->
@@ -132,3 +133,9 @@
         <div class="modal-content" id="modalform"></div>
     </div>
 </div>
+
+<script>
+    function showFilter(item) {
+        document.getElementById("filter").innerHTML = item.innerHTML;
+    }
+</script>
