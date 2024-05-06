@@ -228,24 +228,15 @@ def whatstodrink():
 def whatstodrinkuser():
 
     form = ModifyCocktailForm()
-    cocktailsquery = text("""
-                        SELECT c.name, c.id, c.family, c.build, c.source, c.notes, c.recipe, c.ingredient_list, c.shared
-                        FROM cocktails c
-                        JOIN amounts a ON c.id = a.cocktail_id
-                        LEFT JOIN ingredients i ON a.ingredient_id = i.id
-                        LEFT JOIN stock s ON a.ingredient_id = s.ingredient_id
-                        WHERE (
-                          s.stock = 1 AND s.user_id = :user_id
-                          AND (
-                            (i.user_id = :user_id AND c.user_id = :user_id)
-                            OR
-                            (i.shared = 1 AND c.user_id = :user_id)
-                            )
-                        )
-                        GROUP BY c.id
-                        HAVING COUNT(*) = (SELECT COUNT(*) FROM amounts aa WHERE aa.cocktail_id = c.id)
-                        """)
-    cocktails = db.session.execute(cocktailsquery, {"user_id": current_user.id}).fetchall()
+    subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
+    cocktails = db.session.scalars(select(Cocktail)
+                                           .join(Amount, Cocktail.id == Amount.cocktail_id)
+                                           .join(Ingredient, Amount.ingredient_id == Ingredient.id)
+                                           .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock == 1, Stock.user_id == current_user.id))
+                                           .where(Cocktail.user_id == current_user.id)
+                                           .group_by(Cocktail.id)
+                                           .having(func.count() == subquery)
+    ).fetchall()
 
     if not cocktails:
         return render_template("errors/no_cocktails.html")
