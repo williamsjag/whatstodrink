@@ -11,4 +11,3 @@ class ViewIngredientForm(FlaskForm):
 class CocktailSearchForm(FlaskForm):
     filter = StringField('Filter')
     q = StringField('Search')
-    view = StringField('View')
