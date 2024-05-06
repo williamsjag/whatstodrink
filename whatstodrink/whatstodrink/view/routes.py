@@ -138,6 +138,7 @@ def missingoneall():
     cocktails = db.session.scalars(cocktailquery).fetchall()
 
     missing_ingredients = []
+    counts = {}
     
     for cocktail in cocktails:
         ingredient = db.session.scalar(select(Ingredient)
@@ -145,14 +146,15 @@ def missingoneall():
                                         .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
                                         .where(Amount.cocktail_id == cocktail.id)
                                         )
-        setattr(ingredient, "count", 1)
-        if ingredient not in missing_ingredients:
-            missing_ingredients.append(ingredient)
+        if ingredient not in counts:
+            counts[ingredient] = 1
         else:
-            ingredient.count += 1
+            counts[ingredient] += 1
         setattr(cocktail, 'ingredient_name', ingredient.name)
 
-    missing_ingredients = sorted(missing_ingredients, key=lambda x: x.count, reverse=True)    
+    for ingredient, count in counts.items():
+        setattr(ingredient, "count", count)
+        missing_ingredients.append(ingredient)   
     
     return render_template(
         "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, defaults=session["defaults"]
