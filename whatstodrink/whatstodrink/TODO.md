@@ -148,15 +148,20 @@ Added search trigger for changing filter
 
 ## In Progress
 
-Add ability to view ingredients from cocktail views
-Show cocktails that use an ingredient- option to replace one ingredient with another in one or all
+Make flashed messages show the cocktail or ingredient being modified/deleted
+
+Cocktail filters:
+    -Add plus button for additional filters
+    -make sure filters work after pressing enter
+    -make sure capitalization and special characters don't throw it off
+
+Add viewingredientmodal to cocktail views
+    -Add cocktails that use ingredient at bottom of modal, and pass that to the delete route instead of doing a new query
+
 cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
 
 bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
 bug: after pressing enter in cocktail search it loads all without any searches
-
-bug: 2024-04-24 11:05:59,285: Error running WSGI application
-2024-04-24 11:05:59,301: sqlalchemy.exc.OperationalError: (mysql.connector.errors.OperationalError) MySQL Connection not available. all the time Solved?
 
 bug?: clicking accordions may cause columns to shift
 
@@ -175,9 +180,6 @@ recipe share page that opens a url like /cocktails-userid-cocktailid.html that c
     -button to login to save to your cocktails
     -once logged in replace with save to your cocktails
 
-Search Field for cocktail views
-
 Reports view- number of cocktails per ingredient, searchable using cocktail searches
 
-make navbar active class work
 user modifiability to all ingredients (incl. hide)

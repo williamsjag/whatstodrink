@@ -61,7 +61,7 @@ def viewallcocktails():
     form = CocktailSearchForm()
     cocktails = db.session.scalars(select(Cocktail).where(or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1))).fetchall()
     # check for querires
-    q = form.q.data
+    q = form.q.data.lower()
     filter = form.filter.data
 
     if request.method == "POST":
@@ -117,7 +117,7 @@ def viewallcocktails():
 def viewuser():
 
     form = CocktailSearchForm()
-    q = form.q.data
+    q = form.q.data.lower()
     filter = form.filter.data
    
     cocktails = db.session.scalars(select(Cocktail).where(Cocktail.user_id == current_user.id)).fetchall()
@@ -175,7 +175,7 @@ def viewuser():
 @login_required
 def viewcommon():
     form = CocktailSearchForm()
-    q = form.q.data
+    q = form.q.data.lower()
     filter = form.filter.data
     cocktails = db.session.scalars(select(Cocktail).where(Cocktail.shared == 1)).fetchall()
 
@@ -330,7 +330,7 @@ def whatstodrinkuser():
 
     form = CocktailSearchForm()
     # check for search queries 
-    q = form.q.data
+    q = form.q.data.lower()
     filter = form.filter.data
 
     subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
@@ -401,7 +401,7 @@ def whatstodrinkall():
 
     form = CocktailSearchForm()
     # check for search queries 
-    q = form.q.data
+    q = form.q.data.lower()
     filter = form.filter.data
 
     subquery = select(func.count()).select_from(Amount).where(Amount.cocktail_id == Cocktail.id).correlate_except(Amount).scalar_subquery()
