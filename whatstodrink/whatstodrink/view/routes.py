@@ -66,6 +66,7 @@ def viewallcocktails():
 
     if request.method == "POST":
         filter = filter.lower()
+        q = q.lower()
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
@@ -127,6 +128,7 @@ def viewuser():
     
     if request.method == "POST":
         filter = filter.lower()
+        q = q.lower()
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
@@ -181,6 +183,8 @@ def viewcommon():
 
     if request.method == "POST":
         filter = filter.lower()
+        q = q.lower()
+
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
@@ -350,6 +354,8 @@ def whatstodrinkuser():
     if request.method == "POST":
 
         filter = filter.lower()
+        q = q.lower()
+
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
@@ -420,6 +426,7 @@ def whatstodrinkall():
     if request.method == "POST":
 
         filter = filter.lower()
+        q = q.lower()
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
