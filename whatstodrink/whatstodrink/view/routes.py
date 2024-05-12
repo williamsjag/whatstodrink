@@ -46,7 +46,7 @@ def ingredientsearch():
     return render_template("ingredientsearch.html", results=results)
 
 
-@view.route("/viewcocktails", methods=["GET", "POST"])
+@view.route("/viewcocktails", methods=["GET"])
 @login_required
 def viewcocktails():
     form2 = CocktailSearchForm()
@@ -88,29 +88,21 @@ def viewallcocktails():
         if not cocktails:
             return render_template("errors/no_cocktails.html")
         
-        
-        sorts = set(Cocktail.family for Cocktail in cocktails)
-
-        session["view"] = "viewallcocktails"
-
+        sorts = set(Cocktail.family for Cocktail in cocktails)       
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
 
     # no search bar
     else:
         form = ModifyCocktailForm()
-        
         sorts = db.session.scalars(select(Cocktail.family.distinct())).fetchall()
-
-        session["view"] = "viewallcocktails" 
-
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form, view=session["view"], form2=form2
+            "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form, form2=form2
         )
 
 @view.route("/viewuser", methods=["GET", "POST"])
@@ -153,12 +145,10 @@ def viewuser():
         
         sorts = set(Cocktail.family for Cocktail in cocktails)
 
-        session["view"] = "viewuser"
-
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
     
     # no filter bar
