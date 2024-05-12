@@ -89,7 +89,7 @@
     <!-- Load whatstodrinkuser by default -->
     <script hx-trigger="load" hx-get="/whatstodrinkuser" hx-target="#view" hx-indicator="#spinner">
         var qElement = document.getElementById('q');
-        var sriptElement = document.querySelector('script[hx-trigger="load"]');
+        var scriptElement = document.querySelector('script[hx-trigger="load"]');
         if (qElement && scriptElement) {
             var hxGet = scriptElement.getAttribute('hx-get');
             qElement.setAttribute('hx-post', hxGet);
