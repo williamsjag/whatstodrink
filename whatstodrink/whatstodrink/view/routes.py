@@ -5,7 +5,7 @@ from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
 from whatstodrink.view.forms import ViewIngredientForm, CocktailSearchForm
 from whatstodrink.modify.forms import ModifyCocktailForm
 from flask_login import current_user, login_required
-from operator import itemgetter
+
 
 view = Blueprint('view', __name__)
 

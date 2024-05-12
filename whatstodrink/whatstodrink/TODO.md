@@ -147,6 +147,7 @@ Added search bar to whatstodrink and viewcocktails
 Added search trigger for changing filter
 Assured capitalization doesn't cause problems in cocktail search
 Made cocktail filters persistent across button links in cocktail_views
+Made view and wtd stay the same after enter is pressed instead of loading again.
 
 ## In Progress
 

@@ -35,11 +35,7 @@
                     <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
                     <!-- <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li> -->
                 </ul>
-                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view" hx-trigger="filterChange from:body, search, keyup changed delay:500ms" hx-include="#filter, #current">
-                <!-- Clear search button when a search has been entered -->
-                {% if request.args.get('q') %}
-                <a href="/whatstodrink" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
-                {% endif %}
+                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-target="#view" hx-trigger="filterChange from:body, input keyup changed delay:500ms" hx-include="#filter">
             </div>
         </div>
     </form>
@@ -58,7 +54,6 @@
             if (qElement && scriptElement) {
                 var hxGet = scriptElement.getAttribute('hx-get');
                 qElement.setAttribute('hx-post', hxGet);
-                htmx.process(qElement);
             }
         </script>
 
@@ -79,11 +74,7 @@
                     <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
                     <!-- <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li> -->
                 </ul>
-                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-post="/{{ view }}" hx-target="#view" hx-trigger="filterChange from:body, search, keyup changed delay:500ms" hx-include="#filter, #current">
-                <!-- Clear search button when a search has been entered -->
-                {% if request.args.get('q') %}
-                <a href="/whatstodrink" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
-                {% endif %}
+                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-target="#view" hx-trigger="filterChange from:body, input keyup changed delay:500ms" hx-include="#filter">
             </div>
         </form>
     </div>
@@ -102,7 +93,6 @@
         if (qElement && scriptElement) {
             var hxGet = scriptElement.getAttribute('hx-get');
             qElement.setAttribute('hx-post', hxGet);
-            htmx.process(qElement);
         }
     </script>
 
@@ -111,7 +101,10 @@
 
 {% block javascript %}
 <script>
-    
+    // Prevent search from reloading
+    document.getElementById('qform').addEventListener('submit', function(event) {
+        event.preventDefault();
+    });
     // change active class on click
     var buttonGroup = document.getElementById("buttons");
     if (buttonGroup) {
@@ -127,7 +120,6 @@
                 var qElement = document.getElementById('q');
                 var hxPost = this.getAttribute('hx-post');
                 qElement.setAttribute('hx-post', hxPost);
-                htmx.process(qElement);
             });
         };
     }
@@ -135,9 +127,9 @@
     function showFilter(item) {
         document.getElementById("filterbutton").innerHTML = item.innerHTML;
         document.getElementById("filter").value = item.innerHTML;
-        document.getElementById('q').focus();
         const filterChange = new Event('filterChange', { 'bubbles': true });
         htmx.trigger(htmx.find('body'),'filterChange');
+        document.getElementById('q').focus();
     }
 </script>
 

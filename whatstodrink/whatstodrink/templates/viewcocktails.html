@@ -10,7 +10,7 @@
         <p>View all cocktails in the database and edit your recipes.</p>
     </div>
     {% if defaults %}
-    <form class="item-center center-form form-group mb-3" method="POST">
+    <form class="item-center center-form form-group mb-3" id="qform" method="POST">
     {{ form2.csrf_token }}
         <div class="text-center">
             <div class="btn-group mb-4" id="buttons" role="group" aria-label="Button Group">
@@ -33,11 +33,7 @@
                     <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
                     <!-- <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li> -->
                 </ul>
-                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-target="#view" hx-trigger="filterChange from:body, search, keyup changed delay:500ms" hx-include="#filter">
-                <!-- Clear search button when a search has been entered -->
-                <!-- {% if request.args.get('q') %}
-                <a href="/viewcocktails" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
-                {% endif %} -->
+                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-target="#view" hx-trigger="filterChange from:body, input keyup changed delay:500ms" hx-include="#filter">
             </div>
         
         </div>
@@ -54,14 +50,14 @@
             if (qElement && scriptElement) {
                 var hxGet = scriptElement.getAttribute('hx-get');
                 qElement.setAttribute('hx-post', hxGet);
-                htmx.process(qElement);
+                form.setAttribute('action', hxGet);
             }
         </script>
     {% else %}
     <!-- If defaults turned off -->
     <!-- Filter Bar -->
     <div>
-        <form class="item-center center-form form-group mb-3" method="POST">
+        <form class="item-center center-form form-group mb-3" id="qform" method="POST">
         {{ form2.csrf_token }}
             <label for="search" class="form-label">Filter:</label>
             <div class="input-group mb-3">
@@ -75,11 +71,7 @@
                     <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Source</button></li>
                     <!-- <li><button class="dropdown-item" type="button" onclick="showFilter(this)">Tags</button></li> -->
                 </ul>
-                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-target="#view" hx-trigger="filterChange from:body, search, keyup changed delay:500ms" hx-include="#filter">
-                <!-- Clear search button when a search has been entered -->
-                <!-- {% if request.args.get('q') %}
-                <a href="/viewcocktails" type="button" id="clear" class="btn btn-outline-primary">Clear Search</a>
-                {% endif %} -->
+                <input class="form-control" type="search" name="q" id="q" placeholder="Type to search" hx-target="#view" hx-trigger="filterChange from:body, input keyup changed delay:500ms" hx-include="#filter">
             </div>
         </form>
     </div>
@@ -96,8 +88,7 @@
         if (qElement && scriptElement) {
             var hxGet = scriptElement.getAttribute('hx-get');
             qElement.setAttribute('hx-post', hxGet);
-            htmx.process(qElement);
-        }
+            }
     </script>
     {% endif %}
 
@@ -113,6 +104,10 @@
 {% block javascript %}
 
 <script>
+    // Prevent search from reloading
+    document.getElementById('qform').addEventListener('submit', function(event) {
+        event.preventDefault();
+    });
     // change active class on click
     var buttonGroup = document.getElementById("buttons");
     if (buttonGroup) {
@@ -128,7 +123,6 @@
                 var qElement = document.getElementById('q');
                 var hxPost = this.getAttribute('hx-post');
                 qElement.setAttribute('hx-post', hxPost);
-                htmx.process(qElement);
             });
         };
     }
