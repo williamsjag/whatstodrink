@@ -162,11 +162,8 @@ Add viewingredientmodal to cocktail views
 
 cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
 
-bug: changing from all to my with a search entered doesn't load the search
-bug: my cocktails plus search returns common results
-bug: loading searches when defaults off loads "/" route
+bug: loading searches when defaults off loads "/" route (POSSIBLY FIXED, WILL HAVE TO CHECK DEPLOYMENT)
 bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
-bug: after pressing enter in cocktail search it loads all without any searches
 bug: family doesn't load properly for punches? (Kahiko) in view cocktail->modify
 bug: modify ingredient sometimes results in multiple flashed messages stacked- when multiple cocktails are updated maybe?
 
