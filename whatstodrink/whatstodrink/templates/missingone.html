@@ -41,15 +41,18 @@
 {% block javascript %}
 <script>    
     // change active class on click
-    var button_group = document.getElementById("buttons");
-    var btns = button_group.getElementsByClassName("btn");
-    // loop through buttons to assign active class
-    for (var i = 0; i < btns.length; i++) {
-        btns[i].addEventListener("click", function() {
-            var current = document.getElementsByClassName("active");
-            current[0].className = current[0].className.replace(" active", "");
-            this.className += " active";
-        });
+    var buttonGroup = document.getElementById("buttons");
+    if (buttonGroup) {
+        var btns = buttonGroup.getElementsByClassName("btn");
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener("click", function() {
+                var current = document.getElementsByClassName("active");
+                if (current.length > 0) {
+                    current[0].classList.remove("active");
+                }
+                this.classList.add("active");
+            });
+        };
     }
 </script>
 

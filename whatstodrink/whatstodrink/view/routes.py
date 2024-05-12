@@ -323,6 +323,7 @@ def missingoneuser():
 @login_required
 def whatstodrink():
     form2 = CocktailSearchForm()
+    
     return render_template(
         "whatstodrink.html", defaults=session["defaults"], form2=form2
     )

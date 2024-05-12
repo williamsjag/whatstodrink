@@ -145,6 +145,8 @@ Made altered ingredient selection carry over to modifycocktailerrors.
 Made what's missing sort by number of cocktails in each ingredient.
 Added search bar to whatstodrink and viewcocktails
 Added search trigger for changing filter
+Assured capitalization doesn't cause problems in cocktail search
+Made cocktail filters persistent across button links in cocktail_views
 
 ## In Progress
 
@@ -153,15 +155,19 @@ Make flashed messages show the cocktail or ingredient being modified/deleted
 Cocktail filters:
     -Add plus button for additional filters
     -make sure filters work after pressing enter
-    -make sure capitalization and special characters don't throw it off
 
 Add viewingredientmodal to cocktail views
     -Add cocktails that use ingredient at bottom of modal, and pass that to the delete route instead of doing a new query
 
 cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
 
+bug: changing from all to my with a search entered doesn't load the search
+bug: my cocktails plus search returns common results
+bug: loading searches when defaults off loads "/" route
 bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
 bug: after pressing enter in cocktail search it loads all without any searches
+bug: family doesn't load properly for punches? (Kahiko) in view cocktail->modify
+bug: modify ingredient sometimes results in multiple flashed messages stacked- when multiple cocktails are updated maybe?
 
 bug?: clicking accordions may cause columns to shift
 
