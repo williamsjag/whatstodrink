@@ -33,9 +33,8 @@
         </div>
         {% endif %}
         </div>
-        <input type="hidden" value="{{ ingredient }}">
         <div class="text-center mt-4 mb-3">
-            <button data-bs-dismiss="modal" class="btn btn-secondary" type="button">Close</button>
+            <button class="btn btn-secondary" hx-get="/viewingredientmodal?ingredient={{ ingredient }}" hx-target="#viewModal" type="button">Back</button>
         </div>
     </form>
 </div>

@@ -1,4 +1,3 @@
-
 <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" id="modal-form">
     <div class="modal-header center-text">
@@ -36,7 +35,7 @@
                     </div>
                     <ul id="cocktail_list" class="me-3">
                         {% for cocktail in cocktails %}
-                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail }}" hx-target="#body">{{ cocktail }}</a></li>
+                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail }}&ingredient={{ ingredient.name }}" hx-target="#body">{{ cocktail }}</a></li>
                         {% endfor %}
                         {% if allcocktails|length > 10 %}                           
                         <a class="ms-5 blue" href="#" type="button" onclick=loadAllCocktails()>and {{ allcocktails|length - 10 }} more...</a>
@@ -44,7 +43,7 @@
                     </ul>
                     <ul id="long_list" class="me-3" style="display: none;">
                         {% for cocktail in allcocktails %}
-                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail }}" hx-target="#body">{{ cocktail }}</a></li>
+                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail }}&ingredient={{ ingredient.name }}" hx-target="#body">{{ cocktail }}</a></li>
                         {% endfor %}
                         <a class="ms-5 blue" href="#" onclick=loadLessCocktails()>See Less</a>
                     </ul>

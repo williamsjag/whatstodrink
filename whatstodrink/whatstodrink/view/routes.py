@@ -15,18 +15,21 @@ view = Blueprint('view', __name__)
 def viewingredientmodal():
 
     form = ViewIngredientForm()
+    if request.args.get("ingredient"):
+        referral = request.args.get("ingredient").lower()
+        if referral:
+            ingredient = db.session.scalar(select(Ingredient).where(func.lower(Ingredient.name) == referral).where(Ingredient.user_id == current_user.id))
+            ingredientId = ingredient.id
+    else:
+        for key, value, in request.args.items():
+            if key.startswith('stock_'):
+                ingredient_name = key.replace('stock_', '')
+            # contingency if stock not checked
+            elif key.startswith('id_'):
+                ingredient_name = key.replace('id_', '')    
+        ingredient = db.session.scalar(select(Ingredient).where(Ingredient.name == ingredient_name).where(Ingredient.user_id == current_user.id))
+        ingredientId = ingredient.id
 
-    for key, value, in request.args.items():
-        if key.startswith('stock_'):
-            ingredient_name = key.replace('stock_', '')
-        # contingency if stock not checked
-        elif key.startswith('id_'):
-            ingredient_name = key.replace('id_', '')
-            
-    ingredient = db.session.execute(select(Ingredient).where(Ingredient.name == ingredient_name).where(Ingredient.user_id == current_user.id)).fetchone()
-    ingredient = ingredient[0]
-
-    ingredientId = ingredient.id
     rows = db.session.scalars(select(Amount.cocktail_id).where(Amount.ingredient_id == ingredientId)).fetchall()
     cocktails = db.session.scalars(select(Cocktail.name).where(Cocktail.id.in_(rows)).limit(10)).fetchall()
     allcocktails = db.session.scalars(select(Cocktail.name).where(Cocktail.id.in_(rows))).fetchall() 
@@ -54,16 +57,16 @@ def ingredientsearch():
 @login_required
 def viewcocktailmodal():
 
-    target = request.args.get("cocktail").lower()
-
-    if target:
-        cocktail = db.session.scalar(select(Cocktail)
-                                     .where(func.lower(Cocktail.name) == target)
-                                     .where(Cocktail.user_id == current_user.id))
-        form = ViewCocktailForm()
-        print(f"{cocktail}")
-        print(f"{cocktail.recipe}")
-        return render_template("viewcocktailmodal.html", cocktail=cocktail, form=form)
+    if request.args.get("cocktail"):
+        target = request.args.get("cocktail").lower()
+        if request.args.get("ingredient"):
+            ingredient = request.args.get("ingredient").lower()
+            if target:
+                cocktail = db.session.scalar(select(Cocktail)
+                                            .where(func.lower(Cocktail.name) == target)
+                                            .where(Cocktail.user_id == current_user.id))
+                form = ViewCocktailForm()
+                return render_template("viewcocktailmodal.html", cocktail=cocktail, form=form, ingredient=ingredient)
        
     else:
         redirect(url_for("modify.manageingredients"))
@@ -71,6 +74,7 @@ def viewcocktailmodal():
 @view.route("/viewcocktails", methods=["GET"])
 @login_required
 def viewcocktails():
+   
     form2 = CocktailSearchForm()
     session["view"] = "/viewcocktails"
     return render_template(
