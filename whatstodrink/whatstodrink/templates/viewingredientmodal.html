@@ -39,18 +39,15 @@
                         {% for cocktail in cocktails %}
                         <li class="ms-5">{{ cocktail }}</li>
                         {% endfor %}
-                        {% if allcocktails|length > 10 %}
-                        <div class="ms-5 blue">
-                            and {{ allcocktails|length - 10 }} more...
-                        </div>
-                        <button class="ms-5 btn btn-small btn-outline-primary" type="button" onclick=loadAllCocktails()>See All</button>
+                        {% if allcocktails|length > 10 %}                           
+                        <a class="ms-5 blue" href="#" type="button" onclick=loadAllCocktails()>and {{ allcocktails|length - 10 }} more...</button>
                         {% endif %}
                     </ul>
                     <ul id="long_list" class="me-3" style="display: none;">
                         {% for cocktail in allcocktails %}
                         <li class="ms-5">{{ cocktail }}</li>
                         {% endfor %}
-                        <button class="ms-5 btn btn-small btn-outline-primary" type="button" onclick=loadLessCocktails()>See Less</button>
+                        <a class="ms-5 blue" href="#" onclick=loadLessCocktails()>See Less</button>
                     </ul>
                     {% endif %}
                 </div>
