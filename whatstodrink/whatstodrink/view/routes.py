@@ -126,7 +126,6 @@ def viewallcocktails():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -147,7 +146,6 @@ def viewallcocktails():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -205,7 +203,6 @@ def viewuser():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -226,7 +223,6 @@ def viewuser():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -277,7 +273,6 @@ def viewcommon():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -294,7 +289,6 @@ def viewcommon():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -468,7 +462,6 @@ def whatstodrinkuser():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -489,7 +482,6 @@ def whatstodrinkuser():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -557,7 +549,6 @@ def whatstodrinkall():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
@@ -580,7 +571,6 @@ def whatstodrinkall():
                     if chr(31) in item:
                         parts = item.split(chr(31))
                         recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
-                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
                     else:
                         recipe_parts.append((item, ''))
                 setattr(cocktail, 'recipe_parts', recipe_parts)
