@@ -1,7 +1,6 @@
-from sqlalchemy import select, text, or_, func, and_, update
-from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
-from flask_login import current_user, login_required
-from whatstodrink.__init__ import db
+from sqlalchemy import select, text, update
+from models import  Cocktail, Amount
+from __init__ import db
 
 
 def update_cocktail_recipes():
