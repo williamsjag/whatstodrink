@@ -30,11 +30,17 @@
                         <ul class="navbar-nav me-auto mt-2">
                             <li class="nav-item"><a class="nav-link me-2" href="/">Home</a></li>
                             <li class="nav-item dropdown me-2">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Add</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('create.addingredient') }}">Add Ingredient</a></li>
+                                    <li><a class="dropdown-item" id="addcocktail" href="{{ url_for('create.addcocktail') }}">Add Cocktail</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown me-2">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{ url_for('modify.manageingredients') }}">Manage Ingredients</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('create.addingredient') }}">Add Ingredient</a></li>
-                                    <li><a class="dropdown-item" id="addcocktail" href="{{ url_for('create.addcocktail') }}">Add Cocktail</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('view.viewcocktails') }}">View/Edit Cocktails</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown me-2">
@@ -42,7 +48,6 @@
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{ url_for('view.whatstodrink') }}">What's to Drink?</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('view.missingone') }}">What's Missing?</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('view.viewcocktails') }}">View/Edit Cocktails</a></li>
                                 </ul>
                             </li> 
                             <li class="nav-item"><a class="nav-link me-2" href="{{ url_for('main.about') }}">About</a></li>                      

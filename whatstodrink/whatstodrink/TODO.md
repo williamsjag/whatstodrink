@@ -153,20 +153,14 @@ Added punches to family options in modify-forms
 Moved the flash message out of the for cocktail: loop in modifyingredient to eliminate duplicate flashes
 Added cocktails list to view ingredient modal
 Added back button to get from cocktails list to ingredient modal
+Made flashed messages show the cocktail or ingredient being modified/deleted
+Made cocktail accordions linkable and added view ingredient modal
+Fixed ingredient_list so that it properly wraps when it reaches the name and doesn't add space to the button
 
 ## In Progress
 
-Make flashed messages show the cocktail or ingredient being modified/deleted
-
 Cocktail filters:
     -Add plus button for additional filters
-
-Add viewingredientmodal to cocktail views
-
-cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
-    -Text wraps at end of line length not end of column length, so when it gets so that one thing interferes it interrupts the layout
-
-bug?: clicking accordions may cause columns to shift
 
 Verify:
     -bug: addcocktail drops focus after autoload.
@@ -174,6 +168,8 @@ Verify:
 
 
 ## Todo 
+
+user modifiability to all ingredients (incl. hide)
 
 Color/Theme/Prettify
 
