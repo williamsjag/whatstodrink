@@ -35,8 +35,19 @@
                         Cocktails using {{ ingredient.name }}:
                     </div>
 
-                    <ul class="me-3">
+                    <ul id="cocktail_list" class="me-3">
                         {% for cocktail in cocktails %}
+                        <li class="ms-5">{{ cocktail }}</li>
+                        {% endfor %}
+                        {% if allcocktails|length > 10 %}
+                        <div class="ms-5">
+                            and {{ allcocktails|length - 10 }} more...
+                        </div>
+                        <button class="btn btn-small btn-outline-primary" type="button" onclick=loadAllCocktails()>See All</button>
+                        {% endif %}
+                    </ul>
+                    <ul id="long_list" class="me-3" style="display: none;">
+                        {% for cocktail in allcocktails %}
                         <li class="ms-5">{{ cocktail }}</li>
                         {% endfor %}
                     </ul>
@@ -49,3 +60,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    function loadAllCocktails() {
+        // Hide the cocktail_list
+        document.getElementById('cocktail_list').style.display = 'none';
+        // Show the long_list
+        document.getElementById('long_list').style.display = 'block';
+    }
+</script>
