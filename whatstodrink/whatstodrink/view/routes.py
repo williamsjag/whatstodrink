@@ -26,7 +26,11 @@ def viewingredientmodal():
     ingredient = db.session.execute(select(Ingredient).where(Ingredient.name == ingredient_name).where(Ingredient.user_id == current_user.id)).fetchone()
     ingredient = ingredient[0]
 
-    return render_template("viewingredientmodal.html", form=form, ingredient=ingredient)
+    ingredientId = ingredient.id
+    rows = db.session.scalars(select(Amount.cocktail_id).where(Amount.ingredient_id == ingredientId)).fetchall()
+    cocktails = db.session.scalars(select(Cocktail.name).where(Cocktail.id.in_(rows))).fetchall() 
+
+    return render_template("viewingredientmodal.html", form=form, ingredient=ingredient, cocktails=cocktails)
 
 # Ingredient Search Box from Add Cocktail
 @view.route("/ingredientsearch")

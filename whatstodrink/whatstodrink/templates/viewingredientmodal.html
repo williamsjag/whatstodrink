@@ -32,9 +32,9 @@
                 <div class="me-3 mb-5">
                     {% if cocktails %}
                     Cocktails using {{ ingredient.name }}:
-                    <ul>
+                    <ul class="me-3">
                         {% for cocktail in cocktails %}
-                        <li>{{ cocktail }}</li>
+                        <li class="ms-5">{{ cocktail }}</li>
                         {% endfor %}
                     </ul>
                     {% endif %}
