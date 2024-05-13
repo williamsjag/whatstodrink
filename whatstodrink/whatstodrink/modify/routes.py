@@ -155,7 +155,7 @@ def modify_ingredient():
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
-                        
+
                 flash("Ingredient Modified", "primary")
                 return redirect(url_for('modify.manageingredients'))
             # If form not valid
@@ -195,7 +195,12 @@ def modify_ingredient():
             name = form.name.data
             ingredient = db.session.execute(select(Ingredient.id, Ingredient.name, Ingredient.type, Ingredient.short_name, Ingredient.notes)
                                             .where(Ingredient.name == name)
-                                            .where(Ingredient.user_id == current_user.id)).fetchall()
+                                            .where(Ingredient.user_id == current_user.id)).fetchone()
+            
+            ingredientId = ingredient.id
+
+            rows = db.session.scalars(select(Amount.cocktail_id).where(Amount.ingredient_id == ingredientId)).fetchall()
+            cocktails = db.session.scalars(select(Cocktail.name).where(Cocktail.id.in_(cocktails))).fetchall() 
 
             types = db.session.scalars(select(Ingredient.type.distinct())).fetchall()
 
@@ -203,7 +208,7 @@ def modify_ingredient():
 
             if ingredient:
 
-                return render_template("modifyingredient.html", ingredient=ingredient[0], types=types, form=form)
+                return render_template("modifyingredient.html", ingredient=ingredient[0], types=types, form=form, cocktails = cocktails)
         
         elif "deleteconfirmed" in request.form:
 

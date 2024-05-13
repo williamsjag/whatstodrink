@@ -24,12 +24,21 @@
                     {{ form.type(class="form-control", value=ingredient.type, readonly="true")}}
                 </div>
                 {% if ingredient.notes %}
-                <div class="me-3 mb-5">
+                <div class="me-3 mb-3">
                     {{ form.notes.label(class="form-control-label") }}
                     <span class="textarea form-control notes_field" role="textbox" id="modalnotes" name="notes" readonly="true">{{ ingredient.notes }}</textarea>
                 </div>
                 {% endif %}
-
+                <div class="me-3 mb-5">
+                    {% if cocktails %}
+                    Cocktails using {{ ingredient.name }}:
+                    <ul>
+                        {% for cocktail in cocktails %}
+                        <li>{{ cocktail }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
                 <div class="text-center mt-4 mb-3">
                     <button hx-post="/modify_ingredient" hx-target="#body" id="modifybutton" name="modifybutton" class="btn btn-primary" type="submit">Modify Ingredient</button>
                 </div>
