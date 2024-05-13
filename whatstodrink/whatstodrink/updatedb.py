@@ -1,6 +1,6 @@
 from sqlalchemy import select, text, update
-from models import  Cocktail, Amount
-from __init__ import db
+from whatstodrink.models import  Cocktail, Amount
+from whatstodrink.__init__ import db
 
 
 def update_cocktail_recipes():
