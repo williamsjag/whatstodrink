@@ -1,4 +1,4 @@
-from whatstodrink.__init__ import db, login_manager
+from __init__ import db, login_manager
 from flask import current_app
 from flask_login import UserMixin
 import jwt
