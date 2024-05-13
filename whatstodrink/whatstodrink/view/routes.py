@@ -376,8 +376,6 @@ def whatstodrinkuser():
 
         sorts = set(Cocktail.family for Cocktail in cocktails)
 
-        session["view"] = "whatstodrinkuser" 
-
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
