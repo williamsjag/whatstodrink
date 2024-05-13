@@ -1,0 +1,41 @@
+<div class="modal-body" id="body">
+    <form>
+        {{ form.csrf_token }}
+        <div class="me-3 mb-3">
+            {{ form.name.label(class="form-control-label") }} 
+            {{ form.name(class="form-control", value=cocktail.name, readonly="true") }}
+        </div>
+        <div class="me-3 mb-3">
+            {{ form.recipe.label(class="form-control-label") }}
+            <span name="recipe" class="textarea form-control notes_field" role="textbox" id="recipe" readonly="true">{{ cocktail.recipe }}</span>
+
+        </div>
+        <div class="me-3 mb-3">
+            {{ form.build.label(class="form-control-label") }}
+            <span name="build" class="textarea form-control notes_field" role="textbox" id="build" readonly="true">{{ cocktail.build }}</textarea>
+        </div>
+        {% if cocktail.source %}
+        <div class="me-3 mb-3">
+            {{ form.source.label(class="form-control-label") }}
+            {{ form.source(class="form-control", value=cocktail.source, readonly="true")}}
+        </div>
+        {% endif %}
+        {% if cocktail.family %}
+        <div class="me-3 mb-3">
+            {{ form.family.label(class="form-control-label") }}
+            {{ form.family(class="form-control", value=cocktail.family, readonly="true")}}
+        </div>
+        {% endif %}
+        {% if cocktail.notes %}
+        <div class="me-3 mb-3">
+            {{ form.notes.label(class="form-control-label") }}
+            <span name="notes" class="textarea form-control notes_field" id="notes" readonly="true">{{ cocktail.notes }}</span>
+        </div>
+        {% endif %}
+        </div>
+        <input type="hidden" value="{{ ingredient }}">
+        <div class="text-center mt-4 mb-3">
+            <button data-bs-dismiss="modal" class="btn btn-secondary" type="button">Close</button>
+        </div>
+    </form>
+</div>

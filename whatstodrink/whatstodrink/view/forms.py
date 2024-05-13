@@ -11,3 +11,12 @@ class ViewIngredientForm(FlaskForm):
 class CocktailSearchForm(FlaskForm):
     filter = StringField('Filter')
     q = StringField('Search')
+
+class ViewCocktailForm(FlaskForm):
+    name = StringField('Cocktail Name')
+    recipe = TextAreaField('Recipe')
+    build = TextAreaField('Build')
+    source = StringField('Source')
+    family = StringField('Family')
+    notes = TextAreaField('Notes')
+    

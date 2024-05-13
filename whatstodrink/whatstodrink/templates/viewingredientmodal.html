@@ -26,7 +26,7 @@
                 {% if ingredient.notes %}
                 <div class="me-3 mb-3">
                     {{ form.notes.label(class="form-control-label") }}
-                    <span class="textarea form-control notes_field" role="textbox" id="modalnotes" name="notes" readonly="true">{{ ingredient.notes }}</textarea>
+                    <span class="textarea form-control notes_field" role="textbox" id="modalnotes" name="notes" readonly="true">{{ ingredient.notes }}</span>
                 </div>
                 {% endif %}
                 <div class="me-3 mb-5">
@@ -34,10 +34,9 @@
                     <div class="mb-2">
                         Cocktails using {{ ingredient.name }}:
                     </div>
-
                     <ul id="cocktail_list" class="me-3">
                         {% for cocktail in cocktails %}
-                        <li class="ms-5">{{ cocktail }}</li>
+                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail }}" hx-target="#body">{{ cocktail }}</a></li>
                         {% endfor %}
                         {% if allcocktails|length > 10 %}                           
                         <a class="ms-5 blue" href="#" type="button" onclick=loadAllCocktails()>and {{ allcocktails|length - 10 }} more...</a>
@@ -45,7 +44,7 @@
                     </ul>
                     <ul id="long_list" class="me-3" style="display: none;">
                         {% for cocktail in allcocktails %}
-                        <li class="ms-5">{{ cocktail }}</li>
+                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail }}" hx-target="#body">{{ cocktail }}</a></li>
                         {% endfor %}
                         <a class="ms-5 blue" href="#" onclick=loadLessCocktails()>See Less</a>
                     </ul>

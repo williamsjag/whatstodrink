@@ -2,7 +2,7 @@ from flask import render_template, request, session, Blueprint, redirect, url_fo
 from whatstodrink.__init__ import db
 from sqlalchemy import select, text, or_, func, and_
 from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
-from whatstodrink.view.forms import ViewIngredientForm, CocktailSearchForm
+from whatstodrink.view.forms import ViewIngredientForm, CocktailSearchForm, ViewCocktailForm
 from whatstodrink.modify.forms import ModifyCocktailForm
 from flask_login import current_user, login_required
 
@@ -50,6 +50,23 @@ def ingredientsearch():
 
     return render_template("ingredientsearch.html", results=results)
 
+@view.route("/viewcocktailmodal")
+@login_required
+def viewcocktailmodal():
+
+    target = request.args.get("cocktail").lower()
+
+    if target:
+        cocktail = db.session.scalar(select(Cocktail)
+                                     .where(func.lower(Cocktail.name) == target)
+                                     .where(Cocktail.user_id == current_user.id))
+        form = ViewCocktailForm()
+        print(f"{cocktail}")
+        print(f"{cocktail.recipe}")
+        return render_template("viewcocktailmodal.html", cocktail=cocktail, form=form)
+       
+    else:
+        redirect(url_for("modify.manageingredients"))
 
 @view.route("/viewcocktails", methods=["GET"])
 @login_required
