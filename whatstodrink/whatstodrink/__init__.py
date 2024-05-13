@@ -17,6 +17,10 @@ mail = Mail()
 
 db = SQLAlchemy()
 
+# Custom Jinja filter
+def ascii_to_char(delimiter):
+    return chr(ord(delimiter))
+
 def create_app():
     app = Flask(__name__)
     
@@ -38,7 +42,6 @@ def create_app():
     app.register_blueprint(view)
     app.register_blueprint(errors)
 
-
     csrf.init_app(app)
     login_manager.init_app(app)
     Session(app)
@@ -47,6 +50,9 @@ def create_app():
 
     # with app.app_context():
     #     db.create_all()
+
+    # Add filter to jinja environment
+    app.jinja_env.filters['ascii_to_char'] = ascii_to_char
 
     @app.after_request
     def after_request(response):

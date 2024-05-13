@@ -142,7 +142,7 @@ def modify_ingredient():
 
                     recipe = ""
                     for amount, ingredient in zip(amounts, ingredients):
-                        recipe += f"{amount.amount} {ingredient.name}\n"
+                        recipe += f"{amount.amount}{chr(31)}{ingredient.name}\n"
                     
                     ingredient_list = ', '.join([row.short_name if row.short_name else row.name for row in ingredients])
                     db.session.execute(
@@ -343,7 +343,7 @@ def modifycocktail():
                         name = info.short_name if info.short_name else info.name
                         if name not in list_names:
                             list_names.append(name)
-                        recipe += f"{amount} {ingredient}\n"
+                        recipe += f"{amount}{chr(31)}{ingredient}\n"
                         counter += 1
 
                     # generate ingredientlist

@@ -152,6 +152,7 @@ Made it so modifycocktail redirects you to the branch you were on in the beginni
 Added punches to family options in modify-forms
 Moved the flash message out of the for cocktail: loop in modifyingredient to eliminate duplicate flashes
 Added cocktails list to view ingredient modal
+Added back button to get from cocktails list to ingredient modal
 
 ## In Progress
 

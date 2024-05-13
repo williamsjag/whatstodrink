@@ -91,6 +91,7 @@ def viewallcocktails():
     q = form.q.data
     filter = form.filter.data
 
+    # If filter bar used
     if request.method == "POST":
         filter = filter.lower()
         q = q.lower()
@@ -118,6 +119,17 @@ def viewallcocktails():
         sorts = set(Cocktail.family for Cocktail in cocktails)       
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
@@ -126,8 +138,20 @@ def viewallcocktails():
     else:
         form = ModifyCocktailForm()
         sorts = db.session.scalars(select(Cocktail.family.distinct())).fetchall()
-        form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
+
         return render_template(
             "cocktail_views.html",  sorts=sorts, cocktails=cocktails, form=form, form2=form2
         )
@@ -174,6 +198,17 @@ def viewuser():
 
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
@@ -184,6 +219,17 @@ def viewuser():
         sorts = set(Cocktail.family for Cocktail in cocktails)
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
         )
@@ -224,13 +270,34 @@ def viewcommon():
         sorts = set(Cocktail.family for Cocktail in cocktails)
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
     else:
         familyquery = text("SELECT DISTINCT family FROM cocktails WHERE shared = 1")
         sorts = db.session.scalars(familyquery).fetchall()
-        
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
         )
@@ -394,6 +461,17 @@ def whatstodrinkuser():
 
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
@@ -404,6 +482,17 @@ def whatstodrinkuser():
 
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
         )
@@ -461,6 +550,17 @@ def whatstodrinkall():
 
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
@@ -473,6 +573,17 @@ def whatstodrinkall():
 
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
+        for cocktail in cocktails:
+            if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                        print(f"{cocktail.name} part1: {parts[0]} part2: {parts[1]}")
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
         return render_template(
             "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )

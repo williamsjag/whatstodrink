@@ -141,8 +141,8 @@ def addcocktail():
                
             recipe = ""
             for amount, ingredient in zip(amounts, ingredients):
-                # concatenate amount/ingredient, and newline
-                recipe += f"{amount} {ingredient}\n"
+                # concatenate amount/ingredient with unit separator delimiter, and newline
+                recipe += f"{amount}{chr(31)}{ingredient}\n"
             
             # Add cocktail to db
             newcocktail = Cocktail(name=form.name.data, 
