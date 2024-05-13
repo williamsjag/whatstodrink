@@ -130,6 +130,14 @@ input[type=checkbox] {
 }
 
 /* Accordion */
+.accordion-button .row .left-text {
+  white-space: nowrap; 
+  /* To prevent name wrapping */
+}
+.accordion-button .row .right-text small{
+  white-space: break-word;
+  hyphens: auto;  
+}
 .accordion-button {
   display: grid;
   grid-template-columns: 1fr max-content max-content; 

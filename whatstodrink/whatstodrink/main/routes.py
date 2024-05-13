@@ -8,7 +8,7 @@ main = Blueprint('main', __name__)
 
 @main.route("/about")
 def about():
-    update_cocktail_recipes()
+    # update_cocktail_recipes()
     return render_template("about.html")
 
 
