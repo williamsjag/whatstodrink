@@ -12,6 +12,10 @@
                 <div>
                     {{ form.id(class="form-control", type="hidden", value=cocktail.id) }}
                 </div>
+                <!-- Link source hidden Field -->
+                <div>
+                    <input id="referrer" type="hidden" name="referrer" value="{{ view }}">
+                </div>
                 <!-- Name Field -->
                 <div class="mb-3">
                     {{ form.name.label(class="form-control-label") }}

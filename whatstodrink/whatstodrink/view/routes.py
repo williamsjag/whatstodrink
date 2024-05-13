@@ -50,8 +50,9 @@ def ingredientsearch():
 @login_required
 def viewcocktails():
     form2 = CocktailSearchForm()
+    session["view"] = "/viewcocktails"
     return render_template(
-        "viewcocktails.html", defaults=session["defaults"], form2=form2
+        "viewcocktails.html", defaults=session["defaults"], form2=form2, view=session["view"]
     )
 
 @view.route("/viewallcocktails",  methods=["GET", "POST"])
@@ -155,12 +156,10 @@ def viewuser():
     else:
 
         sorts = set(Cocktail.family for Cocktail in cocktails)
-
-        session["view"] = "viewuser" 
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
         )
 
 @view.route("/viewcommon", methods=["GET", "POST"])
@@ -197,30 +196,26 @@ def viewcommon():
             return render_template("errors/no_cocktails.html")
         
         sorts = set(Cocktail.family for Cocktail in cocktails)
-
-        session["view"] = "viewcommon"
-
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
     else:
         familyquery = text("SELECT DISTINCT family FROM cocktails WHERE shared = 1")
         sorts = db.session.scalars(familyquery).fetchall()
-
-        session["view"] = "viewcommon" 
         
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"]
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form
         )
 
 @view.route("/missingone")
 @login_required
 def missingone():
    
+    session["view"] = "/missingone"
     return render_template(
-        "missingone.html", defaults=session["defaults"]
+        "missingone.html", defaults=session["defaults"], view=session["view"]
     )
 
 @view.route("/missingoneall")
@@ -313,9 +308,9 @@ def missingoneuser():
 @login_required
 def whatstodrink():
     form2 = CocktailSearchForm()
-    
+    session["view"] = "/whatstodrink"
     return render_template(
-        "whatstodrink.html", defaults=session["defaults"], form2=form2
+        "whatstodrink.html", defaults=session["defaults"], form2=form2, view=session["view"]
     )
 
 
@@ -371,12 +366,10 @@ def whatstodrinkuser():
         
         sorts = set(Cocktail.family for Cocktail in cocktails)
 
-        session["view"] = "whatstodrinkall"
-
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
 
     else:
@@ -388,7 +381,7 @@ def whatstodrinkuser():
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, view=session["view"], form2=form2
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
         )
 
 
@@ -442,12 +435,10 @@ def whatstodrinkall():
         
         sorts = set(Cocktail.family for Cocktail in cocktails)
 
-        session["view"] = "whatstodrinkall"
-
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )
 
         
@@ -461,5 +452,5 @@ def whatstodrinkall():
         form = ModifyCocktailForm()
         form2 = CocktailSearchForm()
         return render_template(
-            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2, view=session["view"]
+            "cocktail_views.html", cocktails=cocktails, sorts=sorts, form=form, form2=form2
             )

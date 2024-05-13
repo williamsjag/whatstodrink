@@ -155,16 +155,17 @@ Make flashed messages show the cocktail or ingredient being modified/deleted
 
 Cocktail filters:
     -Add plus button for additional filters
-    -make sure filters work after pressing enter
 
 Add viewingredientmodal to cocktail views
     -Add cocktails that use ingredient at bottom of modal, and pass that to the delete route instead of doing a new query
 
 cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
+    -Text wraps at end of line length not end of column length, so when it gets so that one thing interferes it interrupts the layout
 
-bug: loading searches when defaults off loads "/" route (POSSIBLY FIXED, WILL HAVE TO CHECK DEPLOYMENT)
+bug: Modifying a cocktail in what's to drink redirects you to view/edit
 bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
 bug: family doesn't load properly for punches? (Kahiko) in view cocktail->modify
+    -punches is not even an option in modify
 bug: modify ingredient sometimes results in multiple flashed messages stacked- when multiple cocktails are updated maybe?
 
 bug?: clicking accordions may cause columns to shift

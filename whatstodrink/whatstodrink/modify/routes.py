@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, request, url_for, Blueprint
+from flask import flash, redirect, render_template, request, url_for, Blueprint, session
 from whatstodrink.__init__ import db
 from sqlalchemy import select, union, text, update, exc, or_, delete, outerjoin, func
 from sqlalchemy.orm import outerjoin
@@ -259,7 +259,7 @@ def modifycocktail():
             types = db.session.scalars(select(Ingredient.type.distinct())).fetchall()
 
             return render_template(
-                "modifycocktail.html", cocktail=cocktail, amounts=amounts, ingredients=ingredients, types=types, form=form
+                "modifycocktail.html", cocktail=cocktail, amounts=amounts, ingredients=ingredients, types=types, form=form, view=session["view"]
             )
         
         elif "deletebutton" in request.form:
@@ -366,8 +366,11 @@ def modifycocktail():
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
+
+                    referrer = request.form.get("referrer")
+                    print(f"{referrer}")
                  
-                    return redirect(url_for("view.viewcocktails")) 
+                    return redirect(referrer)
                 
             # If form not validated   
             else:
