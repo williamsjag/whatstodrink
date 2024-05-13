@@ -37,7 +37,7 @@
                                                     {% if cocktail.recipe_parts %}
                                                         {% for part in cocktail.recipe_parts %}
                                                             {{ part[0] }} {% if part[1] %}
-                                                                <a class="blue" href="/viewingredientmodal?ingredient={{ part[1] }}">{{ part[1] }}</a>
+                                                                <a class="blue" href="#" hx-get="/viewingredientmodal?ingredient={{ part[1] }}" hx-target="#viewModal" data-bs-toggle="modal" data-bs-target="#viewModal">{{ part[1] }}</a>
                                                             {% endif %}
                                                             {% if not loop.last %}
                                                                 <br/>
@@ -110,6 +110,13 @@
 <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" id="modalform"></div>
+    </div>
+</div>
+
+<!-- Modal for view ingredient -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="modal-form"></div>
     </div>
 </div>
 

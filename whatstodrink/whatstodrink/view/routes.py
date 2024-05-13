@@ -18,7 +18,7 @@ def viewingredientmodal():
     if request.args.get("ingredient"):
         referral = request.args.get("ingredient").lower()
         if referral:
-            ingredient = db.session.scalar(select(Ingredient).where(func.lower(Ingredient.name) == referral).where(Ingredient.user_id == current_user.id))
+            ingredient = db.session.scalar(select(Ingredient).where(func.lower(Ingredient.name) == referral).where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1)))
             ingredientId = ingredient.id
     else:
         for key, value, in request.args.items():
