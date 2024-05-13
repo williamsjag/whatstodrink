@@ -152,11 +152,11 @@ def modify_ingredient():
                                 ingredient_list=ingredient_list))
                     try:
                         db.session.commit()
-                        flash("Ingredient Modified", "primary")
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
-                
+                        
+                flash("Ingredient Modified", "primary")
                 return redirect(url_for('modify.manageingredients'))
             # If form not valid
             else:
