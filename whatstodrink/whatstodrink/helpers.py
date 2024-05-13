@@ -20,7 +20,7 @@ WhatsToDrink.com"""
 
 def update_cocktail_recipes():
     # Retrieve all cocktails
-    all_cocktails = db.session.scalars(select(Cocktail.id).where(Cocktail.shared == 1)).fetchall()
+    all_cocktails = db.session.scalars(select(Cocktail.id).where(Cocktail.id < 100).where(Cocktail.shared != 1)).fetchall()
 
     for cocktail_id in all_cocktails:
         # Execute the function for each cocktail
