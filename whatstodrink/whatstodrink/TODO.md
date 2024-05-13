@@ -151,6 +151,7 @@ Made view and wtd stay the same after enter is pressed instead of loading again.
 Made it so modifycocktail redirects you to the branch you were on in the beginning.
 Added punches to family options in modify-forms
 Moved the flash message out of the for cocktail: loop in modifyingredient to eliminate duplicate flashes
+Added cocktails list to view ingredient modal
 
 ## In Progress
 
@@ -160,7 +161,6 @@ Cocktail filters:
     -Add plus button for additional filters
 
 Add viewingredientmodal to cocktail views
-    -Add cocktails that use ingredient at bottom of modal, and pass that to the delete route instead of doing a new query
 
 cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
     -Text wraps at end of line length not end of column length, so when it gets so that one thing interferes it interrupts the layout

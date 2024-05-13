@@ -13,12 +13,12 @@
                     {{ form.name.label(class="form-control-label") }} 
                     {{ form.name(class="form-control", value=ingredient.name, readonly="true") }}
                 </div>
-                {% if ingredient.short_name %}
+                <!-- {% if ingredient.short_name %}
                 <div class="me-3 mb-3">
                     {{ form.short_name.label(class="form-control-label") }} 
                     {{ form.short_name(class="form-control", value=ingredient.short_name, readonly="true")}}
                 </div>
-                {% endif %}
+                {% endif %} -->
                 <div class="me-3 mb-3">
                     {{ form.type.label(class="form-control-label") }}
                     {{ form.type(class="form-control", value=ingredient.type, readonly="true")}}
