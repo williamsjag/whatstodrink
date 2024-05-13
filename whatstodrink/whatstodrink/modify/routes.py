@@ -367,8 +367,8 @@ def modifycocktail():
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
 
-                    referrer = request.form.get("referrer")
-                 
+                    referrerpath = request.form.get("referrer")
+                    referrer = referrerpath[1:]
                     return redirect(url_for("view." + referrer))
                 
             # If form not validated   
