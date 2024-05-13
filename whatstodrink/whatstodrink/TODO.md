@@ -148,6 +148,7 @@ Added search trigger for changing filter
 Assured capitalization doesn't cause problems in cocktail search
 Made cocktail filters persistent across button links in cocktail_views
 Made view and wtd stay the same after enter is pressed instead of loading again.
+Made it so modifycocktail redirects you to the branch you were on in the beginning.
 
 ## In Progress
 
@@ -162,12 +163,11 @@ Add viewingredientmodal to cocktail views
 cocktail views split ingredient list to a new line when it gets too small instead of wrapping text
     -Text wraps at end of line length not end of column length, so when it gets so that one thing interferes it interrupts the layout
 
-bug: Modifying a cocktail in what's to drink redirects you to view/edit
-bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
+
 bug: family doesn't load properly for punches? (Kahiko) in view cocktail->modify
     -punches is not even an option in modify
 bug: modify ingredient sometimes results in multiple flashed messages stacked- when multiple cocktails are updated maybe?
-
+bug: After creating a new ingredient in add cocktail cursor focus drops- remains highlighted but not focused
 bug?: clicking accordions may cause columns to shift
 
 Verify:

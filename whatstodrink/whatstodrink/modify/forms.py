@@ -39,7 +39,7 @@ class ModifyCocktailForm(FlaskForm):
     name = StringField('Cocktail Name')
     build = TextAreaField('Build Instructions')
     source = StringField('Source')
-    family = SelectField('Cocktail Family', choices=[('Vermouth Cocktails', 'Vermouth Cocktails'), ('Sours', 'Sours'), ('Amaro Cocktails', 'Amaro Cocktails'), ('Old Fashioneds', 'Old Fashioneds'), ('Highballs', 'Highballs'), ('Champagne Cocktails', 'Champagne Cocktails'), ('Flips and Nogs', 'Flips and Nogs'), ('Juleps and Smashes', 'Juleps and Smashes'), ('Hot Drinks', 'Hot Drinks'), ('Orphans', 'Orphans'), ('Tiki Cocktails', 'Tiki Cocktails'), ('Duos and Trios', 'Duos and Trios')])
+    family = SelectField('Cocktail Family', choices=[('Vermouth Cocktails', 'Vermouth Cocktails'), ('Sours', 'Sours'), ('Amaro Cocktails', 'Amaro Cocktails'), ('Old Fashioneds', 'Old Fashioneds'), ('Highballs', 'Highballs'), ('Champagne Cocktails', 'Champagne Cocktails'), ('Flips and Nogs', 'Flips and Nogs'), ('Juleps and Smashes', 'Juleps and Smashes'), ('Hot Drinks', 'Hot Drinks'), ('Orphans', 'Orphans'), ('Tiki Cocktails', 'Tiki Cocktails'), ('Duos and Trios', 'Duos and Trios'), ('Punches', 'Punches')])
     notes = TextAreaField('Notes')
     id = IntegerField('Id')
 
