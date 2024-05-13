@@ -156,7 +156,7 @@ def modify_ingredient():
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)
 
-                flash("Ingredient Modified", "primary")
+                flash("{}} Modified".format(newname), "primary")
                 return redirect(url_for('modify.manageingredients'))
             # If form not valid
             else:
@@ -210,6 +210,7 @@ def modify_ingredient():
             form = DeleteForm()
 
             ingredient_delete = form.id.data
+            name = db.session.scalar(select(Ingredient.name).where(Ingredient.id == ingredient_delete))
             db.session.execute(delete(Stock)
                                .where(Stock.ingredient_id == ingredient_delete)
                                .where(Stock.user_id == current_user.id))
@@ -218,7 +219,7 @@ def modify_ingredient():
                                .where(Ingredient.user_id == current_user.id))
             try:
                 db.session.commit()
-                flash("Ingredient Deleted", "warning")
+                flash("{}} Deleted".format(name), "warning")
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
@@ -276,12 +277,13 @@ def modifycocktail():
                        (SELECT id FROM cocktails WHERE name = :name AND user_id = :user_id LIMIT 1) \
                        DELETE FROM amounts \
                        WHERE cocktail_id IN (SELECT id FROM CocktailToDelete)")
+            name = db.session.scalar(select(Cocktail.name).where(Cocktail.id == cocktail_delete))
             cocktaildeletequery = text("DELETE FROM cocktails WHERE name = :name AND user_id = :user_id")
             db.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": current_user.id})
             db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": current_user.id})
             try:
                 db.session.commit()
-                flash('Cocktail Deleted', "warning")
+                flash("{}} Deleted".format(name), "warning")
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
@@ -362,7 +364,7 @@ def modifycocktail():
                                 ingredient_list=ingredient_list))
                     try:
                         db.session.commit()
-                        flash("Cocktail modified!", "primary")
+                        flash("{}} Modified".format(form.name.data), "primary")
                     except exc.SQLAlchemyError as e:
                         db.session.rollback()
                         print("Transaction rolled back due to error:", e)

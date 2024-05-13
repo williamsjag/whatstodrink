@@ -102,7 +102,7 @@ def login():
                         
 
                 # Redirect user to home page
-                flash("Successfully logged in, welcome {}!".format(user.username), 'primary')
+                flash("{} successfully logged in, welcome!".format(user.username), 'primary')
 
                 if form.next_page.data:
                     return redirect(form.next_page.data)

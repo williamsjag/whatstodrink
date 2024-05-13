@@ -44,7 +44,7 @@ def addingredientmodal2():
             db.session.add(new_stock)
             try:
                 db.session.commit()
-                flash("Ingredient Added", "primary")
+                flash("{}} Added".format(new_ingredient.name), "primary")
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
@@ -97,7 +97,7 @@ def addingredient():
             db.session.add(new_stock)
             try:
                 db.session.commit()
-                flash("Ingredient Added", "primary")
+                flash("{}} Added".format(new_ingredient.name), "primary")
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
                 print("Transaction rolled back due to error:", e)
@@ -194,7 +194,7 @@ def addcocktail():
             )
             try:
                 db.session.commit()
-                flash("Cocktail Added", 'primary')
+                flash("{}} Added".format(newcocktail.name), "primary")
 
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
