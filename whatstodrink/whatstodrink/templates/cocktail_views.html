@@ -121,4 +121,15 @@
 </div>
 
 <script>
+     function loadAllCocktails() {
+        // Hide the cocktail_list
+        document.getElementById('cocktail_list').style.display = 'none';
+        // Show the long_list
+        document.getElementById('long_list').style.display = 'block';
+    }
+    function loadLessCocktails() {
+        document.getElementById('cocktail_list').style.display = 'block';
+        // Show the long_list
+        document.getElementById('long_list').style.display = 'none';
+    }
 </script>
