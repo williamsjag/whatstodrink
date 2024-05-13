@@ -34,7 +34,7 @@
         {% endif %}
         </div>
         <div class="text-center mt-4 mb-3">
-            <button class="btn btn-secondary" hx-get="/viewingredientmodal?ingredient={{ ingredient }}" hx-target="#viewModal" type="button">Back</button>
+            <button class="btn btn-secondary" hx-get="/viewingredientmodal?ingredient={{ ingredient|urlencode }}" hx-target="#viewModal" type="button">Back</button>
         </div>
     </form>
 </div>

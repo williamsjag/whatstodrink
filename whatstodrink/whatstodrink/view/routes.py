@@ -64,7 +64,7 @@ def viewcocktailmodal():
             if target:
                 cocktail = db.session.scalar(select(Cocktail)
                                             .where(func.lower(Cocktail.name) == target)
-                                            .where(Cocktail.user_id == current_user.id))
+                                            .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared ==  1)))
                 form = ViewCocktailForm()
                 return render_template("viewcocktailmodal.html", cocktail=cocktail, form=form, ingredient=ingredient)
        

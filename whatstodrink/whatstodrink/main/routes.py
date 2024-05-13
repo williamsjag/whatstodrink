@@ -1,5 +1,6 @@
 from flask import render_template, Blueprint
 from flask_login import current_user, login_required
+from whatstodrink.helpers import update_cocktail_recipes
 
 main = Blueprint('main', __name__)
 
@@ -7,6 +8,7 @@ main = Blueprint('main', __name__)
 
 @main.route("/about")
 def about():
+    update_cocktail_recipes()
     return render_template("about.html")
 
 

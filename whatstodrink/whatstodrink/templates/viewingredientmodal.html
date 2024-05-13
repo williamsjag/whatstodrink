@@ -35,7 +35,7 @@
                     </div>
                     <ul id="cocktail_list" class="me-3">
                         {% for cocktail in cocktails %}
-                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail }}&ingredient={{ ingredient.name }}" hx-target="#body">{{ cocktail }}</a></li>
+                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail|urlencode }}&ingredient={{ ingredient.name|urlencode }}" hx-target="#body">{{ cocktail }}</a></li>
                         {% endfor %}
                         {% if allcocktails|length > 10 %}                           
                         <a class="ms-5 blue" href="#" type="button" onclick=loadAllCocktails()>and {{ allcocktails|length - 10 }} more...</a>
@@ -43,15 +43,21 @@
                     </ul>
                     <ul id="long_list" class="me-3" style="display: none;">
                         {% for cocktail in allcocktails %}
-                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail }}&ingredient={{ ingredient.name }}" hx-target="#body">{{ cocktail }}</a></li>
+                        <li class="ms-5"><a class="blue" href="#" hx-get="/viewcocktailmodal?cocktail={{ cocktail|urlencode }}&ingredient={{ ingredient.name|urlencode }}" hx-target="#body">{{ cocktail }}</a></li>
                         {% endfor %}
                         <a class="ms-5 blue" href="#" onclick=loadLessCocktails()>See Less</a>
                     </ul>
                     {% endif %}
                 </div>
+                {% if ingredient.shared != 1 %}
                 <div class="text-center mt-4 mb-3">
                     <button hx-post="/modify_ingredient" hx-target="#body" id="modifybutton" name="modifybutton" class="btn btn-primary" type="submit">Modify Ingredient</button>
                 </div>
+                {% else %}
+                <div class="text-center mt-4 mb-3">
+                    <button data-bs-dismiss="modal" class="btn btn-secondary" type="button">Close</button>
+                </div>
+                {% endif %}
             </form>
         </div>
     </div>
