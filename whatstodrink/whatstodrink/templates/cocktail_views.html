@@ -18,14 +18,14 @@
                             <div class="accordion-item center-accordion cocktail-group">
                                 <h2 class="accordion-header" id="id_{{ loop.index0 }}">
                                     <button class="accordion-button collapsed container-fluid" type="button" data-bs-toggle="collapse" data-bs-target="#Arr{{ loop.index0 }}" aria-expanded="false" aria-controls="Arr{{ loop.index0 }}">
-                                        <div class="row">
-                                            <span class="left-text col-lg-auto">
+                                       
+                                            <div class="left-text">
                                                 <strong>{{ cocktail.name }}</strong>
-                                            </span>
-                                            <span class="right-text d-none d-sm-block list-text col">
+                                            </div>
+                                            <div class="right-text d-none d-sm-block list-text">
                                                 {{ cocktail.ingredient_list }}
-                                            </span>
-                                        </div>
+                                            </div>
+                                        
                                     </button>
                                 </h2>
                                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
