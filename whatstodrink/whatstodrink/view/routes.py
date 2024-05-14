@@ -334,6 +334,15 @@ def missingoneall():
             counts[ingredient] = 1
         else:
             counts[ingredient] += 1
+        if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
 
     for ingredient, count in counts.items():
         setattr(ingredient, "count", count)
@@ -341,10 +350,10 @@ def missingoneall():
 
     missing_ingredients.sort(key=lambda x: x.count, reverse=True)
 
-    
+    form = ModifyCocktailForm()
     
     return render_template(
-        "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, defaults=session["defaults"]
+        "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, defaults=session["defaults"], form=form
     )
 
 @view.route("/missingoneuser")
@@ -377,15 +386,24 @@ def missingoneuser():
             counts[ingredient] = 1
         else:
             counts[ingredient] += 1
+        if cocktail.recipe:
+                recipe_parts = []
+                for item in cocktail.recipe.split('\n'):
+                    if chr(31) in item:
+                        parts = item.split(chr(31))
+                        recipe_parts.append((parts[0], parts[1] if len(parts) > 1 else ''))
+                    else:
+                        recipe_parts.append((item, ''))
+                setattr(cocktail, 'recipe_parts', recipe_parts)
 
     for ingredient, count in counts.items():
         setattr(ingredient, "count", count)
         missing_ingredients.append(ingredient)
 
     missing_ingredients.sort(key=lambda x: x.count, reverse=True)    
-
+    form = ModifyCocktailForm()
     return render_template(
-        "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients
+        "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, form=form
     )
     
 

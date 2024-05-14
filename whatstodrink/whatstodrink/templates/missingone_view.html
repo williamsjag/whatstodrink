@@ -32,16 +32,30 @@
                                             <div class="row row-cols-auto mb-3">
                                                 <div class="category col-3">Ingredients: </div>
                                                 <div class="col-7">
-                                                    {% if cocktail.recipe %}
-                                                        {% set list = cocktail.recipe.split('\n') %}
-                                                        {% for item in list %}
-                                                        {{ item }}
-                                                        {% if not loop.last %}
-                                                        <br/>
-                                                        {% endif %}
+                                                    {% if cocktail.recipe_parts %}
+                                                        {% for part in cocktail.recipe_parts %}
+                                                            {{ part[0] }} {% if part[1] %}
+                                                                <a class="blue" href="#" hx-get="/viewingredientmodal?ingredient={{ part[1]|urlencode }}" hx-target="#viewModal" data-bs-toggle="modal" data-bs-target="#viewModal">{{ part[1] }}</a>
+                                                            {% endif %}
+                                                            {% if not loop.last %}
+                                                                <br/>
+                                                            {% endif %}
                                                         {% endfor %}
                                                     {% endif %}
                                                 </div>
+                                                {% if cocktail.shared != 1 %}
+                                                <form>
+                                                    {{ form.csrf_token }}
+                                                    <!-- button to call modal -->
+                                                    <div>
+                                                        {{ form.name(type="hidden", value=cocktail.name) }}
+                                                    </div>
+                                                    <div class="col ms-auto">
+                                                        <button name="modify" class="btn btn-outline-primary" type="button" hx-post="/modifycocktail" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" hx-vals="{{ cocktail.name }}">Modify</button>
+                                                    </div>
+                                                </form>
+                                                    
+                                                {% endif %}
                                             </div>    
                                             {% if cocktail.build %}
                                             <div class="row row-cols-auto mb-3">
