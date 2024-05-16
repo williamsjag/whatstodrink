@@ -159,12 +159,10 @@ Fixed ingredient_list so that it properly wraps when it reaches the name and doe
 
 ## In Progress
 
+bug: Create new ingredient in add cocktail focuses x button
 Cocktail filters:
     -Add plus button for additional filters
 
-Verify:
-    -bug: addcocktail drops focus after autoload.
-    -bug: add cocktail->create->submit cursor focus drops- remains highlighted but not focused
 
 
 ## Todo 
