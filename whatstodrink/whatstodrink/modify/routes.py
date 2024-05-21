@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, request, url_for, Blueprint, session
 from whatstodrink.__init__ import db
-from sqlalchemy import select, union, text, update, exc, or_, delete, outerjoin, func
+from sqlalchemy import select, union, text, update, exc, or_, delete, outerjoin, func, and_
 from sqlalchemy.orm import outerjoin
 from whatstodrink.models import Cocktail, Ingredient, Stock, Amount
 from whatstodrink.modify.forms import ManageIngredientsForm, ModifyIngredientForm, DeleteForm, ModifyCocktailForm
