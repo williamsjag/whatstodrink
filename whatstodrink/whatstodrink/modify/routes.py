@@ -34,7 +34,7 @@ def manageingredients():
 
             # Get ingredients that match
             ingredientsquery = (select(Ingredient.id, Ingredient.name, Ingredient.type, Ingredient.short_name, Ingredient.notes, Stock.stock, Ingredient.shared)
-                                .join(Ingredient.stock)
+                                .join(Stock, and_(Stock.ingredient_id == Ingredient.id, Stock.user_id == current_user.id))
                                 .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
                                 .where(func.lower(Ingredient.name).like('%' + q + '%'))
             )
@@ -52,7 +52,7 @@ def manageingredients():
                                 .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1)))
             types = db.session.scalars(typesquery).fetchall()
             ingredientsquery = (select(Ingredient.shared, Ingredient.id, Ingredient.name, Ingredient.type, Ingredient.short_name, Ingredient.notes, Stock.stock)
-                                .join(Ingredient.stock)
+                                .join(Stock, and_(Stock.ingredient_id == Ingredient.id, Stock.user_id == current_user.id))
                                 .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
                                 )
             ingredients = db.session.execute(ingredientsquery).fetchall()
