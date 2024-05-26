@@ -304,6 +304,8 @@ def viewcommon():
 def missingone():
    
     session["view"] = "/missingone"
+    if 'defaults' not in session:
+        session["defaults"] = db.session.scalar(select(User.default_cocktails).where(User.id == current_user.id))
     return render_template(
         "missingone.html", defaults=session["defaults"], view=session["view"]
     )
@@ -312,14 +314,18 @@ def missingone():
 @login_required
 def missingoneall():
 
+    # get cocktails missing exactly one ingredient
+    subquery = (
+        select(Amount.cocktail_id, func.count(Amount.ingredient_id).label('missing_count'))
+        .join(Ingredient, Amount.ingredient_id == Ingredient.id)
+        .join(Stock, and_(Stock.ingredient_id == Ingredient.id, Stock.user_id == current_user.id, Stock.stock == 0))
+        .group_by(Amount.cocktail_id)
+        .subquery()
+    )
     cocktailquery = (
         select(Cocktail)
-        .join(Amount, Cocktail.id == Amount.cocktail_id)
-        .join(Ingredient, Amount.ingredient_id == Ingredient.id)
-        .join(Stock, Ingredient.id == Stock.ingredient_id)
-        .where(and_(Stock.stock != 1, Stock.user_id == current_user.id, or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1)))
-        .group_by(Cocktail.id)
-        .having(func.count(Cocktail.id) == 1)
+        .join(subquery, subquery.c.cocktail_id == Cocktail.id)
+        .where(and_(subquery.c.missing_count == 1, or_(Cocktail.user_id == current_user.id, Cocktail.shared == 1)))
     )
     cocktails = db.session.scalars(cocktailquery).fetchall()
 
@@ -327,12 +333,14 @@ def missingoneall():
     counts = {}
     
     for cocktail in cocktails:
+        # Find the missing ingredient in each cocktail
         ingredient = db.session.scalar(select(Ingredient)
                                         .join(Amount, Ingredient.id == Amount.ingredient_id)
-                                        .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
-                                        .where(Amount.cocktail_id == cocktail.id)
+                                        .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.user_id == current_user.id))
+                                        .where(Amount.cocktail_id == cocktail.id, Stock.stock != 1)
                                         )
         setattr(cocktail, 'ingredient_name', ingredient.name)
+        # Keep track of the number of times an ingredient is missing
         if ingredient not in counts:
             counts[ingredient] = 1
         else:
@@ -354,7 +362,8 @@ def missingoneall():
     missing_ingredients.sort(key=lambda x: x.count, reverse=True)
 
     form = ModifyCocktailForm()
-    
+    if 'defaults' not in session:
+        session["defaults"] = db.session.scalar(select(User.default_cocktails).where(User.id == current_user.id))
     return render_template(
         "missingone_view.html", cocktails=cocktails, missing_ingredients=missing_ingredients, defaults=session["defaults"], form=form
     )
@@ -417,6 +426,8 @@ def missingoneuser():
 def whatstodrink():
     form2 = CocktailSearchForm()
     session["view"] = "/whatstodrink"
+    if 'defaults' not in session:
+        session["defaults"] = db.session.scalar(select(User.default_cocktails).where(User.id == current_user.id))
     return render_template(
         "whatstodrink.html", defaults=session["defaults"], form2=form2, view=session["view"]
     )
