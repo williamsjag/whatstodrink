@@ -393,8 +393,8 @@ def missingoneuser():
     for cocktail in cocktails:
         ingredient = db.session.scalar(select(Ingredient)
                                         .join(Amount, Ingredient.id == Amount.ingredient_id)
-                                        .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.stock != 1))
-                                        .where(Amount.cocktail_id == cocktail.id)
+                                        .join(Stock, and_(Ingredient.id == Stock.ingredient_id, Stock.user_id == current_user.id))
+                                        .where(Amount.cocktail_id == cocktail.id, Stock.stock != 1)
                                         )
         setattr(cocktail, 'ingredient_name', ingredient.name)
         if ingredient not in counts:
