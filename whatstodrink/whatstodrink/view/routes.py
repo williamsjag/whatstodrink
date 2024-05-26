@@ -372,15 +372,18 @@ def missingoneall():
 @login_required
 def missingoneuser():
 
-    # Find cocktails missing one ingredient
+    # get cocktails missing exactly one ingredient
+    subquery = (
+        select(Amount.cocktail_id, func.count(Amount.ingredient_id).label('missing_count'))
+        .join(Ingredient, Amount.ingredient_id == Ingredient.id)
+        .join(Stock, and_(Stock.ingredient_id == Ingredient.id, Stock.user_id == current_user.id, Stock.stock == 0))
+        .group_by(Amount.cocktail_id)
+        .subquery()
+    )
     cocktailquery = (
         select(Cocktail)
-        .join(Amount, Cocktail.id == Amount.cocktail_id)
-        .join(Ingredient, Amount.ingredient_id == Ingredient.id)
-        .join(Stock, Ingredient.id == Stock.ingredient_id)
-        .where(and_(Stock.stock != 1, Stock.user_id == current_user.id, Cocktail.user_id == current_user.id))
-        .group_by(Cocktail.id)
-        .having(func.count(Cocktail.id) == 1)
+        .join(subquery, subquery.c.cocktail_id == Cocktail.id)
+        .where(and_(subquery.c.missing_count == 1, Cocktail.user_id == current_user.id))
     )
     cocktails = db.session.scalars(cocktailquery).fetchall()
 
