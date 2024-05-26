@@ -156,12 +156,12 @@ Added back button to get from cocktails list to ingredient modal
 Made flashed messages show the cocktail or ingredient being modified/deleted
 Made cocktail accordions linkable and added view ingredient modal
 Fixed ingredient_list so that it properly wraps when it reaches the name and doesn't add space to the button
+Fixed error where session["defaults"] can be forgotten and left unhandled
 
 ## In Progress
 
 bug: Create new ingredient in add cocktail focuses x button
-Cocktail filters:
-    -Add plus button for additional filters
+
 
 
 
@@ -171,6 +171,9 @@ user modifiability to all ingredients (incl. hide)
 
 Color/Theme/Prettify
 
+Cocktail filters:
+    -Add plus button for additional filters
+    
 implement tags: https://stackoverflow.com/questions/51128832/what-is-the-best-way-to-design-a-tag-based-data-table-with-sqlite
     - Add grouping options for cocktail views
     - blended
