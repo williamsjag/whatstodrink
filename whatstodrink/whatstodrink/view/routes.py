@@ -1,7 +1,7 @@
 from flask import render_template, request, session, Blueprint, redirect, url_for
 from whatstodrink.__init__ import db
 from sqlalchemy import select, text, or_, func, and_
-from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
+from whatstodrink.models import Ingredient, Cocktail, Amount, Stock, User
 from whatstodrink.view.forms import ViewIngredientForm, CocktailSearchForm, ViewCocktailForm
 from whatstodrink.modify.forms import ModifyCocktailForm
 from flask_login import current_user, login_required
@@ -77,9 +77,12 @@ def viewcocktails():
    
     form2 = CocktailSearchForm()
     session["view"] = "/viewcocktails"
+    if 'defaults' not in session:
+        session["defaults"] = db.session.scalar(select(User.default_cocktails).where(User.id == current_user.id))
     return render_template(
         "viewcocktails.html", defaults=session["defaults"], form2=form2, view=session["view"]
     )
+        
 
 @view.route("/viewallcocktails",  methods=["GET", "POST"])
 @login_required
