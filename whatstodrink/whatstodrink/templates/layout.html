@@ -44,11 +44,11 @@
                                     <li><a class="dropdown-item" href="{{ url_for('view.missingone') }}">What's Missing?</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('view.viewcocktails') }}">All Cocktails</a></li>
                                 </ul>
-                            </li> 
-                            <li class="nav-item"><a class="nav-link me-2" href="{{ url_for('main.about') }}">About</a></li>                      
+                            </li>                     
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2 me-2">
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('users.account') }}">Account</a></li>
+                            <li class="nav-item"><a class="nav-link me-2" href="{{ url_for('main.about') }}">About</a></li>  
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('users.logout') }}">Log Out</a></li>
                         </ul>
                     {% else %}
