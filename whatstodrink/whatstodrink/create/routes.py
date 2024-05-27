@@ -3,6 +3,7 @@ from whatstodrink.__init__ import db
 from sqlalchemy import select, text, update, exc, or_
 from whatstodrink.models import Cocktail, Ingredient, Stock, Amount
 from whatstodrink.create.forms import AddIngredientForm, AddCocktailForm
+from whatstodrink.helpers import commit_transaction
 from flask_login import current_user, login_required
 
 create = Blueprint('create', __name__)
@@ -30,11 +31,7 @@ def addingredientmodal2():
             )
             
             db.session.add(new_ingredient)
-            try:
-                db.session.commit()
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
             
             new_stock = Stock(
                 stock=form.stock.data,
@@ -42,12 +39,9 @@ def addingredientmodal2():
                 ingredient_id=new_ingredient.id
             )
             db.session.add(new_stock)
-            try:
-                db.session.commit()
-                flash("{} added".format(new_ingredient.name), "primary")
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
+            flash("{} added".format(new_ingredient.name), "primary")
+            
             return redirect(url_for("modify.manageingredients"))
         else:
             return render_template("addingredienterrors.html", form=form)
@@ -83,11 +77,7 @@ def addingredient():
                 shared=0
             )            
             db.session.add(new_ingredient)
-            try:
-                db.session.commit()
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
             # Add new stock entry 
             new_stock = Stock(
                 stock=form.stock.data,
@@ -95,12 +85,9 @@ def addingredient():
                 ingredient_id=new_ingredient.id
             )
             db.session.add(new_stock)
-            try:
-                db.session.commit()
-                flash("{} added".format(new_ingredient.name), "primary")
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
+            flash("{} added".format(new_ingredient.name), "primary")
+            
             
             return redirect(url_for(
                 "create.addingredient"
@@ -154,11 +141,7 @@ def addcocktail():
                                     recipe=recipe
                                     )
             db.session.add(newcocktail)
-            try:
-                db.session.commit()
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
           
             # Add amounts to db
             # initialize names list and sequence counter
@@ -192,13 +175,8 @@ def addcocktail():
                 .where(Cocktail.user_id == current_user.id)
                 .values(ingredient_list=ingredient_list)
             )
-            try:
-                db.session.commit()
-                flash("{} added".format(newcocktail.name), "primary")
-
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
+            flash("{} added".format(newcocktail.name), "primary")
         
             return redirect(url_for(
                 "create.addcocktail"
@@ -232,11 +210,7 @@ def addingredientmodal():
                 shared=0
             )
             db.session.add(new_ingredient)
-            try:
-                db.session.commit()
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
 
             # Add new stock entry 
             new_stock = Stock(
@@ -245,11 +219,7 @@ def addingredientmodal():
                 ingredient_id=new_ingredient.id
             )
             db.session.add(new_stock)
-            try:
-                db.session.commit()
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
             return form.name.data
         # if not validated
         else:

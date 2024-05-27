@@ -5,6 +5,7 @@ from sqlalchemy.orm import outerjoin
 from whatstodrink.models import Cocktail, Ingredient, Stock, Amount
 from whatstodrink.modify.forms import ManageIngredientsForm, ModifyIngredientForm, DeleteForm, ModifyCocktailForm
 from whatstodrink.view.forms import ViewIngredientForm
+from whatstodrink.helpers import commit_transaction
 from flask_login import current_user, login_required
 
 modify = Blueprint('modify', __name__)
@@ -79,10 +80,7 @@ def manageingredients():
                              .values(stock=stock))
                 # Update the stock value
                 db.session.execute(sql_query)
-                try:
-                    db.session.commit()
-                except Exception as e:
-                    db.session.rollback()
+                commit_transaction()
                 
             
         return redirect(url_for(
@@ -113,11 +111,7 @@ def modify_ingredient():
                 shortname = form.short_name.data
                 updatequery = text("UPDATE ingredients SET type = :type, notes = :notes, name = :name, short_name = :short_name WHERE id = :id AND user_id = :user_id")
                 db.session.execute(updatequery,  {"id": id, "type": newtype, "notes": newnotes, "name": newname, "short_name": shortname, "user_id": current_user.id})
-                try:
-                    db.session.commit()
-                except exc.SQLAlchemyError as e:
-                    db.session.rollback()
-                    print("Transaction rolled back due to error:", e)
+                commit_transaction()
                
                 # Check for cocktails using this ingredient
                 cocktails = db.session.scalars(select(Amount.cocktail_id).where(Amount.ingredient_id == id)).fetchall()
@@ -150,11 +144,7 @@ def modify_ingredient():
                         .where(Cocktail.user_id == current_user.id)
                         .values(recipe=recipe, 
                                 ingredient_list=ingredient_list))
-                    try:
-                        db.session.commit()
-                    except exc.SQLAlchemyError as e:
-                        db.session.rollback()
-                        print("Transaction rolled back due to error:", e)
+                    commit_transaction()
 
                 flash("{} modified".format(newname), "warning")
                 return redirect(url_for('modify.manageingredients'))
@@ -217,12 +207,8 @@ def modify_ingredient():
             db.session.execute(delete(Ingredient)
                                .where(Ingredient.id == ingredient_delete)
                                .where(Ingredient.user_id == current_user.id))
-            try:
-                db.session.commit()
-                flash("{} deleted".format(name), "danger")
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
+            flash("{} deleted".format(name), "danger")
             
             return redirect(url_for("modify.manageingredients"))
         
@@ -281,12 +267,8 @@ def modifycocktail():
             cocktaildeletequery = text("DELETE FROM cocktails WHERE name = :name AND user_id = :user_id")
             db.session.execute(amountsdeletequery, {"name": cocktail_delete, "user_id": current_user.id})
             db.session.execute(cocktaildeletequery, {"name": cocktail_delete, "user_id": current_user.id})
-            try:
-                db.session.commit()
-                flash("{} deleted".format(name), "danger")
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
+            commit_transaction()
+            flash("{} deleted".format(name), "danger")
 
             return redirect(url_for("view.viewcocktails"))
 
@@ -319,11 +301,7 @@ def modifycocktail():
                     clearamounts = text("DELETE FROM amounts WHERE cocktail_id = :cocktail_id AND user_id = :user_id")
                     
                     db.session.execute(clearamounts, {"cocktail_id": form.id.data, "user_id": current_user.id})
-                    try:
-                        db.session.commit()
-                    except exc.SQLAlchemyError as e:
-                        db.session.rollback()
-                        print("Transaction rolled back due to error:", e)
+                    commit_transaction()
                  
                     # for each li...
                     recipe = ""
@@ -362,13 +340,9 @@ def modifycocktail():
                                 notes=form.notes.data, 
                                 recipe=recipe, 
                                 ingredient_list=ingredient_list))
-                    try:
-                        db.session.commit()
-                        flash("{} modified".format(form.name.data), "warning")
-                    except exc.SQLAlchemyError as e:
-                        db.session.rollback()
-                        print("Transaction rolled back due to error:", e)
-
+                    commit_transaction()
+                    flash("{} modified".format(form.name.data), "warning")
+                
                     referrerpath = request.form.get("referrer")
                     referrer = referrerpath[1:]
                     return redirect(url_for("view." + referrer))
