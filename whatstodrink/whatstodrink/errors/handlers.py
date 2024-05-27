@@ -16,7 +16,7 @@ def error_403(error):
 def error_500(error):
     return render_template('errors/500.html'), 500
 
-@errors.app_errorhandler(CSRFError)
-def error_csrf(error):
-    flash("Session expired, please login again", "danger")
-    return redirect(url_for('users.login'))
+# @errors.app_errorhandler(CSRFError)
+# def error_csrf(error):
+#     flash("Session expired, please login again", "danger")
+#     return redirect(url_for('users.login'))
