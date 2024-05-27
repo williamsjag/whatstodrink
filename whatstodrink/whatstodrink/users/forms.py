@@ -32,7 +32,7 @@ class LoginForm(FlaskForm):
     def validate_username(self, username):
         user = db.session.scalars(select(User.username).where(User.username == username.data)).first()
         mail = db.session.scalars(select(User.email).where(User.email == username.data)).first()
-        if not user or mail:
+        if not user and not mail:
             raise ValidationError("Username or Email invalid")
         
     def validate_password(self, password):

@@ -5,6 +5,7 @@ from sqlalchemy import select, text, or_, func, and_, update
 from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
 from flask_login import current_user, login_required
 from whatstodrink.__init__ import db
+from sqlalchemy import exc
 
 def send_reset_email(user):
     token = user.get_reset_token()
@@ -17,6 +18,13 @@ Cheers,
 WhatsToDrink.com"""
     msg.html = render_template('email/request_reset.html', user=user, token=token)
     mail.send(msg)
+
+def commit_transaction():
+    try:
+        db.session.commit()
+    except exc.SQLAlchemyError as e:
+        db.session.rollback()
+        current_app.logger.error(f"Transaction rolled back due to error: {e}")
 
 # def update_cocktail_recipes():
 #     # Retrieve all cocktails

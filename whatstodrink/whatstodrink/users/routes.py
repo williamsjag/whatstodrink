@@ -5,7 +5,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from whatstodrink.models import User, Ingredient, Stock
 from whatstodrink.users.forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm, SettingsForm
 from flask_login import login_user, current_user, logout_user, login_required
-from whatstodrink.helpers import send_reset_email
+from whatstodrink.helpers import send_reset_email, commit_transaction
 
 
 users = Blueprint('users', __name__)
@@ -19,31 +19,19 @@ def register():
     session.clear()
     form = RegistrationForm()
 
-    if request.method == "POST":
-
-        # check to see if user exists
-        if form.validate_on_submit():
-            # insert into users table
-            hash = generate_password_hash(
-                form.password.data, method="pbkdf2", salt_length=16
-            )
-            newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails=1)
-            db.session.add(newuser)
-            try:
-                db.session.commit()
-                flash("Your account has been created! You are now able to log in", 'primary')
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
-            
-            return redirect(url_for('users.login'))
-            
-        else:
-            return render_template("register.html", form=form)
-    
-    # if GET
-    else:
-        return render_template("register.html", form=form)
+    # check to see if user exists if form submitted
+    if form.validate_on_submit():
+        # insert into users table
+        hash = generate_password_hash(
+            form.password.data, method="pbkdf2", salt_length=16
+        )
+        newuser = User(username=form.username.data, email=form.email.data, hash=hash, default_cocktails=1)
+        db.session.add(newuser)
+        commit_transaction()
+        flash("Your account has been created! You are now able to log in", 'primary')        
+        return redirect(url_for('users.login'))
+        
+    return render_template("register.html", form=form)
 
 
 @users.route("/login", methods=["GET", "POST"])
@@ -54,68 +42,31 @@ def login():
     # Forget any user_id
     
     form = LoginForm()
-
-    # User reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
         
-        if form.validate_on_submit():
-           
-            # Query database for username
-            uname = form.username.data
-            password = form.password.data
-            query = select(User).where(or_(User.username == uname, User.email == uname))
-            user = db.session.scalars(query).first()
+    if form.validate_on_submit():
+        uname = form.username.data
+        user = db.session.scalar(select(User).where(or_(User.username == uname, User.email == uname)))
+        if user and check_password_hash(user.hash, form.password.data):
+            session.clear()
+            login_user(user, remember=form.remember.data)
+            # Check default cocktail setting
+            session["defaults"] = user.default_cocktails
 
-            # Ensure username exists and password is correct
-            if not user or not check_password_hash(
-                user.hash, password
-            ):
-                flash('Login failed. Double-check username and/or password', 'warning')
-                return redirect(url_for('users.login'))
+            # make sure user has stock values for all necessary ingredients on login
+            common_ingredients = db.session.scalars(select(Ingredient.id).where(or_(Ingredient.shared == 1, Ingredient.user_id == current_user.id))).all()
+            for ingredient in common_ingredients:
+                result = db.session.scalars(select(Stock.ingredient_id).where(Stock.user_id == current_user.id).where(Stock.ingredient_id == ingredient)).first()
+                # if not, insert a default
+                if not result:
+                    db.session.add(Stock(ingredient_id=ingredient, user_id = current_user.id, stock=0))
+            commit_transaction()                    
 
-            else:
-                
-                session.clear()
-                login_user(user, remember=form.remember.data)
-
-                # Check default cocktail setting
-                session["defaults"] = user.default_cocktails
-
-                # make sure user has stock values for all necessary ingredients on login
-                query = select(Ingredient.id).where(or_(Ingredient.shared == 1, Ingredient.user_id == current_user.id))
-                common_ingredients = db.session.scalars(query).all()
-
-                # get all ids in common_ingredients
-                for ingredient in common_ingredients:
-                    # check if user has ingredient in common_stock
-                    result = db.session.scalars(select(Stock.ingredient_id).where(Stock.user_id == current_user.id).where(Stock.ingredient_id == ingredient)).first()
-
-                    # if not, insert a default
-                    if not result:
-                        newingredient = Stock(ingredient_id=ingredient, user_id = current_user.id, stock=0)
-                        db.session.add(newingredient)
-                        try:
-                            db.session.commit()
-                        except exc.SQLAlchemyError as e:
-                            db.session.rollback()
-                            print("Transaction rolled back due to error:", e)
-                        
-
-                # Redirect user to home page
-                flash("{} successfully logged in, welcome!".format(user.username), 'primary')
-
-                if form.next_page.data:
-                    return redirect(form.next_page.data)
-                else:
-                    return redirect(url_for('main.index'))
-        
+            flash(f"{user.username} successfully logged in, welcome!", 'primary')
+            return redirect(form.next_page.data or url_for('main.index'))
         else:
-            return render_template("login.html", form=form)
+            flash('Login failed. Double-check username and/or password', 'warning')
 
-    # User reached route via GET (as by clicking a link or via redirect)
-    else:
-        next_page = request.args.get('next')
-        return render_template("login.html", form=form, next_page=next_page)
+    return render_template("login.html", form=form)
 
 
 @users.route("/logout")
@@ -125,7 +76,6 @@ def logout():
 
     logout_user()
     flash('Logged Out', 'primary')
-    # Redirect user to login form
     return redirect(url_for('users.login'))
     
 
@@ -134,49 +84,19 @@ def logout():
 def account():
     form = SettingsForm()
 
-    if request.method == "GET":
-        defaults = session.get("defaults")
+    if request.method == "POST":
+        cocktail_setting = request.form.get('cocktailswitch')
+        # cocktailupdate = text("UPDATE users SET default_cocktails = 1 WHERE id = :user_id")
+        current_user.default_cocktails = cocktail_setting
+        commit_transaction
+        session["defaults"] = 'on' if cocktail_setting else ''
+
+    defaults = session.get("defaults")
+    if defaults is None:
+        defaults = current_user.default_cocktails
+        session["defaults"] = defaults
         
-        if defaults is None:
-            session['defaults'] = current_user.default_cocktails
-            defaults = session['defaults']
-
-        return render_template(
-            "account.html", defaults=defaults, form=form
-        )
-    
-    elif request.method == "POST":
-        cocktails = request.form.get('cocktailswitch')
-        
-        if cocktails:
-            # Update database defaults for next login
-            cocktailupdate = text("UPDATE users SET default_cocktails = 1 WHERE id = :user_id")
-            db.session.execute(cocktailupdate, {"user_id": current_user.id})
-            try:
-                db.session.commit()
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
-           
-
-            # Update current session defaults
-            session["defaults"] = 'on'
-
-        else:
-            # Update database defaults for next login
-            cocktailupdate = text("UPDATE users SET default_cocktails = 0 WHERE id = :user_id")
-            db.session.execute(cocktailupdate, {"user_id": current_user.id})
-            try:
-                db.session.commit()
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
-           
-            # Update current session defaults
-            session["defaults"] = ''
-
-        return render_template("account.html", form=form)
-
+    return render_template("account.html", defaults=defaults, form=form)
 
 
 @users.route("/resetpassword", methods=["GET", "POST"])
@@ -185,7 +105,6 @@ def reset_request():
         return redirect(url_for('main.index'))   
 
     form = RequestResetForm()
-
     if form.validate_on_submit():
         user = db.session.scalar(select(User).where(User.email == form.email.data))
         if user:
@@ -199,31 +118,19 @@ def reset_request():
 def reset_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
+    
     user = User.verify_reset_token(token)
     if not user:
         flash('Error: invalid or expired token', 'warning')
         return redirect(url_for('users.reset_request'))
+    
     form = ResetPasswordForm()
     if form.validate_on_submit():
-            # insert into users table
-            hash = generate_password_hash(
-                form.password.data, method="pbkdf2", salt_length=16
-            )
-            db.session.execute(
-                update(User).where(User.id == user)
-                .values(hash=hash)
-            )
-            try:
-                db.session.commit()
-                flash('Your password has been updated! You are now able to log in', 'primary')
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                print("Transaction rolled back due to error:", e)
-           
-
-            
-            
+            hash = generate_password_hash(form.password.data, method="pbkdf2", salt_length=16)
+            db.session.execute(update(User).where(User.id == user).values(hash=hash))
+            commit_transaction
+            flash('Your password has been updated! You are now able to log in', 'primary')
             return redirect(url_for('users.login'))
 
-    return render_template("resettoken.html", methods=["GET", "POST"], form=form)
+    return render_template("resettoken.html", form=form)
 
