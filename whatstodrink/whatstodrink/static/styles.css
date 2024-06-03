@@ -42,6 +42,7 @@ nav .navbar-brand .blue
   max-width: 400px;
   min-width: 400px;
   height: 150px;
+  border-radius: 20px;
 }
 .settingspane {
   box-sizing: border-box;
