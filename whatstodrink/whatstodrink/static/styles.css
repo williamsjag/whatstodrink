@@ -39,12 +39,16 @@ nav .navbar-brand .blue
   border-width: 2px;
   padding: 20px;
   margin: 25px;
-  max-width: 400px;
-  min-width: 400px;
+  max-width: 350px;
+  min-width: 350px;
   height: 135px;
   border-radius: 20px;
 }
-@media screen and (max-width: 895px) {
+
+@media screen and (max-width: 825px) {
+  .hcol {
+    flex: 0 0 100%;
+  }
   .homeitem {
     margin:20px;
   }
@@ -52,8 +56,6 @@ nav .navbar-brand .blue
 @media screen and (max-width: 500px) {
   .homeitem {
     margin:12px;
-    min-width: 200px;
-    max-width: 300px;
   }
 }
 .settingspane {
