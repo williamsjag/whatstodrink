@@ -38,11 +38,23 @@ nav .navbar-brand .blue
   border-color: #537fbe;
   border-width: 2px;
   padding: 20px;
-  margin: 30px;
+  margin: 25px;
   max-width: 400px;
   min-width: 400px;
-  height: 150px;
+  height: 135px;
   border-radius: 20px;
+}
+@media screen and (max-width: 895px) {
+  .homeitem {
+    margin:20px;
+  }
+}
+@media screen and (max-width: 500px) {
+  .homeitem {
+    margin:12px;
+    min-width: 200px;
+    max-width: 300px;
+  }
 }
 .settingspane {
   box-sizing: border-box;
@@ -53,11 +65,7 @@ nav .navbar-brand .blue
   margin: 30px;
   margin-top: 50px;
 }
-@media screen and (max-width: 895px) {
-  .homeitem {
-    margin:20px;
-  }
-}
+
 .explainer {
   box-sizing: border-box;
   border: solid;
@@ -99,9 +107,6 @@ input[type=checkbox] {
 /* buy me a coffee button */
 .bmc-btn {
   transform: scale(.8);
-  position: fixed;
-  right: 10px;
-  bottom: 10px;
 }
 
 .form-group .control-label{
@@ -130,6 +135,9 @@ input[type=checkbox] {
   margin: 2rem auto;
 }
 
+.coffeebutton {
+  align-self: flex;
+}
 /* Accordion */
 .accordion-button .row .left-text {
   white-space: nowrap; 
