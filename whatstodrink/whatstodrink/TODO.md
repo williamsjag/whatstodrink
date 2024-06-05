@@ -165,11 +165,17 @@ Formatted explainers to disappear on mobile
 ## In Progress
 
 bug: Create new ingredient in add cocktail focuses x button
+bug: Rename Aguil a azteca to Águil... 
+    2024-06-05 18:01:20,251: TypeError: The view function did not return a valid response. The return type must be a string, dict, list, tuple with headers or status, Response instance, or WSGI callable, but it was a int.
 
+figure out how to make search bar accent agnostic
+    - works for ingredient search but not cocktail for some reason
+  
 Mobile formatting:
     - format cocktail accordions for mobile
     - format add cocktail for mobile
     - check various modals for mobile formatting
+      - Modify cocktail needs changes
 
 
 ## Todo 
