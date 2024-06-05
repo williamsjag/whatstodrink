@@ -38,26 +38,31 @@ nav .navbar-brand .blue
   border-color: #537fbe;
   border-width: 2px;
   padding: 20px;
-  margin: 25px;
   max-width: 350px;
   min-width: 350px;
   height: 135px;
   border-radius: 20px;
 }
+.indexgrid {
+  display: grid;
+  max-width: 750px;
+  grid-template-columns: 
+    repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+.grid-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: flex-start; /* Align to the top */
+  padding: 2rem 1rem; /* Adjust padding to prevent overflow */
+}
+@media screen and (max-width: 768px) {
+  .indexgrid {
+    grid-template-columns: 1fr; /* Single column on small screens */
+  }
+}
 
-@media screen and (max-width: 825px) {
-  .hcol {
-    flex: 0 0 100%;
-  }
-  .homeitem {
-    margin:20px;
-  }
-}
-@media screen and (max-width: 500px) {
-  .homeitem {
-    margin:12px;
-  }
-}
+
 .settingspane {
   box-sizing: border-box;
   border: solid;
