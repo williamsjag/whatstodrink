@@ -158,12 +158,18 @@ Made cocktail accordions linkable and added view ingredient modal
 Fixed ingredient_list so that it properly wraps when it reaches the name and doesn't add space to the button
 Fixed error where session["defaults"] can be forgotten and left unhandled
 Fix error where whatsmissing was not properly checking for the current user's stock
+Formatted home screen for mobile
+Formatted settings pane for mobile
+Formatted explainers to disappear on mobile
 
 ## In Progress
 
 bug: Create new ingredient in add cocktail focuses x button
 
-
+Mobile formatting:
+    - format cocktail accordions for mobile
+    - format add cocktail for mobile
+    - check various modals for mobile formatting
 
 
 ## Todo 
