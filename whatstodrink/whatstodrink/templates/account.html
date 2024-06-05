@@ -5,21 +5,28 @@
 {% endblock %}
 
 {% block main %}
-<div class="center-accordion text-center">
-    <h1 class="mb-5">Account: <span class="blue"><strong>{{ current_user.username }}</strong></span></h1>
-    <div class="settingspane">
-        <h2>Settings</h2>
-        <form class="list-group">
-            {{ form.csrf_token }}
-            <label class="list-group-item form-switch" for="flexSwitchCheckChecked">Enable default cocktails:
-              {% if defaults %}
-                <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked hx-post="account" hx-trigger="click">
-              {% else %}
-                <input class="form-check-input float-end" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" hx-post="account" hx-trigger="click">
-              {% endif %}
-            </label>
-          </form>
-    </div>
+<div class="center-accordion">
+  <h1 class="mb-5 text-center">Account: <span class="blue"><strong>{{ current_user.username }}</strong></span></h1>
+  <div class="settingspane">
+      <h2 class="mb-4 text-center">Settings</h2>
+      <form>
+          {{ form.csrf_token }}
+          <div class="row settings-item mb-3">
+              <div class="col-9">
+                  <label for="flexSwitchCheckChecked">Enable default cocktails:</label>
+              </div>
+              <div class="col-auto">
+                  <div class="form-check form-switch">
+                    {% if defaults %}
+                      <input class="form-check-input" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked hx-post="account" hx-trigger="click">
+                    {% else %}
+                      <input class="form-check-input" name="cocktailswitch" type="checkbox" role="switch" id="flexSwitchCheckChecked" hx-post="account" hx-trigger="click">
+                    {% endif %}
+                  </div>
+              </div>
+          </div>
+      </form>
+  </div>
 </div>
 
 {% endblock %}

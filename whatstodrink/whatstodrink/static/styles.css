@@ -81,8 +81,13 @@ nav .navbar-brand .blue
   border-color: #537fbe;
   border-width: 2px;
   padding: 20px;
-  margin: 30px;
+  margin-inline: auto;
   margin-top: 50px;
+  border-radius: 20px;
+  max-width: 450px;
+}
+.settings-item {
+  margin-inline: 1rem;
 }
 
 .explainer {
