@@ -25,34 +25,32 @@
                 <div class="mb-3 form-group">
                     <ul id="dynamicSelects">
                         <li id="labels" class="row">
-                            <div class="col-md-1"></div>
-                            <div class="col-md-4">
+                            <div class="col-1"></div>
+                            <div class="col-4">
                                 <strong>Amount</strong>
                             </div>
                             <div class="col">
                                 <strong>Ingredient</strong>
                             </div>
                         </li>
-                        {% for amount in amounts %}
-                        <li id="q{{ loop.index0 }}" class="row exclude">
-                            <div class="col-md-1 mt-1 handle">
+                        {% for i in range(amounts|length) %}
+                        <li id="q{{ loop.index0 }}" class="row gx-2 exclude">
+                            <div class="col-1 mt-1 handle">
                                 <svg height="30px" width="30px" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#aba0a0"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 8C10.3284 8 11 7.32843 11 6.5C11 5.67157 10.3284 5 9.5 5C8.67157 5 8 5.67157 8 6.5C8 7.32843 8.67157 8 9.5 8ZM9.5 14C10.3284 14 11 13.3284 11 12.5C11 11.6716 10.3284 11 9.5 11C8.67157 11 8 11.6716 8 12.5C8 13.3284 8.67157 14 9.5 14ZM11 18.5C11 19.3284 10.3284 20 9.5 20C8.67157 20 8 19.3284 8 18.5C8 17.6716 8.67157 17 9.5 17C10.3284 17 11 17.6716 11 18.5ZM15.5 8C16.3284 8 17 7.32843 17 6.5C17 5.67157 16.3284 5 15.5 5C14.6716 5 14 5.67157 14 6.5C14 7.32843 14.6716 8 15.5 8ZM17 12.5C17 13.3284 16.3284 14 15.5 14C14.6716 14 14 13.3284 14 12.5C14 11.6716 14.6716 11 15.5 11C16.3284 11 17 11.6716 17 12.5ZM15.5 20C16.3284 20 17 19.3284 17 18.5C17 17.6716 16.3284 17 15.5 17C14.6716 17 14 17.6716 14 18.5C14 19.3284 14.6716 20 15.5 20Z" fill="#aba0a0"></path> </g></svg>
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" autocomplete="off" class="form-control amountlist" name="amount" value="{{ amount.amount }}">
+                            <div class="col-4">
+                                <input type="text" autocomplete="off" class="form-control amountlist" name="amount" value="{{ amounts[i].amount }}">
                             </div>
-                            {% for ingredient in ingredients %}
-                            {% if ingredient.id == amount.ingredient_id %}
+                         
                             <div class="col">
-                                <input type="search" placeholder="{{ ingredient.name }}" autocomplete="off" class="form-control ingredientlist" value="{{ ingredient.name }}" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="next .searchtable">
+                                <input type="search" placeholder="{{ ingredients[i].name }}" autocomplete="off" class="form-control ingredientlist" value="{{ ingredients[i].name }}" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="next .searchtable">
                                 <!-- ingredient search table -->
                                 <table class="table table-sm table-borderless table-hover">
                                     <tbody class="searchtable">
                                 </table>
                             </div>
-                            {% endif %}
-                            {% endfor %}
-                            <div class="col-md-1 text-right mt-1">
+                        
+                            <div class="col-1 text-right mt-1">
                                 <a href="#" class="svg" onclick="removeRow(this)">
                                     <svg fill="#ff0000" height="25px" width="25px" version="1.1" id="Layer_1" viewBox="-8.42 -8.42 227.25 227.25" xml:space="preserve" stroke="#ff0000" stroke-width="9.889458" onclick="removeRow(this)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <g> <path d="M105.207,0C47.196,0,0,47.196,0,105.207c0,58.011,47.196,105.207,105.207,105.207 c58.011,0,105.207-47.196,105.207-105.207C210.414,47.196,163.218,0,105.207,0z M105.207,202.621 c-53.715,0-97.414-43.699-97.414-97.414c0-53.715,43.699-97.414,97.414-97.414c53.715,0,97.414,43.699,97.414,97.414 C202.621,158.922,158.922,202.621,105.207,202.621z"></path> <path d="M155.862,101.31H54.552c-2.152,0-3.897,1.745-3.897,3.897c0,2.152,1.745,3.897,3.897,3.897h101.31 c2.152,0,3.897-1.745,3.897-3.897C159.759,103.055,158.014,101.31,155.862,101.31z"></path> </g> </g> </g> </g></svg>
                                 </a>
@@ -155,16 +153,16 @@
         // If not, create new one
         else {
             var firstRow = document.createElement('li');
-            firstRow.className = 'row'
+            firstRow.className = 'row gx-2'
             firstRow.id = 'q0'
             var handlediv = document.createElement('div');
-            handlediv.className = "col-md-1 mt-1 handle"
+            handlediv.className = "col-1 mt-1 handle"
             var amountdiv = document.createElement('div');
-            amountdiv.className = "col-md-4"
+            amountdiv.className = "col-4"
             var ingredientdiv = document.createElement('div');
             ingredientdiv.className = "col"
             var buttondiv = document.createElement('div');
-            buttondiv.className = "col-md-1 text-right mt-1"
+            buttondiv.className = "col-1 text-right mt-1"
          
             // append elements to cells
             handlediv.innerHTML = '<svg height="30px" width="30px" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#aba0a0"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 8C10.3284 8 11 7.32843 11 6.5C11 5.67157 10.3284 5 9.5 5C8.67157 5 8 5.67157 8 6.5C8 7.32843 8.67157 8 9.5 8ZM9.5 14C10.3284 14 11 13.3284 11 12.5C11 11.6716 10.3284 11 9.5 11C8.67157 11 8 11.6716 8 12.5C8 13.3284 8.67157 14 9.5 14ZM11 18.5C11 19.3284 10.3284 20 9.5 20C8.67157 20 8 19.3284 8 18.5C8 17.6716 8.67157 17 9.5 17C10.3284 17 11 17.6716 11 18.5ZM15.5 8C16.3284 8 17 7.32843 17 6.5C17 5.67157 16.3284 5 15.5 5C14.6716 5 14 5.67157 14 6.5C14 7.32843 14.6716 8 15.5 8ZM17 12.5C17 13.3284 16.3284 14 15.5 14C14.6716 14 14 13.3284 14 12.5C14 11.6716 14.6716 11 15.5 11C16.3284 11 17 11.6716 17 12.5ZM15.5 20C16.3284 20 17 19.3284 17 18.5C17 17.6716 16.3284 17 15.5 17C14.6716 17 14 17.6716 14 18.5C14 19.3284 14.6716 20 15.5 20Z" fill="#aba0a0"></path> </g></svg>'

@@ -161,6 +161,7 @@ Fix error where whatsmissing was not properly checking for the current user's st
 Formatted home screen for mobile
 Formatted settings pane for mobile
 Formatted explainers to disappear on mobile
+Reduced gutter size on add cocktail to fit all elements on mobile
 
 ## In Progress
 
