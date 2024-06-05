@@ -59,6 +59,18 @@ nav .navbar-brand .blue
 @media screen and (max-width: 768px) {
   .indexgrid {
     grid-template-columns: 1fr; /* Single column on small screens */
+    gap: 1.5rem;
+  }
+  .btn-blurb {
+    display: none;
+  }
+  .homeitem {
+    height: 75px;
+    min-width: 295px;
+    max-width: 295px;
+  }
+  .grid-container {
+    padding: 1.5rem 1rem;
   }
 }
 
@@ -114,6 +126,8 @@ input[type=checkbox] {
 /* buy me a coffee button */
 .bmc-btn {
   transform: scale(.8);
+  margin-top: 2rem;
+  margin-left: -1.5rem;
 }
 
 .form-group .control-label{
