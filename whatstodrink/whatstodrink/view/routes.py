@@ -66,7 +66,8 @@ def viewcocktailmodal():
                                             .where(func.lower(Cocktail.name) == target)
                                             .where(or_(Cocktail.user_id == current_user.id, Cocktail.shared ==  1)))
                 form = ViewCocktailForm()
-                return render_template("viewcocktailmodal.html", cocktail=cocktail, form=form, ingredient=ingredient)
+                formatted_recipe = cocktail.recipe.replace(chr(31), ' ')
+                return render_template("viewcocktailmodal.html", cocktail=cocktail, form=form, ingredient=ingredient, formatted_recipe=formatted_recipe)
        
     else:
         redirect(url_for("modify.manageingredients"))

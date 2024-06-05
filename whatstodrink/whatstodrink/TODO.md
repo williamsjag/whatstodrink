@@ -162,6 +162,7 @@ Formatted home screen for mobile
 Formatted settings pane for mobile
 Formatted explainers to disappear on mobile
 Reduced gutter size on add cocktail to fit all elements on mobile
+Made Modify Cocktail work on mobile
 
 ## In Progress
 
@@ -174,9 +175,9 @@ figure out how to make search bar accent agnostic
   
 Mobile formatting:
     - format cocktail accordions for mobile
-    - format add cocktail for mobile
     - check various modals for mobile formatting
-      - Modify cocktail needs changes
+        - Modify Cocktail done
+    - check on [x] characters on mobile after clicking 'cocktails using'
 
 
 ## Todo 
