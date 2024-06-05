@@ -92,6 +92,7 @@ nav .navbar-brand .blue
   border-width: 2px;
   margin: auto;
   padding: 20px;
+  width: 80%;
   max-width: 500px;
 }
 .hometext {
