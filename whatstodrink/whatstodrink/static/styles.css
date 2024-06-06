@@ -67,10 +67,10 @@ nav .navbar-brand .blue
     height: 38px;
   }
   .offset-col {
-    margin-left: 2em;
+    margin-left: 1em;
   }
   .offset-col-spaced {
-    margin-left: 2em;
+    margin-left: 1em;
     margin-top: 7px;
   }
   .order-xs-1 { order: 1; }
@@ -194,6 +194,7 @@ input[type=checkbox] {
 .category {
   text-align: left;
   font-weight: bold;
+  padding-left: 0;
 }
 
 .item-center {
