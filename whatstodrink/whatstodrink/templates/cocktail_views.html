@@ -10,7 +10,7 @@
 {% endif %}
     {% for category in sorts %}
         <div class="no-break">
-            <h3 class="mb-3 center text-center"><span class="blue">{{ category }}</span></h3>
+            <h3 class="mb-3 text-center"><span class="blue">{{ category }}</span></h3>
                 <div class="accordion mb-3" id="makeabledrinks">
                     {% for cocktail in cocktails %}
                         {% if cocktail.family == category %}

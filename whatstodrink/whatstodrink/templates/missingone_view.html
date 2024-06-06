@@ -18,7 +18,7 @@
     {% for ingredient in missing_ingredients %}
     {% set sanitized_name = ingredient.name|replace(' ', '_') %}
         <div class="no-break">
-            <h3 class="mb-3 center text-center" id="ingredient_{{ sanitized_name }}"><span class="blue">{{ ingredient.name }}</span></h3>
+            <h3 class="mb-3 text-center" id="ingredient_{{ sanitized_name }}"><span class="blue">{{ ingredient.name }}</span></h3>
                 <div class="accordion mb-3" id="makeabledrinks">
                     {% for cocktail in cocktails %}
                         {% if cocktail.ingredient_name == ingredient.name %}
@@ -37,10 +37,10 @@
                                 </h2>
                                 <div id="Arr{{ loop.index0 }}" class="accordion-collapse collapse" aria-labelledby="{{ loop.index0 }}" data-bs-parent="#makeabledrinks">
                                     <div class="accordion-body">
-                                        <div class="container mb-3">
-                                            <div class="row row-cols-auto mb-3">
-                                                <div class="category col-3">Ingredients: </div>
-                                                <div class="col-7">
+                                        <div class="container-fluid mb-3">
+                                            <div class="row mb-3 d-flex">
+                                                <div class="category col-3 order-xs-1">Ingredients: </div>
+                                                <div class="col-sm offset-col{% if cocktail.shared == 1 %}-spaced{% endif %} order-xs-2">
                                                     {% if cocktail.recipe_parts %}
                                                         {% for part in cocktail.recipe_parts %}
                                                             {{ part[0] }} {% if part[1] %}
@@ -53,13 +53,11 @@
                                                     {% endif %}
                                                 </div>
                                                 {% if cocktail.shared != 1 %}
-                                                <form>
+                                                <form class="col-auto order-xs-3 ms-auto d-flex justify-content-end">
                                                     {{ form.csrf_token }}
                                                     <!-- button to call modal -->
                                                     <div>
                                                         {{ form.name(type="hidden", value=cocktail.name) }}
-                                                    </div>
-                                                    <div class="col ms-auto">
                                                         <button name="modify" class="btn btn-outline-primary" type="button" hx-post="/modifycocktail" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" hx-vals="{{ cocktail.name }}">Modify</button>
                                                     </div>
                                                 </form>
@@ -69,7 +67,7 @@
                                             {% if cocktail.build %}
                                             <div class="row row-cols-auto mb-3">
                                                 <div class="category col-3">Build: </div>
-                                                <div class="col-9">
+                                                <div class="col-sm offset-col-spaced">
                                                         {% set list = cocktail.build.split('\n') %}
                                                         {% for item in list %}
                                                         {{ item }}
@@ -83,13 +81,13 @@
                                             {% if cocktail.source %}
                                             <div class="row row-cols-auto mb-3">
                                                 <div class="category col-3">Source: </div>
-                                                <div class="col">{{ cocktail.source }}</div>
+                                                <div class="col-12 col-sm-3 offset-col-spaced">{{ cocktail.source }}</div>
                                             </div>
                                             {% endif %}
                                             {% if cocktail.notes %}
                                                 <div class="row row-cols-auto mb-3">
                                                     <div class="category col-3">Notes: </div>
-                                                    <div class="col-9">
+                                                    <div class="col-sm offset-col-spaced">
                                                         {% set list = cocktail.notes.split('\n') %}
                                                         {% for item in list %}
                                                             {{ item }}
