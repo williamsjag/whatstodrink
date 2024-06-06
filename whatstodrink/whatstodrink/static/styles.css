@@ -61,11 +61,17 @@ nav .navbar-brand .blue
     padding: 1.5rem 1rem;
   }
 }
-@media screen and (max-width: 576px) { /* mobile vertical screens */
-  .btn-group button{
+@media screen and (max-width: 575px) { /* mobile vertical screens */
+  .btn-group button {
     font-size: .8em;
     height: 38px;
   }
+  .offset-col {
+    margin-left: 2em;
+  }
+  .order-xs-1 { order: 1; }
+  .order-xs-2 { order: 3; }
+  .order-xs-3 { order: 2; }
 }
 .settingspane {
   box-sizing: border-box;
