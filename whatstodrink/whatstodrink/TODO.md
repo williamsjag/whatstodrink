@@ -164,6 +164,8 @@ Formatted explainers to disappear on mobile
 Reduced gutter size on add cocktail to fit all elements on mobile
 Made Modify Cocktail work on mobile
 Changed processing of viewcocktailmodal to avoid placeholder characters for delimiter chr(31)
+Erased unused css
+Changed container class to container-md in layout page to prevent width jumps at breakpoints
 
 ## In Progress
 
