@@ -48,7 +48,7 @@
                                                     <!-- button to call modal -->
                                                     <div>
                                                         {{ form.name(type="hidden", value=cocktail.name) }}
-                                                        <button name="modify" class="btn btn-outline-primary" type="button" hx-post="/modifycocktail" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" hx-vals="{{ cocktail.name }}">Modify</button>
+                                                        <button name="modify" class="btn btn-sm btn-outline-primary" type="button" hx-post="/modifycocktail" hx-target="#modifyModal" hx-trigger="click" data-bs-toggle="modal" data-bs-target="#modifyModal" hx-vals="{{ cocktail.name }}">Modify</button>
                                                     </div>
                                                 </form>
                                                     
@@ -71,7 +71,7 @@
                                             {% if cocktail.source %}
                                             <div class="row row-cols-auto mb-3">
                                                 <div class="category col-3">Source: </div>
-                                                <div class="col">{{ cocktail.source }}</div>
+                                                <div class="col-sm offset-col">{{ cocktail.source }}</div>
                                             </div>
                                             {% endif %}
                                             {% if cocktail.notes %}
