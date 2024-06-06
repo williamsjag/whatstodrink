@@ -166,6 +166,8 @@ Made Modify Cocktail work on mobile
 Changed processing of viewcocktailmodal to avoid placeholder characters for delimiter chr(31)
 Erased unused css
 Changed container class to container-md in layout page to prevent width jumps at breakpoints
+Formatted cocktail accordions for mobile
+Mobile formatting 1.0 is finished
 
 ## In Progress
 
@@ -175,12 +177,6 @@ bug: Rename Aguil a azteca to Águil...
 
 figure out how to make search bar accent agnostic
     - works for ingredient search but not cocktail for some reason
-  
-Mobile formatting:
-    - format cocktail accordions for mobile
-    - check various modals for mobile formatting
-        - Modify Cocktail done
-
 
 
 ## Todo 
@@ -200,6 +196,6 @@ recipe share page that opens a url like /cocktails-userid-cocktailid.html that c
     -button to login to save to your cocktails
     -once logged in replace with save to your cocktails
 
-Reports view- number of cocktails per ingredient, searchable using cocktail searches
+Reports view- number of cocktails per ingredient, searchable using cocktail searches, unused ingredients
 
 user modifiability to all ingredients (incl. hide)
