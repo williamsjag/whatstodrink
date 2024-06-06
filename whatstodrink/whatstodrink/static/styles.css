@@ -69,6 +69,10 @@ nav .navbar-brand .blue
   .offset-col {
     margin-left: 2em;
   }
+  .offset-col-spaced {
+    margin-left: 2em;
+    margin-top: 7px;
+  }
   .order-xs-1 { order: 1; }
   .order-xs-2 { order: 3; }
   .order-xs-3 { order: 2; }
