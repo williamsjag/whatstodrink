@@ -89,6 +89,7 @@
         if (qElement && scriptElement) {
             var hxGet = scriptElement.getAttribute('hx-get');
             qElement.setAttribute('hx-post', hxGet);
+            htmx.process(qElement);
             }
     </script>
     {% endif %}
@@ -124,6 +125,7 @@
                 var qElement = document.getElementById('q');
                 var hxPost = this.getAttribute('hx-post');
                 qElement.setAttribute('hx-post', hxPost);
+                htmx.process(qElement);
             });
         };
     }

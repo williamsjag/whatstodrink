@@ -122,6 +122,7 @@
                 var qElement = document.getElementById('q');
                 var hxPost = this.getAttribute('hx-post');
                 qElement.setAttribute('hx-post', hxPost);
+                htmx.process(qElement);
             });
         };
     }
