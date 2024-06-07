@@ -243,3 +243,7 @@ padding: 0;
   90%  {opacity: 1;}
   100% {opacity: 0;}
 }
+.error-spill {
+  width: 80%;
+  max-width: 500px;
+}

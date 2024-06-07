@@ -168,6 +168,8 @@ Erased unused css
 Changed container class to container-md in layout page to prevent width jumps at breakpoints
 Formatted cocktail accordions for mobile
 Mobile formatting 1.0 is finished
+Cleaned up formatting of accordions for better indentation
+Fixed bug where search bar would always search allcocktails
 
 ## In Progress
 
