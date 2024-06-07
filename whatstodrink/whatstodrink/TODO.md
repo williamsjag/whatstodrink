@@ -171,15 +171,16 @@ Mobile formatting 1.0 is finished
 Cleaned up formatting of accordions for better indentation
 Fixed bug where search bar would always search allcocktails
 Fixed size of error image for all screens
+Made search bar ignore accents
+Changed validate form logic for modifies to only throw error if name is changed and the name found is from a different id.
+    This allows changes of accents.
 
 ## In Progress
 
 bug: Create new ingredient in add cocktail focuses x button
+
 bug: Rename Aguil a azteca to Águil... 
     2024-06-05 18:01:20,251: TypeError: The view function did not return a valid response. The return type must be a string, dict, list, tuple with headers or status, Response instance, or WSGI callable, but it was a int.
-
-figure out how to make search bar accent agnostic
-    - works for ingredient search but not cocktail for some reason
 
 
 ## Todo 

@@ -19,15 +19,16 @@ class ModifyIngredientForm(FlaskForm):
     id = IntegerField('Id')
 
     def validate_name(self, name):
-        oldName = db.session.scalar(select(Ingredient.name)
+        oldName = db.session.scalar(select(Ingredient)
                                     .where(Ingredient.id == self.id.data)
                                     .where(Ingredient.user_id == current_user.id)
                                     )
-        if name.data != oldName:
-            newName = db.session.scalar(select(Ingredient.name).where(Ingredient.name == func.binary(name.data))
+        if name.data != oldName.name:
+            nameCheck = db.session.scalar(select(Ingredient.id)
+                                        .where(Ingredient.name == func.binary(name.data))
                                         .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
                                         )
-            if newName:
+            if nameCheck and (nameCheck != oldName.id):
                 raise ValidationError('An ingredient with that name already exists')
         else:
             pass
@@ -44,15 +45,15 @@ class ModifyCocktailForm(FlaskForm):
     id = IntegerField('Id')
 
     def validate_name(self, name):
-        oldName = db.session.scalar(select(Cocktail.name)
+        oldName = db.session.scalar(select(Cocktail)
                                     .where(Cocktail.id == self.id.data)
                                     .where(Cocktail.user_id == current_user.id))
-        if name.data != oldName:
-            newName = db.session.scalar(select(Cocktail.name)
+        if name.data != oldName.name:
+            nameCheck = db.session.scalar(select(Cocktail.id)
                                         .where(Cocktail.name == func.binary(name.data))
                                         .where(Cocktail.user_id == current_user.id))
-                                        
-            if newName:
+                          
+            if nameCheck and (nameCheck != oldName.id):
                 raise ValidationError('There is already a Cocktail with that name')
         else:
             pass
