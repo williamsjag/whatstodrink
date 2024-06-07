@@ -6,6 +6,7 @@ from whatstodrink.models import Ingredient, Cocktail, Amount, Stock
 from flask_login import current_user, login_required
 from whatstodrink.__init__ import db
 from sqlalchemy import exc
+import unicodedata
 
 def send_reset_email(user):
     token = user.get_reset_token()
@@ -26,6 +27,9 @@ def commit_transaction():
         db.session.rollback()
         current_app.logger.error(f"Transaction rolled back due to error: {e}")
 
+def remove_accents(input_str):
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
 # def update_cocktail_recipes():
 #     # Retrieve all cocktails
 #     all_cocktails = db.session.scalars(

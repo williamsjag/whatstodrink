@@ -170,6 +170,7 @@ Formatted cocktail accordions for mobile
 Mobile formatting 1.0 is finished
 Cleaned up formatting of accordions for better indentation
 Fixed bug where search bar would always search allcocktails
+Fixed size of error image for all screens
 
 ## In Progress
 

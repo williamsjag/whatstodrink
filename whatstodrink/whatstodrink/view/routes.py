@@ -5,6 +5,7 @@ from whatstodrink.models import Ingredient, Cocktail, Amount, Stock, User
 from whatstodrink.view.forms import ViewIngredientForm, CocktailSearchForm, ViewCocktailForm
 from whatstodrink.modify.forms import ModifyCocktailForm
 from flask_login import current_user, login_required
+from whatstodrink.helpers import remove_accents
 
 
 view = Blueprint('view', __name__)
@@ -98,21 +99,22 @@ def viewallcocktails():
     # If filter bar used
     if request.method == "POST":
         filter = filter.lower()
-        q = q.lower()
+        q = remove_accents(q.lower())
+
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
             ]
         elif filter == 'ingredient':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['recipe', 'ingredient_list'])
             ]
         else:
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+                if getattr(cocktail, filter) is not None and q in remove_accents(getattr(cocktail, filter).lower())
             ]
 
         cocktails = filtered_cocktails
@@ -173,21 +175,22 @@ def viewuser():
     
     if request.method == "POST":
         filter = filter.lower()
-        q = q.lower()
+        q = remove_accents(q.lower())
+
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
             ]
         elif filter == 'ingredient':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['recipe', 'ingredient_list'])
             ]
         else:
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+                if getattr(cocktail, filter) is not None and q in remove_accents(getattr(cocktail, filter).lower())
             ]
 
         cocktails = filtered_cocktails
@@ -244,22 +247,22 @@ def viewcommon():
 
     if request.method == "POST":
         filter = filter.lower()
-        q = q.lower()
+        q = remove_accents(q.lower())
 
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
             ]
         elif filter == 'ingredient':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['recipe', 'ingredient_list'])
             ]
         else:
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+                if getattr(cocktail, filter) is not None and q in remove_accents(getattr(cocktail, filter).lower())
             ]
 
         cocktails = filtered_cocktails
@@ -463,22 +466,22 @@ def whatstodrinkuser():
     if request.method == "POST":
 
         filter = filter.lower()
-        q = q.lower()
+        q = remove_accents(q.lower())
 
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
             ]
         elif filter == 'ingredient':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['recipe', 'ingredient_list'])
             ]
         else:
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+                if getattr(cocktail, filter) is not None and q in remove_accents(getattr(cocktail, filter).lower())
             ]
 
         cocktails = filtered_cocktails
@@ -551,21 +554,22 @@ def whatstodrinkall():
     if request.method == "POST":
 
         filter = filter.lower()
-        q = q.lower()
+        q = remove_accents(q.lower())
+
         if filter == 'search' or filter == 'search all':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['name', 'build', 'source', 'notes', 'family', 'recipe', 'ingredient_list'])
             ]
         elif filter == 'ingredient':
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if any(getattr(cocktail, attr) is not None and q in getattr(cocktail, attr).lower() for attr in ['recipe', 'ingredient_list'])
+                if any(getattr(cocktail, attr) is not None and q in remove_accents(getattr(cocktail, attr).lower()) for attr in ['recipe', 'ingredient_list'])
             ]
         else:
             filtered_cocktails = [
                 cocktail for cocktail in cocktails
-                if getattr(cocktail, filter) is not None and q in getattr(cocktail, filter).lower()
+                if getattr(cocktail, filter) is not None and q in remove_accents(getattr(cocktail, filter).lower())
             ]
 
         cocktails = filtered_cocktails
