@@ -29,7 +29,7 @@
                                     <div class="accordion-body">
                                         <div class="container-fluid mb-3">
                                             <div class="row mb-3 d-flex">
-                                                <div class="category col-3 order-xs-1">Ingredients: </div>
+                                                <div class="category col-2 order-xs-1">Ingredients: </div>
                                                 <div class="col-sm offset-col{% if cocktail.shared == 1 %}-spaced{% endif %} order-xs-2">
                                                     {% if cocktail.recipe_parts %}
                                                         {% for part in cocktail.recipe_parts %}
@@ -56,8 +56,8 @@
                                             </div>
                                             {% if cocktail.build %}
                                             <div class="row row-cols-auto mb-3">
-                                                <div class="category col-3">Build: </div>
-                                                <div class="col-12 col-sm-9 offset-col-spaced">
+                                                <div class="category col-2">Build: </div>
+                                                <div class="col-12 col-sm offset-col-spaced">
                                                         {% set list = cocktail.build.split('\n') %}
                                                         {% for item in list %}
                                                         {{ item }}
@@ -70,14 +70,14 @@
                                             {% endif %}
                                             {% if cocktail.source %}
                                             <div class="row row-cols-auto mb-3">
-                                                <div class="category col-3">Source: </div>
-                                                <div class="col-12 col-sm-9 offset-col-spaced">{{ cocktail.source }}</div>
+                                                <div class="category col-2">Source: </div>
+                                                <div class="col-12 col-sm offset-col-spaced">{{ cocktail.source }}</div>
                                             </div>
                                             {% endif %}
                                             {% if cocktail.notes %}
                                                 <div class="row row-cols-auto mb-3">
-                                                    <div class="category col-3">Notes: </div>
-                                                    <div class="col-12 col-sm-9 offset-col-spaced">
+                                                    <div class="category col-2">Notes: </div>
+                                                    <div class="col-12 col-sm offset-col-spaced">
                                                         {% set list = cocktail.notes.split('\n') %}
                                                         {% for item in list %}
                                                             {{ item }}
