@@ -1,6 +1,6 @@
 from flask import render_template, request, session, Blueprint, redirect, url_for
 from whatstodrink.__init__ import db
-from sqlalchemy import select, text, or_, func, and_
+from sqlalchemy import select, text, or_, func, and_, distinct
 from whatstodrink.models import Ingredient, Cocktail, Amount, Stock, User
 from whatstodrink.view.forms import ViewIngredientForm, CocktailSearchForm, ViewCocktailForm
 from whatstodrink.modify.forms import ModifyCocktailForm
@@ -62,7 +62,7 @@ def sourcesearch():
     print(f"{q}")
 
     if q:
-        results = db.session.scalars(select(Cocktail.source)
+        results = db.session.scalars(select(Cocktail.source.distinct())
                                      .where(func.lower(Cocktail.source).like('%' + q + '%'))
                                      .where(Cocktail.user_id == current_user.id)
                                      .limit(5)

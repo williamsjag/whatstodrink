@@ -68,7 +68,7 @@
         <!-- Source field -->
         <div class="form-group mb-3">
             {{ form.source.label(class="form-control-label") }}
-            {{ form.source(class="form-control", autocomplete="off", **{
+            {{ form.source(class="form-control", autocomplete="off", id="source_input", **{
                 "hx-get": "/sourcesearch",
                 "hx-trigger": "keyup changed delay:300ms",
                 "hx-target": "#source_results"}) }}
@@ -277,6 +277,18 @@
     function attachEventListeners() {
 
         var searchTable = document.getElementById('results');
+        var sourceSearch = document.getElementById('source_results');
+
+        if (sourceSearch) {
+            sourceSearch.addEventListener('click', function(event) {
+                if (event.target.tagName === "TD") {
+                    var originalElement = document.querySelector('#source_input');
+                    var sourceVal = event.target.textContent;
+                    originalElement.value = sourceVal;
+                    sourceSearch.innerHTML = '';
+                }
+            })
+        }
 
         if (searchTable) {
 
