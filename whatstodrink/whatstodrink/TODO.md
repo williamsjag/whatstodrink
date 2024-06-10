@@ -175,6 +175,7 @@ Made search bar ignore accents
 Changed validate form logic for modifies to only throw error if name is changed and the name found is from a different id.
     This allows changes of accents.
 Added source search table to add cocktail and modify cocktail
+Reduced size of first column in cocktail views
 
 
 ## In Progress

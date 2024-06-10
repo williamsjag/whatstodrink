@@ -46,21 +46,20 @@
                         <input type="text" autocomplete="off" class="form-control amountlist" name="amount" placeholder="e.g. 1 1/2 ounces">
                     </div>
                     <div class="col">
-                        <input type="text" autocomplete="off" class="form-control ingredientlist" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="next .results">
+                        <input type="text" autocomplete="off" class="form-control ingredientlist mb-3" placeholder="Type to search" name="q" hx-get="/ingredientsearch" hx-trigger="keyup changed delay:300ms" hx-target="#results">
                         <!-- ingredient search table -->
-                        <table class="table table-sm table-borderless table-hover">
-                            <tbody class="results">
+                        <table id ="searchtable" class="table table-sm table-borderless table-hover">
+                            <tbody id="results">
                         </table>
-                         <!-- Create new ingredient button -->
-                        <div class="ingredient_btn mb-3">
-                            <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal" onclick="focusFirstInput()">Create New Ingredient</button>
-                        </div>
                     </div>
                 </li>
             </ul>
             
         </div>
-       
+        <!-- Create new ingredient button -->
+        <div class="mb-3 text-center">
+            <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal" onclick="focusFirstInput()">Create New Ingredient</button>
+        </div>
         <!-- Build instructions field -->
         <div class="form-group mb-3">
             {{ form.build.label(class="form-control-label") }}
@@ -223,7 +222,7 @@
                 newDiv.classList.add('exclude-item');
 
                 // clear inputs and table of new copy
-                var resultsTable = newDiv.querySelector(".results");
+                var resultsTable = newDiv.querySelector("#results");
                 resultsTable.innerHTML = '';
                 inputs = newDiv.querySelectorAll('input');
                 
@@ -236,13 +235,9 @@
                 newDiv.querySelectorAll('label').forEach(function(label) {
                     label.remove();
                 })
-                // clear old searchtable
-                var oldTable = originalElement.querySelector('.results');
-                oldTable.innerHTML = '';
-                
+                // remove old searchtable
+                originalElement.querySelector("#searchtable").remove();
                 originalElement.classList.remove('exclude-item');
-                originalElement.querySelector('.ingredient_btn').remove();
-
 
                 //increment counter
                 counter++;
@@ -253,8 +248,16 @@
 
                 // set new field variables
                 var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
+
                 var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
                 
+                // make readonly
+                var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
+                oldInput.setAttribute('readonly', 'true');
+                oldInput.removeAttribute('hx-trigger');
+                oldInput.removeAttribute('hx-get');
+                oldInput.removeAttribute('hx-target');
+
                 // add handles and delete
                 var handle = '<div class="col-1 mt-1 handle"><svg height="30px" width="30px" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#aba0a0"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 8C10.3284 8 11 7.32843 11 6.5C11 5.67157 10.3284 5 9.5 5C8.67157 5 8 5.67157 8 6.5C8 7.32843 8.67157 8 9.5 8ZM9.5 14C10.3284 14 11 13.3284 11 12.5C11 11.6716 10.3284 11 9.5 11C8.67157 11 8 11.6716 8 12.5C8 13.3284 8.67157 14 9.5 14ZM11 18.5C11 19.3284 10.3284 20 9.5 20C8.67157 20 8 19.3284 8 18.5C8 17.6716 8.67157 17 9.5 17C10.3284 17 11 17.6716 11 18.5ZM15.5 8C16.3284 8 17 7.32843 17 6.5C17 5.67157 16.3284 5 15.5 5C14.6716 5 14 5.67157 14 6.5C14 7.32843 14.6716 8 15.5 8ZM17 12.5C17 13.3284 16.3284 14 15.5 14C14.6716 14 14 13.3284 14 12.5C14 11.6716 14.6716 11 15.5 11C16.3284 11 17 11.6716 17 12.5ZM15.5 20C16.3284 20 17 19.3284 17 18.5C17 17.6716 16.3284 17 15.5 17C14.6716 17 14 17.6716 14 18.5C14 19.3284 14.6716 20 15.5 20Z" fill="#aba0a0"></path> </g></svg></div>'   
                 originalElement.insertAdjacentHTML('afterbegin', handle);
@@ -273,7 +276,7 @@
     // Listener for search table clicks
     function attachEventListeners() {
 
-        var searchTables = document.querySelectorAll('.results');
+        var searchTable = document.getElementById('results');
         var sourceSearch = document.getElementById('source_results');
 
         if (sourceSearch) {
@@ -287,78 +290,73 @@
             })
         }
 
-        if (searchTables) {
+        if (searchTable) {
 
-            searchTables.forEach(function(table) {
+            searchTable.addEventListener('click', function(event) {
 
-                table.addEventListener('click', function(event) {
+                // check if click is a cell
+                if (event.target.tagName === "TD") {
+                    // copy original empty field
+                    var originalElement = document.querySelector("#dynamicSelects li:last-child");
 
-                    // check if click is a cell
-                    if (event.target.tagName === "TD") {
-                        // copy original empty field
-                        var parent = table.parentElement;
-                        var originalInput = parent.previousElementSibling;
-                        var originalElement = parent.parentElement.parentElement;
-                        var lastElement = document.querySelector("#dynamicSelects li:last-child")
-                        // get content of clicked cell
-                        var ingredientval = event.target.textContent;
-
-                        if (originalElement == lastElement) { // If the input is the empty input at the end of the list
-                            // create a new one
-                            var newDiv = originalElement.cloneNode(true);
-                            blankspace = originalElement.querySelector('#temp');
-                            if (blankspace) {
-                                blankspace.remove();
-                            }
-
-                            // set new id and exclude class
-                            newDiv.id = 'q' + counter;
-                            newDiv.classList.add('exclude-item');
-
-                            // clear new inputs and table
-                            var resultsTable = newDiv.querySelector(".results");
-                            resultsTable.innerHTML = '';
-                            inputs = newDiv.querySelectorAll('input');
-                            inputs.forEach(function(input) {
-                                input.value = '';
-                            });
-
-                            // clear old searchtable
-                            table.innerHTML = '';
-
-                            //increment counter
-                            counter++;
-
-                            // add new div to dynamicSelects
-                            var hostdiv = document.getElementById('dynamicSelects');
-                            hostdiv.appendChild(newDiv);
-
-                            // set old field to cellval
-                            var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
-                            var newLi = document.querySelector("#dynamicSelects li:last-child")
-                            originalInput.value = ingredientval;
-                            console.log(originalElement);
-                            originalElement.classList.remove('exclude-item');
-                            originalElement.querySelector('.ingredient_btn').remove();
-
-                            // add handles and delete
-                            var handle = '<div class="col-1 mt-1 handle"><svg height="30px" width="30px" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#aba0a0"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 8C10.3284 8 11 7.32843 11 6.5C11 5.67157 10.3284 5 9.5 5C8.67157 5 8 5.67157 8 6.5C8 7.32843 8.67157 8 9.5 8ZM9.5 14C10.3284 14 11 13.3284 11 12.5C11 11.6716 10.3284 11 9.5 11C8.67157 11 8 11.6716 8 12.5C8 13.3284 8.67157 14 9.5 14ZM11 18.5C11 19.3284 10.3284 20 9.5 20C8.67157 20 8 19.3284 8 18.5C8 17.6716 8.67157 17 9.5 17C10.3284 17 11 17.6716 11 18.5ZM15.5 8C16.3284 8 17 7.32843 17 6.5C17 5.67157 16.3284 5 15.5 5C14.6716 5 14 5.67157 14 6.5C14 7.32843 14.6716 8 15.5 8ZM17 12.5C17 13.3284 16.3284 14 15.5 14C14.6716 14 14 13.3284 14 12.5C14 11.6716 14.6716 11 15.5 11C16.3284 11 17 11.6716 17 12.5ZM15.5 20C16.3284 20 17 19.3284 17 18.5C17 17.6716 16.3284 17 15.5 17C14.6716 17 14 17.6716 14 18.5C14 19.3284 14.6716 20 15.5 20Z" fill="#aba0a0"></path> </g></svg></div>'   
-                            originalElement.insertAdjacentHTML('afterbegin', handle);
-                            var bin = '<div class="col-1 text-right mt-1"><a href="#" class="svg" onclick="removeRow(this)"><svg fill="#ff0000" height="25px" width="25px" version="1.1" id="Layer_1" viewBox="-8.42 -8.42 227.25 227.25" xml:space="preserve" stroke="#ff0000" stroke-width="9.889458" onclick="removeRow(this)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <g> <path d="M105.207,0C47.196,0,0,47.196,0,105.207c0,58.011,47.196,105.207,105.207,105.207 c58.011,0,105.207-47.196,105.207-105.207C210.414,47.196,163.218,0,105.207,0z M105.207,202.621 c-53.715,0-97.414-43.699-97.414-97.414c0-53.715,43.699-97.414,97.414-97.414c53.715,0,97.414,43.699,97.414,97.414 C202.621,158.922,158.922,202.621,105.207,202.621z"></path> <path d="M155.862,101.31H54.552c-2.152,0-3.897,1.745-3.897,3.897c0,2.152,1.745,3.897,3.897,3.897h101.31 c2.152,0,3.897-1.745,3.897-3.897C159.759,103.055,158.014,101.31,155.862,101.31z"></path> </g> </g> </g> </g></svg></a></div>'
-                            originalElement.insertAdjacentHTML('beforeend', bin);
-                            // focus new field
-                            newInput.focus();
-
-                            htmx.process(newLi);
-                            attachEventListeners();
-                        }
-                        else { // If the input is already in the list and is being modified
-                            originalInput.value = ingredientval;
-                            table.innerHTML = '';
-                        }
-                        
+                    // create a new one
+                    var newDiv = originalElement.cloneNode(true);
+                    blankspace = originalElement.querySelector('#temp');
+                    if (blankspace) {
+                        blankspace.remove();
                     }
-                })
+
+                    // set new id and exclude class
+                    newDiv.id = 'q' + counter;
+                    newDiv.classList.add('exclude-item');
+
+                    // clear new inputs and table
+                    var resultsTable = newDiv.querySelector("#results");
+                    resultsTable.innerHTML = '';
+                    inputs = newDiv.querySelectorAll('input');
+                    inputs.forEach(function(input) {
+                        input.value = '';
+                    });
+
+                    // remove old searchtable
+                    originalElement.querySelector("#searchtable").remove();
+                    originalElement.classList.remove('exclude-item');
+
+                    //increment counter
+                    counter++;
+
+                    // add new div to dynamicSelects
+                    var hostdiv = document.getElementById('dynamicSelects');
+                    hostdiv.appendChild(newDiv);
+
+                    // get content of clicked cell
+                    var ingredientval = event.target.textContent;
+
+                    // set old field to cellval
+                    var newInput = document.querySelector("#dynamicSelects li:last-child .amountlist")
+                    var newIngredient = document.querySelector("#dynamicSelects li:last-child .ingredientlist")
+                    document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist").value = ingredientval;
+                    // make readonly
+                    var oldInput = document.querySelector("#dynamicSelects li:nth-last-child(2) .ingredientlist")
+                    oldInput
+                    oldInput.setAttribute('readonly', 'true');
+                    oldInput.removeAttribute('hx-trigger');
+                    oldInput.removeAttribute('hx-get');
+                    oldInput.removeAttribute('hx-target');
+
+                    // add handles and delete
+                    var handle = '<div class="col-1 mt-1 handle"><svg height="30px" width="30px" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#aba0a0"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 8C10.3284 8 11 7.32843 11 6.5C11 5.67157 10.3284 5 9.5 5C8.67157 5 8 5.67157 8 6.5C8 7.32843 8.67157 8 9.5 8ZM9.5 14C10.3284 14 11 13.3284 11 12.5C11 11.6716 10.3284 11 9.5 11C8.67157 11 8 11.6716 8 12.5C8 13.3284 8.67157 14 9.5 14ZM11 18.5C11 19.3284 10.3284 20 9.5 20C8.67157 20 8 19.3284 8 18.5C8 17.6716 8.67157 17 9.5 17C10.3284 17 11 17.6716 11 18.5ZM15.5 8C16.3284 8 17 7.32843 17 6.5C17 5.67157 16.3284 5 15.5 5C14.6716 5 14 5.67157 14 6.5C14 7.32843 14.6716 8 15.5 8ZM17 12.5C17 13.3284 16.3284 14 15.5 14C14.6716 14 14 13.3284 14 12.5C14 11.6716 14.6716 11 15.5 11C16.3284 11 17 11.6716 17 12.5ZM15.5 20C16.3284 20 17 19.3284 17 18.5C17 17.6716 16.3284 17 15.5 17C14.6716 17 14 17.6716 14 18.5C14 19.3284 14.6716 20 15.5 20Z" fill="#aba0a0"></path> </g></svg></div>'   
+                    originalElement.insertAdjacentHTML('afterbegin', handle);
+                    var bin = '<div class="col-1 text-right mt-1"><a href="#" class="svg" onclick="removeRow(this)"><svg fill="#ff0000" height="25px" width="25px" version="1.1" id="Layer_1" viewBox="-8.42 -8.42 227.25 227.25" xml:space="preserve" stroke="#ff0000" stroke-width="9.889458" onclick="removeRow(this)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <g> <path d="M105.207,0C47.196,0,0,47.196,0,105.207c0,58.011,47.196,105.207,105.207,105.207 c58.011,0,105.207-47.196,105.207-105.207C210.414,47.196,163.218,0,105.207,0z M105.207,202.621 c-53.715,0-97.414-43.699-97.414-97.414c0-53.715,43.699-97.414,97.414-97.414c53.715,0,97.414,43.699,97.414,97.414 C202.621,158.922,158.922,202.621,105.207,202.621z"></path> <path d="M155.862,101.31H54.552c-2.152,0-3.897,1.745-3.897,3.897c0,2.152,1.745,3.897,3.897,3.897h101.31 c2.152,0,3.897-1.745,3.897-3.897C159.759,103.055,158.014,101.31,155.862,101.31z"></path> </g> </g> </g> </g></svg></a></div>'
+                    originalElement.insertAdjacentHTML('beforeend', bin);
+                    // focus new field
+                    newInput.focus();
+
+                    htmx.process(newIngredient);
+                    attachEventListeners();
+
+
+                }
             })
         }
     }
