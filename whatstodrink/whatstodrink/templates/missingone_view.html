@@ -67,7 +67,7 @@
                                             {% if cocktail.build %}
                                             <div class="row row-cols-auto mb-3">
                                                 <div class="category col-3">Build: </div>
-                                                <div class="col-12 col-sm-3 offset-col-spaced">
+                                                <div class="col-12 col-sm-9 offset-col-spaced">
                                                         {% set list = cocktail.build.split('\n') %}
                                                         {% for item in list %}
                                                         {{ item }}
@@ -81,13 +81,13 @@
                                             {% if cocktail.source %}
                                             <div class="row row-cols-auto mb-3">
                                                 <div class="category col-3">Source: </div>
-                                                <div class="col-12 col-sm-3 offset-col-spaced">{{ cocktail.source }}</div>
+                                                <div class="col-12 col-sm-9 offset-col-spaced">{{ cocktail.source }}</div>
                                             </div>
                                             {% endif %}
                                             {% if cocktail.notes %}
                                                 <div class="row row-cols-auto mb-3">
                                                     <div class="category col-3">Notes: </div>
-                                                    <div class="col-12 col-sm-3 offset-col-spaced">
+                                                    <div class="col-12 col-sm-9 offset-col-spaced">
                                                         {% set list = cocktail.notes.split('\n') %}
                                                         {% for item in list %}
                                                             {{ item }}
