@@ -71,9 +71,17 @@
                     <textarea class="form-control notes_field" id="build" name="build" rows="3">{{ cocktail.build }}</textarea>
                 </div>
                 <!-- Source Field -->
-                <div class="mb-3">
-                    {{ form.source.label(class="form-control-label") }} 
-                    {{ form.source(class="form-control", value=cocktail.source) }}
+                <div class="form-group mb-3">
+                    {{ form.source.label(class="form-control-label") }}
+                    {{ form.source(class="form-control", autocomplete="off", id="source_input", value=cocktail.source, **{
+                        "hx-get": "/sourcesearch",
+                        "hx-trigger": "keyup changed delay:300ms",
+                        "hx-target": "#source_results"}) }}
+            
+                    <!-- source search table -->
+                    <table id ="source_table" class="table table-sm table-borderless table-hover">
+                        <tbody id="source_results">
+                    </table>
                 </div>
                 <!-- Family Field -->
                 <div class="mb-3">
@@ -220,7 +228,18 @@
     function attachEventListeners() {
 
         var searchTables = document.querySelectorAll('.searchtable');
-        console.log(searchTables);
+        var sourceSearch = document.getElementById('source_results');
+
+        if (sourceSearch) {
+            sourceSearch.addEventListener('click', function(event) {
+                if (event.target.tagName === "TD") {
+                    var originalElement = document.querySelector('#source_input');
+                    var sourceVal = event.target.textContent;
+                    originalElement.value = sourceVal;
+                    sourceSearch.innerHTML = '';
+                }
+            })
+        }
 
         if (searchTables) {
 
