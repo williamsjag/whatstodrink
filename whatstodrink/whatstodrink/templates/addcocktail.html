@@ -68,7 +68,15 @@
         <!-- Source field -->
         <div class="form-group mb-3">
             {{ form.source.label(class="form-control-label") }}
-            {{ form.source(class="form-control", autocomplete="off") }}
+            {{ form.source(class="form-control", autocomplete="off", **{
+                "hx-get": "/sourcesearch",
+                "hx-trigger": "keyup changed delay:300ms",
+                "hx-target": "#source_results"}) }}
+    
+            <!-- ingredient search table -->
+            <table id ="source_table" class="table table-sm table-borderless table-hover">
+                <tbody id="source_results">
+            </table>
         </div>
         <!-- Family field -->
         <div class="mb-3 form-group">

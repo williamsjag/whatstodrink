@@ -179,8 +179,7 @@ Changed validate form logic for modifies to only throw error if name is changed 
 
 bug: Create new ingredient in add cocktail focuses x button
 
-bug: Rename Aguil a azteca to Águil... 
-    2024-06-05 18:01:20,251: TypeError: The view function did not return a valid response. The return type must be a string, dict, list, tuple with headers or status, Response instance, or WSGI callable, but it was a int.
+Make added ingredients no longer read only in add cocktail
 
 
 ## Todo 

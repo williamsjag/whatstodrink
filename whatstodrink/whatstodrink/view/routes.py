@@ -44,10 +44,28 @@ def ingredientsearch():
     q = request.args.get("q").lower()
 
     if q:
-        results = db.session.execute(select(Ingredient.name)
+        results = db.session.scalars(select(Ingredient.name)
                                      .where(func.lower(Ingredient.name).like('%' + q + '%'))
                                      .where(or_(Ingredient.user_id == current_user.id, Ingredient.shared == 1))
                                      .limit(10)
+        ).fetchall()        
+    else:
+        results = []
+
+    return render_template("ingredientsearch.html", results=results)
+
+# Source search from add cocktail
+@view.route("/sourcesearch")
+@login_required
+def sourcesearch():
+    q = request.args.get("source").lower()
+    print(f"{q}")
+
+    if q:
+        results = db.session.scalars(select(Cocktail.source)
+                                     .where(func.lower(Cocktail.source).like('%' + q + '%'))
+                                     .where(Cocktail.user_id == current_user.id)
+                                     .limit(5)
         ).fetchall()        
     else:
         results = []

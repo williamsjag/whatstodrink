@@ -44,6 +44,11 @@ nav .navbar-brand .blue
   align-items: flex-start; /* Align to the top */
   padding: 2rem 1rem; /* Adjust padding to prevent overflow */
 }
+/* @media screen and (max-width: 1200px) {
+  .accordion-group {
+    column-width: 600px;
+  }
+} */
 @media screen and (max-width: 768px) { /* medium and larger screens */
   .indexgrid {
     grid-template-columns: 1fr; /* Single column on small screens */
@@ -150,7 +155,7 @@ input[type=checkbox] {
 }
 .accordion-group {
   column-count: 2;
-  column-width: 800px;
+  column-width: 700px;
   column-gap: 50px;
   max-width: 1700px;
   margin: 0 auto;
