@@ -176,14 +176,18 @@ Changed validate form logic for modifies to only throw error if name is changed 
     This allows changes of accents.
 Added source search table to add cocktail and modify cocktail
 Reduced size of first column in cocktail views
-
+Removed readonly from add cocktail and made added ingredients changeable
+Added Inline Validation to Add Cocktail Form - name
+Added specification default and warning to empty amounts in add cocktail
 
 ## In Progress
 
 bug: Create new ingredient in add cocktail focuses x button
 
-Make added ingredients no longer read only in add cocktail
+bug: Adding ingredients without amounts results in nothing being added
+    - Make cocktail errors throw error for empty amount once it carries them over
 
+Make add cocktail errors transfer submitted ingredients, and add a modal to view/modify the existing one.
 
 ## Todo 
 

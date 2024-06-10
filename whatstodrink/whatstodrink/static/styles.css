@@ -11,6 +11,10 @@
   margin: auto;
   max-width: 800px;
 }
+.navbar {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
 
 nav .navbar-brand
 {

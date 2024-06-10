@@ -1,0 +1,19 @@
+<div class="form-group mb-3" hx-target="this" hx-swap="outerHTML">
+    {{ form.name.label(class="form-control-label", ) }}
+    {% if form.name.errors %}
+            {{ form.name(class="form-control is-invalid", **{
+                "hx-post": "/validatecocktail",
+                "hx-trigger": "keyup changed delay:500ms"
+            }) }}
+            <div class="invalid-feedback">
+                {% for error in form.name.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+    {% else %}
+        {{ form.name(class="form-control", autocomplete="off", **{
+            "hx-post": "/validatecocktail",
+            "hx-trigger": "keyup changed delay:500ms"
+        }) }}
+    {% endif %} 
+</div>

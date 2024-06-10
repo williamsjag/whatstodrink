@@ -10,10 +10,10 @@
         <p>Add a new recipe to your database.</p>
     </div>
     <!-- Add cocktail form -->
-    <form action="/addcocktail" id="amountsForm" class="item-center center-form" method="post" novalidate>
+    <form action="/addcocktail" id="amountsForm" class="item-center center-form" method="post" novalidate onsubmit="enforceDefaultValue(event)">
         {{ form.csrf_token }}
         <!-- name field -->
-        <div class="form-group mb-3">
+        <div class="form-group mb-3" hx-target="this" hx-swap="outerHTML">
             {{ form.name.label(class="form-control-label") }}
             {% if form.name.errors %}
                     {{ form.name(class="form-control is-invalid") }}
@@ -23,7 +23,10 @@
                         {% endfor %}
                     </div>
             {% else %}
-                {{ form.name(class="form-control", autocomplete="off") }}
+                {{ form.name(class="form-control", autocomplete="off", **{
+                    "hx-post": "/validatecocktail",
+                    "hx-trigger": "keyup changed delay:300ms"
+                }) }}
             {% endif %} 
         </div>
             <!--ingredients list -->
@@ -362,7 +365,15 @@
             })
         }
     }
-
+// Enforce Default value of amounts
+function enforceDefaultValue(event) {
+    const amountInputs = document.querySelectorAll('input[name="amount"]');
+    amountInputs.forEach(input => {
+        if (input.value.trim() === '') {
+            input.value = 'unspecified';
+        }
+    });
+}
         
 </script>
 {% endblock %}

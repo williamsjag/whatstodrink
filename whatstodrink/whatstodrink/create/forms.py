@@ -41,3 +41,14 @@ class AddCocktailForm(FlaskForm):
 
         if cocktail:
             raise ValidationError("You already have a cocktail by that name")
+        
+class CocktailNameForm(FlaskForm):
+    name = StringField('Cocktail Name')
+
+    def validate_name(self, name):
+        cocktail = db.session.execute(select(Cocktail.name)
+                                      .where(Cocktail.name == name.data)
+                                      .where(Cocktail.user_id == current_user.id)).fetchall()
+
+        if cocktail:
+            raise ValidationError("You already have a cocktail by that name")

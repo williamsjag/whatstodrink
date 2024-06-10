@@ -2,7 +2,7 @@ from flask import flash, redirect, render_template, request, url_for, Blueprint
 from whatstodrink.__init__ import db
 from sqlalchemy import select, text, update, exc, or_
 from whatstodrink.models import Cocktail, Ingredient, Stock, Amount
-from whatstodrink.create.forms import AddIngredientForm, AddCocktailForm
+from whatstodrink.create.forms import AddIngredientForm, AddCocktailForm, CocktailNameForm
 from whatstodrink.helpers import commit_transaction
 from flask_login import current_user, login_required
 
@@ -52,10 +52,6 @@ def addingredientmodal2():
             "addingredientmodal2.html", form=form
         )
 
-
-# AddIngredient/AddCocktail/Amounts and related routes
-
-
 @create.route("/addingredient", methods=["GET", "POST"])
 @login_required
 def addingredient():
@@ -103,6 +99,16 @@ def addingredient():
         )
     
 
+@create.route("/validatecocktail", methods=["POST"])
+@login_required
+def validatecocktail():
+    form = CocktailNameForm()
+
+    if form.validate_on_submit():
+        return render_template("namevalidate.html", form=form)
+    else:
+        return render_template("namevalidate.html", form=form)
+
 @create.route("/addcocktail", methods=["GET", "POST"])
 @login_required
 def addcocktail():
@@ -127,9 +133,13 @@ def addcocktail():
             ingredients = list(filter(None, rawingredients))
                
             recipe = ""
+            flag_unspecified = []
             for amount, ingredient in zip(amounts, ingredients):
                 # concatenate amount/ingredient with unit separator delimiter, and newline
                 recipe += f"{amount}{chr(31)}{ingredient}\n"
+                if ingredient and amount == "unspecified":
+                    flag_unspecified.append(ingredient)
+
             
             # Add cocktail to db
             newcocktail = Cocktail(name=form.name.data, 
@@ -169,6 +179,7 @@ def addcocktail():
              # generate ingredientlist
             
             ingredient_list = ', '.join(list_names)
+            flags = ', '.join(flag_unspecified)
             
             db.session.execute(
                 update(Cocktail).where(Cocktail.id == newcocktail.id)
@@ -176,7 +187,12 @@ def addcocktail():
                 .values(ingredient_list=ingredient_list)
             )
             commit_transaction()
-            flash("{} added".format(newcocktail.name), "primary")
+            if flag_unspecified and len(flag_unspecified) == 1:
+                flash(f"{newcocktail.name} added, but {flags} is unspecified", "warning")
+            elif flag_unspecified and len(flag_unspecified) > 1:
+                flash(f"{newcocktail.name} added, but {flags} are unspecified", "warning")
+            else:
+                flash("{} added".format(newcocktail.name), "primary")
         
             return redirect(url_for(
                 "create.addcocktail"
