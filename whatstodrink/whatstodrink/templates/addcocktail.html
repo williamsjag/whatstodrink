@@ -24,12 +24,11 @@
                     </div>
             {% else %}
                 {{ form.name(class="form-control", autocomplete="off", **{
-                    "hx-post": "/validatecocktail",
-                    "hx-trigger": "keyup changed delay:300ms"
+                    "hx-post": "/validatecocktail"
                 }) }}
             {% endif %} 
         </div>
-            <!--ingredients list -->
+            <!--ingredients list -->    
         <div class="form-group">
             {{ form.ingredient.label(class="form-control-label", autocomplete="off") }}
             <ul id="dynamicSelects">

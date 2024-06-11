@@ -3,7 +3,6 @@
     {% if form.name.errors %}
             {{ form.name(class="form-control is-invalid", **{
                 "hx-post": "/validatecocktail",
-                "hx-trigger": "keyup changed delay:500ms"
             }) }}
             <div class="invalid-feedback">
                 {% for error in form.name.errors %}
@@ -13,7 +12,6 @@
     {% else %}
         {{ form.name(class="form-control", autocomplete="off", **{
             "hx-post": "/validatecocktail",
-            "hx-trigger": "keyup changed delay:500ms"
         }) }}
     {% endif %} 
 </div>
