@@ -191,6 +191,7 @@ bug: Adding ingredients without amounts results in nothing being added
 
 Make add cocktail errors transfer submitted ingredients, and add a modal to view/modify the existing one.
 
+Make family pull from only one source and clean up (wine/vermouth cocktails for example)
 
 ## Todo 
 
