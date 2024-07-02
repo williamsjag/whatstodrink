@@ -179,6 +179,8 @@ Reduced size of first column in cocktail views
 Removed readonly from add cocktail and made added ingredients changeable
 Added Inline Validation to Add Cocktail Form - name
 Added specification default and warning to empty amounts in add cocktail
+Fixed error that results in prepopulated ingredient modal fields when a second ingredient is created in add ingredient
+    -I still don't know where the error comes from, I just overwrite it in javascript
 
 ## In Progress
 
@@ -188,6 +190,7 @@ bug: Adding ingredients without amounts results in nothing being added
     - Make cocktail errors throw error for empty amount once it carries them over
 
 Make add cocktail errors transfer submitted ingredients, and add a modal to view/modify the existing one.
+
 
 ## Todo 
 

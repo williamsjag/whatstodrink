@@ -55,7 +55,7 @@
                         </table>
                          <!-- Create new ingredient button -->
                         <div class="ingredient_btn mb-3">
-                            <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal" onclick="focusFirstInput()">Create New Ingredient</button>
+                            <button class="btn btn-primary btn-sm" id="new_ingredient" hx-get="/addingredientmodal" hx-target="#ingredientModal" hx-trigger="click" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal" onclick="removeExistingModal()">Create New Ingredient</button>
                         </div>
                     </div>
                 </li>
@@ -155,12 +155,7 @@
 {% endblock %}
 {% block javascript %}
 <script>
-    // Focus input in modal
-    function focusFirstInput() {
-        var form = document.getElementById("addItemForm");
-        var inputFields = form.getElementsByTagName("input");
-        inputFields[0].focus();
-    }
+
 
     // Configure drag bars
     var el = document.getElementById('dynamicSelects');
@@ -189,7 +184,7 @@
     // counter variable for ids
     var counter = 1;
 
-    // Listener for create ingredient button
+    // Listener for create ingredient modal submit to autofill the new ingredient and create another line
     document.addEventListener('htmx:afterRequest', function(evt) {
         var response = evt.detail.xhr.response; // Listen for response
         var source = evt.detail.elt; // But only for Post requests
@@ -268,7 +263,6 @@
 
                 htmx.process(newIngredient);
                 attachEventListeners();
-
             }
         }
     });
@@ -372,6 +366,20 @@ function enforceDefaultValue(event) {
             input.value = 'unspecified';
         }
     });
+}
+function removeExistingModal() {
+    const modal = document.getElementById('addItemForm')
+    const inputs = modal.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        if (input.type === 'checkbox') {
+            input.checked = false;
+        } else {
+            input.value = '';
+        }
+        
+    })
+    const button = document.getElementById('modalbutton')
+    button.innerHTML = 'Add Ingredient';
 }
         
 </script>

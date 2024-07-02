@@ -1,5 +1,5 @@
 <!-- Add Ingredient Modal for Add Cocktail- no reload -->
-<div class="modal-dialog modal-dialog-centered">
+<div class="modal-dialog modal-dialog-centered" id="existing_modal">
     <div class="modal-content">
         <div class="modal-header text-center">
             <h5 class="modal-title w-100" id="ingredientModalLabel">New Ingredient</h5>
@@ -99,7 +99,5 @@
   </div>
               
   <script>
-      $('#ingredientModal').on('shown.bs.modal', function () {
-          $('#ingredientModal input[name="name"]').focus();
-      })
+
   </script>
